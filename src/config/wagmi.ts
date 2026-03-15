@@ -1,10 +1,16 @@
 import { http, createConfig } from 'wagmi'
-import { injected } from 'wagmi/connectors'
+import { metaMask, coinbaseWallet, walletConnect } from 'wagmi/connectors'
 import { somniaTestnet } from './chains'
+
+const projectId = import.meta.env.VITE_WC_PROJECT_ID || ''
 
 export const config = createConfig({
   chains: [somniaTestnet],
-  connectors: [injected()],
+  connectors: [
+    metaMask(),
+    coinbaseWallet({ appName: 'MirrorX' }),
+    ...(projectId ? [walletConnect({ projectId })] : []),
+  ],
   transports: {
     [somniaTestnet.id]: http(),
   },
