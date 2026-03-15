@@ -1,6 +1,6 @@
 export function Footer() {
   return (
-    <footer className="border-t border-border flex items-center justify-between px-20 py-10">
+    <footer className="border-t border-border flex items-center justify-between py-10">
       <span className="text-xs text-text-faint">
         &copy; 2026 MirrorX &mdash; Built on Somnia
       </span>
