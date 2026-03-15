@@ -1,13 +1,12 @@
 import { useReadContract, useReadContracts } from 'wagmi'
 import { formatEther } from 'viem'
-import { contracts } from '../config/contracts'
-import { LeaderRegistryAbi } from '../config/abi/LeaderRegistry'
-import { ReputationEngineAbi } from '../config/abi/ReputationEngine'
-import { FollowerVaultAbi } from '../config/abi/FollowerVault'
-import { protocolStats as mockStats } from '../data/mock'
+import { contracts } from '@/config/contracts'
+import { LeaderRegistryAbi } from '@/config/abi/LeaderRegistry'
+import { ReputationEngineAbi } from '@/config/abi/ReputationEngine'
+import { FollowerVaultAbi } from '@/config/abi/FollowerVault'
 
 export function useProtocolStats() {
-  const { data: leaderCount } = useReadContract({
+  const { data: leaderCount, isLoading: countLoading } = useReadContract({
     address: contracts.leaderRegistry,
     abi: LeaderRegistryAbi,
     functionName: 'getLeaderCount',
@@ -65,7 +64,8 @@ export function useProtocolStats() {
 
   const totalVolume = statsResults?.reduce((sum, r) => {
     if (r.status !== 'success') return sum
-    const stats = r.result as unknown as readonly [bigint, bigint, bigint, bigint, bigint, bigint]
+    const stats = r.result as unknown as readonly bigint[]
+    if (!Array.isArray(stats) || stats.length < 4 || stats[3] == null) return sum
     return sum + Number(formatEther(stats[3]))
   }, 0) ?? 0
 
@@ -75,17 +75,12 @@ export function useProtocolStats() {
     return `$${vol.toFixed(0)}`
   }
 
-  // Fall back to mock if no on-chain data
-  if (totalLeaders === 0) {
-    return { stats: mockStats, isLoading: false }
-  }
-
   return {
     stats: {
       leaders: totalLeaders,
       followers: totalFollowers,
       volume: formatVolume(totalVolume),
     },
-    isLoading: false,
+    isLoading: countLoading,
   }
 }

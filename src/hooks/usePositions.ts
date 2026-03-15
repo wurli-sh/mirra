@@ -1,23 +1,19 @@
 import { useAccount, useReadContracts } from 'wagmi'
 import { formatEther } from 'viem'
-import { contracts } from '../config/contracts'
-import { FollowerVaultAbi } from '../config/abi/FollowerVault'
-import { PositionTrackerAbi } from '../config/abi/PositionTracker'
-import { ReputationEngineAbi } from '../config/abi/ReputationEngine'
-import { type Position, positions as mockPositions } from '../data/mock'
-import { useLeaders } from './useLeaders'
+import { contracts } from '@/config/contracts'
+import { LeaderRegistryAbi } from '@/config/abi/LeaderRegistry'
+import { FollowerVaultAbi } from '@/config/abi/FollowerVault'
+import { PositionTrackerAbi } from '@/config/abi/PositionTracker'
+import { ReputationEngineAbi } from '@/config/abi/ReputationEngine'
+import type { Position } from '@/data/types'
 
 export function usePositions() {
   const { address } = useAccount()
-  const { leaders } = useLeaders()
 
-  // For each leader address, read the position from FollowerVault
-  // We need full addresses from the contract, but we only have truncated ones from useLeaders
-  // So we read positions for all leaders from the registry directly
   const { data: countResult } = useReadContracts({
     contracts: [{
       address: contracts.leaderRegistry as `0x${string}`,
-      abi: [{ inputs: [], name: 'getLeaderCount', outputs: [{ type: 'uint256' }], stateMutability: 'view', type: 'function' }] as const,
+      abi: LeaderRegistryAbi,
       functionName: 'getLeaderCount',
     }],
     query: { enabled: !!address },
@@ -27,7 +23,7 @@ export function usePositions() {
 
   const leaderAddressCalls = Array.from({ length: leaderCount }, (_, i) => ({
     address: contracts.leaderRegistry as `0x${string}`,
-    abi: [{ inputs: [{ type: 'uint256' }], name: 'getLeaderAt', outputs: [{ type: 'address' }], stateMutability: 'view', type: 'function' }] as const,
+    abi: LeaderRegistryAbi,
     functionName: 'getLeaderAt' as const,
     args: [BigInt(i)] as const,
   }))
@@ -80,9 +76,9 @@ export function usePositions() {
 
   const isLoading = positionsLoading || pnlLoading || scoresLoading
 
-  // Build active positions
+  // Build active positions from on-chain data only
   const positions: Position[] = (() => {
-    if (!address || fullAddresses.length === 0 || !positionResults) return mockPositions
+    if (!address || fullAddresses.length === 0 || !positionResults) return []
 
     const activePositions: Position[] = []
 
@@ -91,12 +87,14 @@ export function usePositions() {
       if (posResult?.status !== 'success') return
 
       // FollowPosition tuple: follower, leader, depositedSTT, maxPerTrade, maxSlippageBps, stopLossSTT, active
-      const pos = posResult.result as unknown as readonly [`0x${string}`, `0x${string}`, bigint, bigint, number, bigint, boolean]
-      if (!pos[6]) return // not active
+      const pos = posResult.result as unknown as readonly [
+        `0x${string}`, `0x${string}`, bigint, bigint, bigint, bigint, boolean
+      ]
+      if (!pos || !pos[6]) return // not active
 
       const deposited = Number(formatEther(pos[2]))
       const maxPerTrade = Number(formatEther(pos[3]))
-      const slippage = pos[4] / 100 // bps to percent
+      const slippage = Number(pos[4]) / 100 // bps to percent
       const stopLoss = Number(formatEther(pos[5]))
 
       const pnlRaw = pnlResults?.[i]?.status === 'success'
@@ -113,6 +111,7 @@ export function usePositions() {
 
       activePositions.push({
         leader: truncatedAddr,
+        fullLeaderAddress: leaderAddr,
         score,
         rank: i + 1,
         deposited: Math.round(deposited * 100) / 100,
@@ -126,7 +125,7 @@ export function usePositions() {
       })
     })
 
-    return activePositions.length > 0 ? activePositions : mockPositions
+    return activePositions
   })()
 
   return { positions, isLoading }

@@ -1,5 +1,13 @@
 import { TrendingUp, ChevronLeft, ChevronRight } from 'lucide-react'
-import { rankingChartData } from '../../data/mock'
+import { useLeaders } from '@/hooks/useLeaders'
+
+const CHART_COLORS = [
+  'var(--color-chart-1)',
+  'var(--color-chart-2)',
+  'var(--color-chart-3)',
+  'var(--color-chart-4, #6366f1)',
+  'var(--color-chart-5, #f59e0b)',
+]
 
 function positionsToPath(positions: number[], width: number, height: number): string {
   const xStep = width / (positions.length - 1)
@@ -24,11 +32,38 @@ function positionsToPath(positions: number[], width: number, height: number): st
 }
 
 export function RankingChart() {
-  const { weeks, lines } = rankingChartData
+  const { leaders, isLoading } = useLeaders()
+
+  // Use the trend data from top leaders (max 5)
+  const topLeaders = leaders.slice(0, 5)
+  const lines = topLeaders.map((leader, i) => ({
+    leader: leader.address,
+    color: CHART_COLORS[i % CHART_COLORS.length],
+    positions: leader.trend,
+  }))
+
   const svgWidth = 800
   const svgHeight = 180
   const gridYs = [36, 72, 108, 144]
   const yLabels = [1, 3, 5, 7, 10]
+
+  if (isLoading) {
+    return (
+      <div className="border border-border rounded-2xl p-6 flex items-center justify-center py-16">
+        <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+        <span className="text-sm text-text-muted ml-3">Loading chart...</span>
+      </div>
+    )
+  }
+
+  if (lines.length === 0) {
+    return (
+      <div className="border border-border rounded-2xl p-6 text-center py-16">
+        <TrendingUp size={24} className="text-text-faint mx-auto mb-3" />
+        <p className="text-sm text-text-muted">No leaders registered yet. Chart will populate when leaders are active.</p>
+      </div>
+    )
+  }
 
   return (
     <div className="border border-border rounded-2xl p-6">
@@ -40,7 +75,7 @@ export function RankingChart() {
         </div>
         <div className="flex items-center gap-2">
           <ChevronLeft size={16} className="text-text-faint cursor-pointer" />
-          <span className="text-xs text-text-muted font-medium">Week 12</span>
+          <span className="text-xs text-text-muted font-medium">Recent</span>
           <ChevronRight size={16} className="text-text-faint cursor-pointer" />
         </div>
       </div>
@@ -101,11 +136,11 @@ export function RankingChart() {
           })}
         </svg>
 
-        {/* X-axis labels */}
+        {/* X-axis labels from trend indices */}
         <div className="flex justify-between mt-2 px-0">
-          {weeks.map((w) => (
-            <span key={w} className="text-xs text-text-faint">
-              {w}
+          {lines[0]?.positions.map((_, i) => (
+            <span key={i} className="text-xs text-text-faint">
+              {i + 1}
             </span>
           ))}
         </div>

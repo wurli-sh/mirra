@@ -1,85 +1,198 @@
-import { useUIStore } from '../../stores/ui'
+import { useState, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Loader2, X } from 'lucide-react'
+import { useUIStore } from '@/stores/ui'
+import { useFollow } from '@/hooks/useFollow'
+import { useApproveToken } from '@/hooks/useApproveToken'
+import { useWallet } from '@/hooks/useWallet'
+import { contracts } from '@/config/contracts'
+import { parseEther } from 'viem'
+import { modalOverlay, modalContent } from '@/lib/animations'
 
 export function FollowModal() {
-  const setFollowModalOpen = useUIStore((s) => s.setFollowModalOpen)
+  const closeFollowModal = useUIStore((s) => s.closeFollowModal)
+  const selectedLeader = useUIStore((s) => s.selectedLeader)
+  const selectedLeaderDisplay = useUIStore((s) => s.selectedLeaderDisplay)
+  const { isConnected } = useWallet()
+
+  const [depositAmount, setDepositAmount] = useState('500')
+  const [maxPerTrade, setMaxPerTrade] = useState('100')
+  const [slippage, setSlippage] = useState('0.5')
+  const [stopLoss, setStopLoss] = useState('100')
+
+  const { follow, isPending: followPending, isConfirming: followConfirming, isSuccess: followSuccess, error: followError } = useFollow()
+
+  // Approve STT (base token) for FollowerVault
+  const {
+    approve,
+    isPending: approvePending,
+    isConfirming: approveConfirming,
+    isSuccess: approveSuccess,
+    needsApproval,
+  } = useApproveToken(contracts.sttToken, contracts.followerVault)
+
+  const amount = (() => {
+    try { return depositAmount && Number(depositAmount) > 0 ? parseEther(depositAmount) : 0n }
+    catch { return 0n }
+  })()
+  const requiresApproval = needsApproval(amount) && !approveSuccess
+
+  // Auto-close modal after successful follow
+  useEffect(() => {
+    if (followSuccess) {
+      const timer = setTimeout(closeFollowModal, 2000)
+      return () => clearTimeout(timer)
+    }
+  }, [followSuccess, closeFollowModal])
+
+  const handleSubmit = () => {
+    if (!selectedLeader || !isConnected) return
+    if (!depositAmount || Number(depositAmount) <= 0) return
+
+    if (requiresApproval) {
+      approve()
+      return
+    }
+
+    follow({
+      leader: selectedLeader,
+      amount: depositAmount,
+      maxPerTrade,
+      slippageBps: Math.round(Number(slippage) * 100),
+      stopLoss,
+    })
+  }
+
+  const isLoading = followPending || followConfirming || approvePending || approveConfirming
+
+  const buttonText = () => {
+    if (approvePending) return 'Confirm approval in wallet...'
+    if (approveConfirming) return 'Approving...'
+    if (requiresApproval && !approveSuccess) return 'Approve STT'
+    if (followPending) return 'Confirm in wallet...'
+    if (followConfirming) return 'Following...'
+    if (followSuccess) return 'Followed!'
+    return 'Confirm & Follow'
+  }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      {/* Backdrop */}
-      <div
-        className="absolute inset-0 bg-black/40"
-        onClick={() => setFollowModalOpen(false)}
-      />
+    <AnimatePresence>
+      <div className="fixed inset-0 z-50 flex items-center justify-center">
+        {/* Backdrop */}
+        <motion.div
+          className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+          variants={modalOverlay}
+          initial="hidden"
+          animate="visible"
+          exit="exit"
+          onClick={closeFollowModal}
+        />
 
-      {/* Modal card */}
-      <div className="relative w-[480px] bg-white rounded-2xl shadow-xl border border-border p-10">
-        {/* Title */}
-        <h2 className="font-bold text-2xl">Follow 0x7b2e...4f91</h2>
-        <p className="text-sm text-text-muted mt-1 mb-8">
-          Configure your mirror position
-        </p>
+        {/* Modal card */}
+        <motion.div
+          className="relative w-[480px] bg-white rounded-2xl shadow-xl border border-border p-10"
+          variants={modalContent}
+          initial="hidden"
+          animate="visible"
+          exit="exit"
+        >
+          {/* Close button */}
+          <button
+            className="absolute top-4 right-4 text-text-faint hover:text-secondary transition-colors cursor-pointer"
+            onClick={closeFollowModal}
+          >
+            <X size={18} />
+          </button>
 
-        {/* Deposit Amount */}
-        <div className="mb-5">
-          <label className="block text-xs text-text-muted uppercase tracking-wider font-medium mb-2">
-            Deposit Amount
-          </label>
-          <input
-            type="text"
-            defaultValue="500"
-            className="w-full border border-border-strong rounded-xl px-4 py-3.5 text-sm outline-none"
-          />
-          <span className="text-xs text-text-muted mt-1.5 block">
-            Balance: 2,340 USDC
-          </span>
-        </div>
+          {/* Title */}
+          <h2 className="font-bold text-2xl">Follow {selectedLeaderDisplay || '...'}</h2>
+          <p className="text-sm text-text-muted mt-1 mb-8">
+            Configure your mirror position
+          </p>
 
-        {/* Max Per Trade + Slippage */}
-        <div className="flex gap-3 mb-5">
-          <div className="flex-1">
+          {/* Deposit Amount */}
+          <div className="mb-5">
             <label className="block text-xs text-text-muted uppercase tracking-wider font-medium mb-2">
-              Max Per Trade
+              Deposit Amount (STT)
             </label>
             <input
               type="text"
-              defaultValue="100"
-              className="w-full border border-border-strong rounded-xl px-4 py-3.5 text-sm outline-none"
+              value={depositAmount}
+              onChange={(e) => setDepositAmount(e.target.value)}
+              className="w-full border border-border-strong rounded-xl px-4 py-3.5 text-sm outline-none focus:border-secondary transition-colors"
             />
           </div>
-          <div className="flex-1">
+
+          {/* Max Per Trade + Slippage */}
+          <div className="flex gap-3 mb-5">
+            <div className="flex-1">
+              <label className="block text-xs text-text-muted uppercase tracking-wider font-medium mb-2">
+                Max Per Trade (STT)
+              </label>
+              <input
+                type="text"
+                value={maxPerTrade}
+                onChange={(e) => setMaxPerTrade(e.target.value)}
+                className="w-full border border-border-strong rounded-xl px-4 py-3.5 text-sm outline-none focus:border-secondary transition-colors"
+              />
+            </div>
+            <div className="flex-1">
+              <label className="block text-xs text-text-muted uppercase tracking-wider font-medium mb-2">
+                Slippage %
+              </label>
+              <input
+                type="text"
+                value={slippage}
+                onChange={(e) => setSlippage(e.target.value)}
+                className="w-full border border-border-strong rounded-xl px-4 py-3.5 text-sm outline-none focus:border-secondary transition-colors"
+              />
+            </div>
+          </div>
+
+          {/* Stop-Loss Threshold */}
+          <div className="mb-8">
             <label className="block text-xs text-text-muted uppercase tracking-wider font-medium mb-2">
-              Slippage %
+              Stop-Loss (STT)
             </label>
             <input
               type="text"
-              defaultValue="0.5"
-              className="w-full border border-border-strong rounded-xl px-4 py-3.5 text-sm outline-none"
+              value={stopLoss}
+              onChange={(e) => setStopLoss(e.target.value)}
+              className="w-full border border-border-strong rounded-xl px-4 py-3.5 text-sm outline-none focus:border-secondary transition-colors"
             />
           </div>
-        </div>
 
-        {/* Stop-Loss Threshold */}
-        <div className="mb-8">
-          <label className="block text-xs text-text-muted uppercase tracking-wider font-medium mb-2">
-            Stop-Loss Threshold
-          </label>
-          <div className="relative">
-            <input
-              type="text"
-              defaultValue="20"
-              className="w-full border border-border-strong rounded-xl px-4 py-3.5 text-sm outline-none"
-            />
-            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-text-muted text-sm">
-              %
-            </span>
-          </div>
-        </div>
+          {/* Error */}
+          {followError && (
+            <p className="text-xs text-danger mb-4">
+              {(followError as any)?.shortMessage || followError.message}
+            </p>
+          )}
 
-        {/* Confirm button */}
-        <button className="bg-secondary text-white rounded-xl w-full py-4 font-semibold cursor-pointer">
-          Confirm &amp; Follow
-        </button>
+          {/* Success */}
+          {followSuccess && (
+            <p className="text-xs text-success mb-4 font-medium">
+              Position opened! Your trades will now mirror this leader.
+            </p>
+          )}
+
+          {/* Confirm button */}
+          <button
+            className="bg-secondary text-white rounded-xl w-full py-4 font-semibold cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2"
+            onClick={handleSubmit}
+            disabled={isLoading || followSuccess || !isConnected || !depositAmount || Number(depositAmount) <= 0}
+          >
+            {isLoading && <Loader2 size={16} className="animate-spin" />}
+            {buttonText()}
+          </button>
+
+          {!isConnected && (
+            <p className="text-xs text-text-muted text-center mt-3">
+              Connect your wallet to follow
+            </p>
+          )}
+        </motion.div>
       </div>
-    </div>
+    </AnimatePresence>
   )
 }

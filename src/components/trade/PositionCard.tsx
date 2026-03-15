@@ -1,7 +1,12 @@
-import { Plus, Minus, X } from 'lucide-react'
-import { cn } from '../../lib/cn'
+import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Plus, Minus, X, Loader2 } from 'lucide-react'
+import { cn } from '@/lib/cn'
 import { ProgressBar } from '../ui/ProgressBar'
-import type { Position } from '../../data/mock'
+import { useDepositMore } from '@/hooks/useDepositMore'
+import { useWithdrawPosition } from '@/hooks/useWithdrawPosition'
+import { useUnfollow } from '@/hooks/useUnfollow'
+import type { Position } from '@/data/types'
 
 interface PositionCardProps {
   position: Position
@@ -10,6 +15,36 @@ interface PositionCardProps {
 export function PositionCard({ position }: PositionCardProps) {
   const danger = position.stopLossUsed > 70
   const positive = position.pnl >= 0
+
+  const [showDeposit, setShowDeposit] = useState(false)
+  const [showWithdraw, setShowWithdraw] = useState(false)
+  const [inputAmount, setInputAmount] = useState('')
+
+  const { deposit, isPending: depositPending, isConfirming: depositConfirming } = useDepositMore()
+  const { withdraw, isPending: withdrawPending, isConfirming: withdrawConfirming } = useWithdrawPosition()
+  const { unfollow, isPending: unfollowPending, isConfirming: unfollowConfirming } = useUnfollow()
+
+  const leaderAddr = position.fullLeaderAddress
+
+  const handleDeposit = () => {
+    if (!inputAmount) return
+    deposit(leaderAddr, inputAmount)
+    setInputAmount('')
+    setShowDeposit(false)
+  }
+
+  const handleWithdraw = () => {
+    if (!inputAmount) return
+    withdraw(leaderAddr, inputAmount)
+    setInputAmount('')
+    setShowWithdraw(false)
+  }
+
+  const handleUnfollow = () => {
+    unfollow(leaderAddr)
+  }
+
+  const anyLoading = depositPending || depositConfirming || withdrawPending || withdrawConfirming || unfollowPending || unfollowConfirming
 
   return (
     <div className={cn('p-4 border-b border-border/60', danger && 'bg-danger/[0.02]')}>
@@ -78,7 +113,7 @@ export function PositionCard({ position }: PositionCardProps) {
         <div>
           <div className="text-xs text-text-faint uppercase tracking-wider">Stop-Loss</div>
           <div className={cn('font-semibold text-xs mt-0.5', danger ? 'text-danger' : 'text-secondary')}>
-            {position.stopLoss}%
+            {position.stopLoss} STT
           </div>
         </div>
       </div>
@@ -88,7 +123,7 @@ export function PositionCard({ position }: PositionCardProps) {
         <div className="flex items-center justify-between mb-1.5">
           <span className="text-xs text-text-faint">Stop-loss threshold</span>
           <span className="text-xs text-text-faint">
-            {position.stopLossUsed}% of {position.stopLoss}%
+            {position.stopLossUsed}% of {position.stopLoss} STT
           </span>
         </div>
         <ProgressBar
@@ -100,19 +135,64 @@ export function PositionCard({ position }: PositionCardProps) {
 
       {/* Action buttons */}
       <div className="flex gap-2 mt-3">
-        <button className="flex items-center gap-1.5 bg-primary text-secondary px-4 py-2 rounded-lg text-xs font-medium">
-          <Plus size={12} />
+        <motion.button
+          className="flex items-center gap-1.5 bg-primary text-secondary px-4 py-2 rounded-lg text-xs font-medium cursor-pointer disabled:opacity-50"
+          onClick={() => { setShowDeposit(!showDeposit); setShowWithdraw(false) }}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          disabled={anyLoading}
+        >
+          {depositPending || depositConfirming ? <Loader2 size={12} className="animate-spin" /> : <Plus size={12} />}
           Deposit
-        </button>
-        <button className="flex items-center gap-1.5 border border-border-strong text-text-muted px-4 py-2 rounded-lg text-xs">
-          <Minus size={12} />
+        </motion.button>
+        <motion.button
+          className="flex items-center gap-1.5 border border-border-strong text-text-muted px-4 py-2 rounded-lg text-xs cursor-pointer disabled:opacity-50"
+          onClick={() => { setShowWithdraw(!showWithdraw); setShowDeposit(false) }}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          disabled={anyLoading}
+        >
+          {withdrawPending || withdrawConfirming ? <Loader2 size={12} className="animate-spin" /> : <Minus size={12} />}
           Withdraw
-        </button>
-        <button className="flex items-center gap-1.5 border border-danger/20 text-danger px-4 py-2 rounded-lg text-xs">
-          <X size={12} />
+        </motion.button>
+        <motion.button
+          className="flex items-center gap-1.5 border border-danger/20 text-danger px-4 py-2 rounded-lg text-xs cursor-pointer disabled:opacity-50"
+          onClick={handleUnfollow}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          disabled={anyLoading}
+        >
+          {unfollowPending || unfollowConfirming ? <Loader2 size={12} className="animate-spin" /> : <X size={12} />}
           Unfollow
-        </button>
+        </motion.button>
       </div>
+
+      {/* Inline deposit/withdraw input */}
+      <AnimatePresence>
+        {(showDeposit || showWithdraw) && (
+          <motion.div
+            className="flex items-center gap-2 mt-3"
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+          >
+            <input
+              type="text"
+              value={inputAmount}
+              onChange={(e) => setInputAmount(e.target.value)}
+              placeholder={`Amount (${position.token})`}
+              className="flex-1 border border-border-strong rounded-lg px-3 py-2 text-xs outline-none focus:border-secondary"
+            />
+            <button
+              className="bg-secondary text-white px-4 py-2 rounded-lg text-xs font-medium cursor-pointer disabled:opacity-50"
+              onClick={showDeposit ? handleDeposit : handleWithdraw}
+              disabled={!inputAmount || anyLoading}
+            >
+              {showDeposit ? 'Deposit' : 'Withdraw'}
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }

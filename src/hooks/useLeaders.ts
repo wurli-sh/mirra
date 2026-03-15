@@ -1,10 +1,10 @@
 import { useReadContract, useReadContracts } from 'wagmi'
 import { formatEther } from 'viem'
-import { contracts } from '../config/contracts'
-import { LeaderRegistryAbi } from '../config/abi/LeaderRegistry'
-import { ReputationEngineAbi } from '../config/abi/ReputationEngine'
-import { FollowerVaultAbi } from '../config/abi/FollowerVault'
-import { type Leader, leaders as mockLeaders } from '../data/mock'
+import { contracts } from '@/config/contracts'
+import { LeaderRegistryAbi } from '@/config/abi/LeaderRegistry'
+import { ReputationEngineAbi } from '@/config/abi/ReputationEngine'
+import { FollowerVaultAbi } from '@/config/abi/FollowerVault'
+import type { Leader } from '@/data/types'
 
 export function useLeaderCount() {
   return useReadContract({
@@ -74,7 +74,7 @@ export function useLeaders() {
 
   const isLoading = countLoading || addressesLoading || statsLoading || scoresLoading || followersLoading
 
-  // Build leader objects
+  // Build leader objects from on-chain data
   const leaders: Leader[] = addresses.length > 0
     ? addresses.map((addr, i) => {
         const stats = statsResults?.[i]
@@ -82,14 +82,15 @@ export function useLeaders() {
         const followers = followerResults?.[i]
 
         // Parse stats tuple: totalTrades, profitableTrades, totalPnlSTT, totalVolumeSTT, score, lastTradeBlock
-        const statsData = stats?.status === 'success'
-          ? stats.result as unknown as readonly [bigint, bigint, bigint, bigint, bigint, bigint]
+        const statsRaw = stats?.status === 'success'
+          ? stats.result as unknown as readonly bigint[]
           : undefined
+        const statsData = Array.isArray(statsRaw) && statsRaw.length >= 4 ? statsRaw : undefined
 
         const totalTrades = statsData ? Number(statsData[0]) : 0
         const profitableTrades = statsData ? Number(statsData[1]) : 0
-        const totalPnlSTT = statsData ? Number(formatEther(statsData[2])) : 0
-        const totalVolumeSTT = statsData ? Number(formatEther(statsData[3])) : 0
+        const totalPnlSTT = statsData && statsData[2] != null ? Number(formatEther(statsData[2])) : 0
+        const totalVolumeSTT = statsData && statsData[3] != null ? Number(formatEther(statsData[3])) : 0
         const leaderScore = score?.status === 'success' ? Number(score.result) : 0
         const followerCount = followers?.status === 'success' ? Number(followers.result) : 0
         const winRate = totalTrades > 0 ? (profitableTrades / totalTrades) * 100 : 0
@@ -99,19 +100,19 @@ export function useLeaders() {
         return {
           rank: i + 1,
           address: truncatedAddr,
+          fullAddress: addr,
           score: leaderScore,
           winRate: Math.round(winRate * 10) / 10,
           pnl: Math.round(totalPnlSTT * 100) / 100,
           volume: Math.round(totalVolumeSTT * 100) / 100,
           followers: followerCount,
-          form: Array.from({ length: 5 }, (_, j) => j < profitableTrades % 5),
           trend: Array.from({ length: 7 }, () => Math.floor(Math.random() * 16) + 2),
         }
       })
       // Sort by score descending, reassign ranks
       .sort((a, b) => b.score - a.score)
       .map((leader, i) => ({ ...leader, rank: i + 1 }))
-    : mockLeaders
+    : []
 
   return { leaders, leaderCount, isLoading }
 }

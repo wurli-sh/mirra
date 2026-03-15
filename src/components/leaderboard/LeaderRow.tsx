@@ -1,14 +1,19 @@
-import { cn } from '../../lib/cn'
-import { formatPnl, formatCurrency } from '../../lib/format'
-import { FormDots } from '../ui/FormDots'
-import { Sparkline } from '../ui/Sparkline'
-import type { Leader } from '../../data/mock'
+import { motion } from 'framer-motion'
+import { UserPlus } from 'lucide-react'
+import { cn } from '@/lib/cn'
+import { formatPnl, formatCurrency } from '@/lib/format'
+import { useUIStore } from '@/stores/ui'
+import { useWallet } from '@/hooks/useWallet'
+import type { Leader } from '@/data/types'
 
 interface LeaderRowProps {
   leader: Leader
 }
 
 export function LeaderRow({ leader }: LeaderRowProps) {
+  const openFollowModal = useUIStore((s) => s.openFollowModal)
+  const { address } = useWallet()
+
   const rankBorderClass =
     leader.rank === 1
       ? 'border-l-3 border-l-rank-gold'
@@ -28,12 +33,16 @@ export function LeaderRow({ leader }: LeaderRowProps) {
           : 'text-text-muted'
 
   const pnlPositive = leader.pnl >= 0
-  const sparklineColor = pnlPositive ? 'var(--color-success)' : 'var(--color-danger)'
+  const isSelf = address?.toLowerCase() === leader.fullAddress.toLowerCase()
+
+  const handleFollow = () => {
+    openFollowModal(leader.fullAddress, leader.address)
+  }
 
   return (
     <div
       className={cn(
-        'flex items-center px-4 py-3 border-b border-border/60',
+        'flex items-center px-4 py-3 border-b border-border/60 hover:bg-surface/50 transition-colors',
         rankBorderClass
       )}
     >
@@ -53,6 +62,7 @@ export function LeaderRow({ leader }: LeaderRowProps) {
       {/* Address */}
       <span className="font-semibold text-sm flex-1 min-w-0 truncate">
         {leader.address}
+        {isSelf && <span className="ml-1.5 text-xs text-text-faint">(you)</span>}
       </span>
 
       {/* Score */}
@@ -85,14 +95,21 @@ export function LeaderRow({ leader }: LeaderRowProps) {
         {leader.followers}
       </span>
 
-      {/* Form Dots */}
-      <div className="w-[90px] flex justify-center shrink-0">
-        <FormDots results={leader.form} />
-      </div>
-
-      {/* Sparkline */}
-      <div className="w-[60px] flex justify-center shrink-0">
-        <Sparkline points={leader.trend} color={sparklineColor} />
+      {/* Follow button */}
+      <div className="w-[80px] flex justify-center shrink-0">
+        {isSelf ? (
+          <span className="text-xs text-text-faint">—</span>
+        ) : (
+          <motion.button
+            className="flex items-center gap-1 bg-primary text-secondary px-3 py-1.5 rounded-lg text-xs font-medium cursor-pointer"
+            onClick={handleFollow}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            <UserPlus size={11} />
+            Follow
+          </motion.button>
+        )}
       </div>
     </div>
   )
