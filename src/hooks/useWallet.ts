@@ -1,21 +1,25 @@
 import { useAccount, useConnect, useDisconnect, useBalance } from 'wagmi'
-import { injected } from 'wagmi/connectors'
-import { somniaTestnet } from '../config/chains'
+import { somniaTestnet } from '@/config/chains'
+import type { Connector } from 'wagmi'
 
 export function useWallet() {
-  const { address, isConnected } = useAccount()
-  const { connect } = useConnect()
+  const { address, isConnected, isConnecting } = useAccount()
+  const { connect, connectors } = useConnect()
   const { disconnect } = useDisconnect()
   const { data: balance } = useBalance({ address })
 
-  const connectWallet = () => connect({ connector: injected(), chainId: somniaTestnet.id })
+  const connectWith = (connector: Connector) => {
+    connect({ connector, chainId: somniaTestnet.id })
+  }
 
   return {
     address,
     isConnected,
+    isConnecting,
     balance: balance ? Number(balance.formatted).toFixed(2) : '0',
     symbol: balance?.symbol ?? 'STT',
-    connectWallet,
+    connectors,
+    connectWith,
     disconnect,
   }
 }
