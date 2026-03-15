@@ -1,14 +1,16 @@
 # Dependencies
 node_modules/
 
-# Build artifacts
-artifacts/
-cache/
-typechain-types/
-cache/
+# Build
+dist/
+contracts/artifacts/
+contracts/cache/
+contracts/typechain-types/
 
 # Environment
 .env
+.env.local
+.env.*.local
 
 # IDE
 .vscode/
@@ -20,13 +22,9 @@ Thumbs.db
 
 # Claude
 .claude/
-
-# Playwright MCP
+.agents/
 .playwright-mcp/
 
 # Coverage
 coverage/
 coverage.json
-.agents/
-docs/*/
-docs/superpowers/
