@@ -65,7 +65,7 @@ export function useProtocolStats() {
 
   const totalVolume = statsResults?.reduce((sum, r) => {
     if (r.status !== 'success') return sum
-    const stats = r.result as readonly [bigint, bigint, bigint, bigint, bigint, bigint]
+    const stats = r.result as unknown as readonly [bigint, bigint, bigint, bigint, bigint, bigint]
     return sum + Number(formatEther(stats[3]))
   }, 0) ?? 0
 

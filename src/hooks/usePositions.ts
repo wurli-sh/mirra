@@ -91,7 +91,7 @@ export function usePositions() {
       if (posResult?.status !== 'success') return
 
       // FollowPosition tuple: follower, leader, depositedSTT, maxPerTrade, maxSlippageBps, stopLossSTT, active
-      const pos = posResult.result as readonly [`0x${string}`, `0x${string}`, bigint, bigint, number, bigint, boolean]
+      const pos = posResult.result as unknown as readonly [`0x${string}`, `0x${string}`, bigint, bigint, number, bigint, boolean]
       if (!pos[6]) return // not active
 
       const deposited = Number(formatEther(pos[2]))

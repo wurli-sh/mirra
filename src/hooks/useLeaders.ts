@@ -83,7 +83,7 @@ export function useLeaders() {
 
         // Parse stats tuple: totalTrades, profitableTrades, totalPnlSTT, totalVolumeSTT, score, lastTradeBlock
         const statsData = stats?.status === 'success'
-          ? stats.result as readonly [bigint, bigint, bigint, bigint, bigint, bigint]
+          ? stats.result as unknown as readonly [bigint, bigint, bigint, bigint, bigint, bigint]
           : undefined
 
         const totalTrades = statsData ? Number(statsData[0]) : 0
