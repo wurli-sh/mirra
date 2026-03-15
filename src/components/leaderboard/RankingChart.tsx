@@ -48,7 +48,7 @@ export function RankingChart() {
       {/* Chart area */}
       <div className="relative">
         {/* Y-axis labels */}
-        <div className="absolute left-0 top-0 h-[180px] flex flex-col justify-between text-3xs text-text-faint -translate-x-6 py-1">
+        <div className="absolute left-0 top-0 h-[180px] flex flex-col justify-between text-xs text-text-faint -translate-x-6 py-1">
           {yLabels.map((label) => (
             <span key={label}>{label}</span>
           ))}
@@ -104,7 +104,7 @@ export function RankingChart() {
         {/* X-axis labels */}
         <div className="flex justify-between mt-2 px-0">
           {weeks.map((w) => (
-            <span key={w} className="text-3xs text-text-faint">
+            <span key={w} className="text-xs text-text-faint">
               {w}
             </span>
           ))}
@@ -119,7 +119,7 @@ export function RankingChart() {
               className="w-3 h-[3px] rounded"
               style={{ backgroundColor: line.color }}
             />
-            <span className="text-2xs text-text-muted">
+            <span className="text-xs text-text-muted">
               {line.leader} · #{i + 1}
             </span>
           </div>
