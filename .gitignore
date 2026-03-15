@@ -27,3 +27,6 @@ Thumbs.db
 # Coverage
 coverage/
 coverage.json
+.agents/
+docs/*/
+docs/superpowers/

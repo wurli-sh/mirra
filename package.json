@@ -1,29 +1,53 @@
 {
-  "name": "anesthesia",
+  "name": "mirrorx",
   "version": "1.0.0",
+  "description": "Reactive copy-trading protocol on Somnia",
   "main": "index.js",
   "directories": {
     "doc": "docs"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "vite",
+    "build": "tsc -p tsconfig.frontend.json && vite build",
+    "preview": "vite preview",
+    "compile": "npx hardhat compile",
+    "test": "npx hardhat test",
+    "deploy": "npx hardhat run contracts/scripts/deploy.ts --network somnia_testnet"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
-  "devDependencies": {
-    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
-    "@types/node": "^25.5.0",
-    "hardhat": "^2.28.6",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.9.3"
-  },
   "dependencies": {
     "@openzeppelin/contracts": "^5.6.1",
+    "@paper-design/shaders-react": "^0.0.71",
     "@somnia-chain/reactivity": "^0.1.10",
     "@somnia-chain/reactivity-contracts": "^0.1.6",
+    "clsx": "^2.1.1",
     "dotenv": "^17.3.1",
-    "viem": "^2.47.4"
+    "lucide-react": "^0.577.0",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "react-router-dom": "^7.13.1",
+    "tailwind-merge": "^3.5.0",
+    "viem": "^2.47.4",
+    "zustand": "^5.0.11"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "@tailwindcss/vite": "^4.2.1",
+    "@types/node": "^25.5.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^4.7.0",
+    "hardhat": "^2.28.6",
+    "tailwindcss": "^4.2.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3",
+    "vite": "^6.4.1"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
   }
 }
