@@ -1,3 +1,4 @@
+import { motion } from 'framer-motion'
 import { cn } from '@/lib/cn'
 
 interface TabItem {
@@ -15,19 +16,26 @@ interface TabsProps {
 
 export function Tabs({ items, active, onChange, className, trailing }: TabsProps) {
   return (
-    <div className={cn('flex items-center border-b border-border', className)}>
+    <div className={cn('flex items-center gap-1 border-b border-border', className)}>
       {items.map((item) => (
         <button
           key={item.key}
           onClick={() => onChange(item.key)}
           className={cn(
-            'px-5 py-3.5 text-sm cursor-pointer transition-colors',
+            'relative px-4 py-2.5 text-sm rounded-lg cursor-pointer transition-colors duration-200 outline-none focus-visible:ring-2 focus-visible:ring-primary/40',
             active === item.key
-              ? 'font-semibold text-secondary border-b-2 border-secondary'
+              ? 'font-semibold text-secondary'
               : 'text-text-faint hover:text-text-muted'
           )}
         >
-          {item.label}
+          {active === item.key && (
+            <motion.div
+              layoutId="activeTab"
+              className="absolute inset-0 rounded-lg bg-surface-alt"
+              transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+            />
+          )}
+          <span className="relative z-10">{item.label}</span>
         </button>
       ))}
       {trailing && <div className="ml-auto">{trailing}</div>}

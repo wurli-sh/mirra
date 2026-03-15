@@ -8,7 +8,7 @@ export const config = createConfig({
   chains: [somniaTestnet],
   connectors: [
     metaMask(),
-    coinbaseWallet({ appName: 'MirrorX' }),
+    coinbaseWallet({ appName: 'Mirra' }),
     ...(projectId ? [walletConnect({ projectId })] : []),
   ],
   transports: {

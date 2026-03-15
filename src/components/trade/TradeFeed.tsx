@@ -1,7 +1,6 @@
 import { motion } from 'framer-motion'
 import { Activity, ArrowRight } from 'lucide-react'
 import { cn } from '@/lib/cn'
-import { Badge } from '../ui/Badge'
 import { useLiveTradeFeed } from '@/hooks/useLiveEvents'
 import { pulse } from '@/lib/animations'
 
@@ -9,66 +8,69 @@ export function TradeFeed() {
   const { items, loaded } = useLiveTradeFeed()
 
   return (
-    <div className="flex flex-col gap-2.5">
+    <div className="border border-border rounded-2xl overflow-hidden">
       {/* Header */}
-      <div className="flex items-center px-4 gap-2">
+      <div className="flex items-center px-5 py-3.5 bg-surface-alt/60 gap-2">
         <Activity size={14} className="text-secondary" />
-        <span className="font-semibold text-xs text-secondary">Recent Activity</span>
+        <span className="font-bold text-xs text-secondary">Recent Activity</span>
         <div className="flex-1" />
         <motion.div className="w-1.5 h-1.5 bg-success rounded-full" animate={pulse} />
         <span className="text-xs text-text-faint">
-          {items.length > 0 ? 'Connected' : 'Listening...'}
+          {items.length > 0 ? 'Live' : 'Listening...'}
         </span>
       </div>
 
       {/* Feed items */}
       {!loaded ? (
-        <div className="flex items-center justify-center py-6">
-          <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-          <span className="text-xs text-text-muted ml-2">Loading activity...</span>
+        <div className="divide-y divide-border/40">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="flex items-center gap-3 px-5 py-3">
+              <div className="animate-pulse rounded bg-surface-alt h-3 w-10" />
+              <div className="animate-pulse rounded bg-surface-alt h-4 w-12" />
+              <div className="animate-pulse rounded bg-surface-alt h-3 flex-1" />
+              <div className="animate-pulse rounded bg-surface-alt h-3 w-14" />
+            </div>
+          ))}
         </div>
       ) : items.length === 0 ? (
-        <div className="px-4 py-6 text-center">
+        <div className="py-10 text-center">
           <p className="text-xs text-text-muted">No trades yet. Swap events will appear here in real time.</p>
         </div>
       ) : (
-        <div>
+        <div className="divide-y divide-border/40">
           {items.map((item, i) => (
-            <div
+            <motion.div
               key={`${item.time}-${item.leader}-${i}`}
-              className="flex items-center px-4 py-2.5 border-t border-border/60 gap-2.5"
+              className="flex items-center px-5 py-3 gap-3 hover:bg-surface transition-colors duration-150"
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.25, delay: i * 0.03 }}
             >
-              <span className="text-xs text-text-faint w-9 shrink-0">{item.time}</span>
-              <div
-                className={cn(
-                  'w-[5px] h-[5px] rounded-full shrink-0',
-                  item.type === 'success' && 'bg-success',
-                  item.type === 'fail' && 'bg-danger',
-                  item.type === 'stop' && 'bg-warning'
-                )}
-              />
-              <span
-                className={cn(
-                  'text-xs flex-1',
-                  item.type === 'success' && 'text-secondary',
-                  item.type === 'fail' && 'text-danger',
-                  item.type === 'stop' && 'text-warning'
-                )}
-              >
-                {item.type === 'success' && (
-                  <span className="flex items-center gap-1">
-                    Swapped {item.leader} <ArrowRight size={10} /> {item.from} <ArrowRight size={10} /> {item.to}
-                  </span>
-                )}
-                {item.type === 'fail' && `Failed: ${item.leader} — ${item.reason}`}
-                {item.type === 'stop' && `Stop-loss: ${item.leader} closed · ${item.loss} returned`}
+              {/* Time */}
+              <span className="text-xs text-text-faint w-10 shrink-0 tabular-nums">{item.time}</span>
+
+              {/* Type badge */}
+              <span className={cn(
+                'text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded shrink-0',
+                item.type === 'success' ? 'bg-success/10 text-success' : item.type === 'fail' ? 'bg-danger/10 text-danger' : 'bg-warning/10 text-warning'
+              )}>
+                {item.type === 'success' ? 'SWAP' : item.type === 'fail' ? 'FAIL' : 'STOP'}
               </span>
+
+              {/* Details */}
+              <span className="text-xs text-secondary flex-1 flex items-center gap-1">
+                <span className="font-medium">{item.leader}</span>
+                <ArrowRight size={10} className="text-text-faint" />
+                <span>{item.from}</span>
+                <ArrowRight size={10} className="text-text-faint" />
+                <span>{item.to}</span>
+              </span>
+
+              {/* Result */}
               {item.type === 'success' && (
-                <span className="text-xs font-semibold text-success">{item.result}</span>
+                <span className="text-xs font-bold text-success tabular-nums shrink-0">{item.result}</span>
               )}
-              {item.type === 'fail' && <Badge variant="danger">FAIL</Badge>}
-              {item.type === 'stop' && <Badge variant="warning">STOP</Badge>}
-            </div>
+            </motion.div>
           ))}
         </div>
       )}

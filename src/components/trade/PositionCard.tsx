@@ -175,13 +175,14 @@ export function PositionCard({ position }: PositionCardProps) {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2, ease: 'easeOut' }}
           >
             <input
               type="text"
               value={inputAmount}
               onChange={(e) => setInputAmount(e.target.value)}
               placeholder={`Amount (${position.token})`}
-              className="flex-1 border border-border-strong rounded-lg px-3 py-2 text-xs outline-none focus:border-secondary"
+              className="flex-1 border border-border-strong rounded-lg px-3 py-2 text-xs outline-none focus:border-secondary transition-colors duration-200"
             />
             <button
               className="bg-secondary text-white px-4 py-2 rounded-lg text-xs font-medium cursor-pointer disabled:opacity-50"

@@ -29,6 +29,8 @@ export interface FeedItem {
   time: string
   type: 'success' | 'fail' | 'stop'
   leader: string
+  tokenIn?: string
+  tokenOut?: string
   from?: string
   to?: string
   result?: string
