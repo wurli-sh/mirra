@@ -9,17 +9,17 @@ export function TradeFeed() {
       {/* Header */}
       <div className="flex items-center px-4 gap-2">
         <Activity size={14} className="text-secondary" />
-        <span className="font-semibold text-[13px] text-secondary">Recent Activity</span>
+        <span className="font-semibold text-xs text-secondary">Recent Activity</span>
         <div className="flex-1" />
         <div className="w-1.5 h-1.5 bg-success rounded-full" />
-        <span className="text-[11px] text-text-faint">Live</span>
+        <span className="text-2xs text-text-faint">Live</span>
       </div>
 
       {/* Feed items */}
       {feedItems.map((item, i) => (
         <div key={i} className="flex items-center px-4 py-2.5 border-t border-border/60 gap-2.5">
           {/* Timestamp */}
-          <span className="text-[10px] text-text-faint w-9 shrink-0">{item.time}</span>
+          <span className="text-3xs text-text-faint w-9 shrink-0">{item.time}</span>
 
           {/* Status dot */}
           <div
@@ -47,7 +47,7 @@ export function TradeFeed() {
 
           {/* Result / Badge */}
           {item.type === 'success' && (
-            <span className="text-[11px] font-semibold text-success">{item.result}</span>
+            <span className="text-2xs font-semibold text-success">{item.result}</span>
           )}
           {item.type === 'fail' && <Badge variant="danger">FAIL</Badge>}
           {item.type === 'stop' && <Badge variant="warning">STOP</Badge>}

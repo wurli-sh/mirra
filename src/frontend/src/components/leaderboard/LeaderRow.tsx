@@ -61,14 +61,14 @@ export function LeaderRow({ leader }: LeaderRowProps) {
       </span>
 
       {/* Win Rate */}
-      <span className="text-[13px] w-[70px] text-center shrink-0">
+      <span className="text-xs w-[70px] text-center shrink-0">
         {leader.winRate}%
       </span>
 
       {/* P&L */}
       <span
         className={cn(
-          'font-semibold text-[13px] w-[90px] text-right shrink-0',
+          'font-semibold text-xs w-[90px] text-right shrink-0',
           pnlPositive ? 'text-success' : 'text-danger'
         )}
       >
@@ -76,12 +76,12 @@ export function LeaderRow({ leader }: LeaderRowProps) {
       </span>
 
       {/* Volume */}
-      <span className="text-[13px] text-text-muted w-[90px] text-right shrink-0">
+      <span className="text-xs text-text-muted w-[90px] text-right shrink-0">
         {formatCurrency(leader.volume)}
       </span>
 
       {/* Followers */}
-      <span className="font-medium text-[13px] w-[70px] text-center shrink-0">
+      <span className="font-medium text-xs w-[70px] text-center shrink-0">
         {leader.followers}
       </span>
 

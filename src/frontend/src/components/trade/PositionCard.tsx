@@ -26,7 +26,7 @@ export function PositionCard({ position }: PositionCardProps) {
           </div>
           <div className="flex flex-col">
             <span className="font-semibold text-sm text-secondary">{position.leader}</span>
-            <span className="text-[11px] text-text-faint">
+            <span className="text-2xs text-text-faint">
               Score {position.score} · Rank #{position.rank}
             </span>
           </div>
@@ -43,13 +43,13 @@ export function PositionCard({ position }: PositionCardProps) {
               : `-$${Math.abs(position.pnl).toFixed(2)}`}
           </span>
           {danger ? (
-            <span className="text-[11px] text-danger font-medium">
+            <span className="text-2xs text-danger font-medium">
               {position.stopLossUsed}% of stop-loss
             </span>
           ) : (
             <span
               className={cn(
-                'text-[11px]',
+                'text-2xs',
                 positive ? 'text-success/70' : 'text-danger/70'
               )}
             >
@@ -62,22 +62,22 @@ export function PositionCard({ position }: PositionCardProps) {
       {/* Stats row */}
       <div className="flex gap-0 mt-3">
         <div className="flex-1">
-          <div className="text-[10px] text-text-faint uppercase tracking-widest">Deposited</div>
-          <div className="font-semibold text-[13px] text-secondary">
+          <div className="text-3xs text-text-faint uppercase tracking-widest">Deposited</div>
+          <div className="font-semibold text-xs text-secondary">
             {position.deposited} {position.token}
           </div>
         </div>
         <div className="flex-1">
-          <div className="text-[10px] text-text-faint uppercase tracking-widest">Max/Trade</div>
-          <div className="font-semibold text-[13px] text-secondary">{position.maxPerTrade}</div>
+          <div className="text-3xs text-text-faint uppercase tracking-widest">Max/Trade</div>
+          <div className="font-semibold text-xs text-secondary">{position.maxPerTrade}</div>
         </div>
         <div className="flex-1">
-          <div className="text-[10px] text-text-faint uppercase tracking-widest">Slippage</div>
-          <div className="font-semibold text-[13px] text-secondary">{position.slippage}%</div>
+          <div className="text-3xs text-text-faint uppercase tracking-widest">Slippage</div>
+          <div className="font-semibold text-xs text-secondary">{position.slippage}%</div>
         </div>
         <div className="flex-1">
-          <div className="text-[10px] text-text-faint uppercase tracking-widest">Stop-Loss</div>
-          <div className={cn('font-semibold text-[13px]', danger ? 'text-danger' : 'text-secondary')}>
+          <div className="text-3xs text-text-faint uppercase tracking-widest">Stop-Loss</div>
+          <div className={cn('font-semibold text-xs', danger ? 'text-danger' : 'text-secondary')}>
             {position.stopLoss}%
           </div>
         </div>
@@ -86,8 +86,8 @@ export function PositionCard({ position }: PositionCardProps) {
       {/* Progress bar */}
       <div className="mt-3">
         <div className="flex items-center justify-between mb-1.5">
-          <span className="text-[11px] text-text-faint">Stop-loss threshold</span>
-          <span className="text-[11px] text-text-faint">
+          <span className="text-2xs text-text-faint">Stop-loss threshold</span>
+          <span className="text-2xs text-text-faint">
             {position.stopLossUsed}% of {position.stopLoss}%
           </span>
         </div>

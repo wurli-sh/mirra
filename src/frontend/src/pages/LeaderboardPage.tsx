@@ -26,10 +26,10 @@ export function LeaderboardPage() {
       {/* Header */}
       <div className="px-20 pt-14 pb-10 flex items-end justify-between">
         <div>
-          <span className="text-[13px] text-text-faint uppercase tracking-[0.1em] block mb-1">
+          <span className="text-xs text-text-faint uppercase tracking-[0.1em] block mb-1">
             RANKINGS
           </span>
-          <h1 className="text-[44px] font-bold tracking-tight leading-none">
+          <h1 className="text-5xl font-bold tracking-tight leading-none">
             Leaderboard
           </h1>
         </div>

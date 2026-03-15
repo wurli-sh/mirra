@@ -6,8 +6,8 @@ export function LiveMirrorFeed() {
       {/* Header */}
       <div className="flex items-end justify-between w-full">
         <div className="flex flex-col gap-3">
-          <span className="text-[13px] text-text-faint uppercase tracking-[0.1em]">Live Activity</span>
-          <h2 className="text-[44px] font-bold text-secondary tracking-tight">Mirror feed</h2>
+          <span className="text-xs text-text-faint uppercase tracking-[0.1em]">Live Activity</span>
+          <h2 className="text-5xl font-bold text-secondary tracking-tight">Mirror feed</h2>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-2 h-2 rounded-full bg-success" />
@@ -31,7 +31,7 @@ export function LiveMirrorFeed() {
           <span className="text-sm text-secondary w-[180px] shrink-0">{entry.leader}</span>
           <span className="text-sm font-medium text-secondary w-[160px] shrink-0">{entry.pair}</span>
           <span className="text-sm font-medium text-secondary flex-1">{entry.amount}</span>
-          <span className="text-[13px] text-text-faint w-20 shrink-0 text-right">{entry.time}</span>
+          <span className="text-xs text-text-faint w-20 shrink-0 text-right">{entry.time}</span>
         </div>
       ))}
     </section>

@@ -23,7 +23,7 @@ export function HeroSection() {
       <div className="relative z-10 flex flex-col items-center px-20 py-28 gap-12">
         {/* Headline */}
         <div className="flex flex-col items-center gap-5 max-w-[900px]">
-          <h1 className="text-[72px] font-bold text-white tracking-[-0.04em] leading-[76px] text-center">
+          <h1 className="text-7xl font-bold text-white tracking-[-0.04em] leading-[76px] text-center">
             Your trades follow the best. Near-instant. Zero trust.
           </h1>
           <p className="text-xl text-white/55 leading-[30px] text-center max-w-[600px]">
@@ -51,17 +51,17 @@ export function HeroSection() {
         <div className="flex items-center gap-16 px-12 py-8 bg-white/[0.08] rounded-2xl">
           <div className="flex flex-col items-center gap-1">
             <span className="text-4xl font-bold text-white tracking-tight">{protocolStats.leaders}</span>
-            <span className="text-[13px] text-white/40 uppercase tracking-widest">Active Leaders</span>
+            <span className="text-xs text-white/40 uppercase tracking-widest">Active Leaders</span>
           </div>
           <div className="w-px h-12 bg-white/15" />
           <div className="flex flex-col items-center gap-1">
             <span className="text-4xl font-bold text-white tracking-tight">{protocolStats.followers.toLocaleString()}</span>
-            <span className="text-[13px] text-white/40 uppercase tracking-widest">Active Followers</span>
+            <span className="text-xs text-white/40 uppercase tracking-widest">Active Followers</span>
           </div>
           <div className="w-px h-12 bg-white/15" />
           <div className="flex flex-col items-center gap-1">
             <span className="text-4xl font-bold text-white tracking-tight">{protocolStats.volume}</span>
-            <span className="text-[13px] text-white/40 uppercase tracking-widest">Mirrored Volume</span>
+            <span className="text-xs text-white/40 uppercase tracking-widest">Mirrored Volume</span>
           </div>
         </div>
       </div>

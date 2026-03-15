@@ -8,7 +8,7 @@ export function StatsPanel() {
       {/* Header */}
       <div className="flex items-center gap-2">
         <BarChart3 size={15} className="text-secondary" />
-        <span className="font-bold text-[15px] text-secondary">Your Stats</span>
+        <span className="font-bold text-sm text-secondary">Your Stats</span>
       </div>
 
       {/* Stats */}
@@ -23,11 +23,11 @@ export function StatsPanel() {
 
       {/* Buttons */}
       <div className="flex gap-2">
-        <button className="flex-1 bg-secondary text-white rounded-xl py-2.5 flex items-center justify-center gap-1.5 text-[13px] font-semibold">
+        <button className="flex-1 bg-secondary text-white rounded-xl py-2.5 flex items-center justify-center gap-1.5 text-xs font-semibold">
           <Wallet size={14} className="text-white" />
           Claim ${leaderStats.pendingFees}
         </button>
-        <button className="border border-border-strong rounded-xl py-2.5 px-4 flex items-center justify-center gap-1.5 text-[13px] text-text-muted">
+        <button className="border border-border-strong rounded-xl py-2.5 px-4 flex items-center justify-center gap-1.5 text-xs text-text-muted">
           <LogOut size={14} />
           Exit
         </button>

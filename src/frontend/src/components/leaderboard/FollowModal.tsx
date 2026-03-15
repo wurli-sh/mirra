@@ -27,7 +27,7 @@ export function FollowModal() {
           <input
             type="text"
             defaultValue="500"
-            className="w-full border border-border-strong rounded-xl px-4 py-3.5 text-[15px] outline-none"
+            className="w-full border border-border-strong rounded-xl px-4 py-3.5 text-sm outline-none"
           />
           <span className="text-xs text-text-muted mt-1.5 block">
             Balance: 2,340 USDC
@@ -43,7 +43,7 @@ export function FollowModal() {
             <input
               type="text"
               defaultValue="100"
-              className="w-full border border-border-strong rounded-xl px-4 py-3.5 text-[15px] outline-none"
+              className="w-full border border-border-strong rounded-xl px-4 py-3.5 text-sm outline-none"
             />
           </div>
           <div className="flex-1">
@@ -53,7 +53,7 @@ export function FollowModal() {
             <input
               type="text"
               defaultValue="0.5"
-              className="w-full border border-border-strong rounded-xl px-4 py-3.5 text-[15px] outline-none"
+              className="w-full border border-border-strong rounded-xl px-4 py-3.5 text-sm outline-none"
             />
           </div>
         </div>
@@ -67,9 +67,9 @@ export function FollowModal() {
             <input
               type="text"
               defaultValue="20"
-              className="w-full border border-border-strong rounded-xl px-4 py-3.5 text-[15px] outline-none"
+              className="w-full border border-border-strong rounded-xl px-4 py-3.5 text-sm outline-none"
             />
-            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-text-muted text-[15px]">
+            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-text-muted text-sm">
               %
             </span>
           </div>

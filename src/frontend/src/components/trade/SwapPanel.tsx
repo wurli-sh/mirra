@@ -16,7 +16,7 @@ export function SwapPanel() {
 
       {/* Sell section */}
       <div>
-        <div className="text-[10px] text-text-faint uppercase tracking-widest mb-2">You sell</div>
+        <div className="text-3xs text-text-faint uppercase tracking-widest mb-2">You sell</div>
         <div className="bg-white rounded-xl p-3.5 flex items-center justify-between">
           <span className="font-semibold text-xl text-secondary">250</span>
           <TokenSelector token="STT" />
@@ -32,7 +32,7 @@ export function SwapPanel() {
 
       {/* Receive section */}
       <div>
-        <div className="text-[10px] text-text-faint uppercase tracking-widest mb-2">You receive</div>
+        <div className="text-3xs text-text-faint uppercase tracking-widest mb-2">You receive</div>
         <div className="bg-white rounded-xl p-3.5 flex items-center justify-between">
           <span className="font-semibold text-xl text-text-muted">~124.8</span>
           <TokenSelector token="USDC" />
@@ -52,12 +52,12 @@ export function SwapPanel() {
       </div>
 
       {/* Button */}
-      <button className="bg-secondary text-white rounded-xl py-3.5 w-full font-semibold text-[15px] text-center">
+      <button className="bg-secondary text-white rounded-xl py-3.5 w-full font-semibold text-sm text-center">
         Swap
       </button>
 
       {/* Disclaimer */}
-      <p className="text-[11px] text-text-faint text-center">
+      <p className="text-2xs text-text-faint text-center">
         Followers will automatically mirror this trade
       </p>
     </div>

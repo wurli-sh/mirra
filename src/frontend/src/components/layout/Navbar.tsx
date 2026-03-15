@@ -21,7 +21,7 @@ export function Navbar({ connected = false }: NavbarProps) {
         <NavLink
           to="/"
           className={({ isActive }) =>
-            cn('text-[15px]', isActive ? 'font-medium text-secondary' : 'text-text-muted')
+            cn('text-sm', isActive ? 'font-medium text-secondary' : 'text-text-muted')
           }
         >
           Home
@@ -29,7 +29,7 @@ export function Navbar({ connected = false }: NavbarProps) {
         <NavLink
           to="/leaderboard"
           className={({ isActive }) =>
-            cn('text-[15px]', isActive ? 'font-medium text-secondary' : 'text-text-muted')
+            cn('text-sm', isActive ? 'font-medium text-secondary' : 'text-text-muted')
           }
         >
           Leaderboard
@@ -37,7 +37,7 @@ export function Navbar({ connected = false }: NavbarProps) {
         <NavLink
           to="/trade"
           className={({ isActive }) =>
-            cn('text-[15px]', isActive ? 'font-medium text-secondary' : 'text-text-muted')
+            cn('text-sm', isActive ? 'font-medium text-secondary' : 'text-text-muted')
           }
         >
           Trade

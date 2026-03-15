@@ -8,8 +8,8 @@ export function HowItWorks() {
   return (
     <section className="flex flex-col items-center px-20 py-24 gap-14">
       <div className="flex flex-col items-center gap-3">
-        <span className="text-[13px] text-text-faint uppercase tracking-[0.1em]">How It Works</span>
-        <h2 className="text-[44px] font-bold text-secondary tracking-tight">Three steps. Fully on-chain.</h2>
+        <span className="text-xs text-text-faint uppercase tracking-[0.1em]">How It Works</span>
+        <h2 className="text-5xl font-bold text-secondary tracking-tight">Three steps. Fully on-chain.</h2>
       </div>
 
       <div className="flex items-start gap-8 w-full max-w-[1100px]">
@@ -19,13 +19,13 @@ export function HowItWorks() {
               <span className="text-xl font-bold text-secondary">{step.num}</span>
             </div>
             <span className="text-xl font-semibold text-secondary tracking-tight">{step.title}</span>
-            <span className="text-[15px] text-text-muted leading-6">{step.desc}</span>
+            <span className="text-sm text-text-muted leading-6">{step.desc}</span>
           </div>
         ))}
       </div>
 
       <div className="flex items-center gap-2 px-5 py-3 bg-primary rounded-full">
-        <span className="text-[13px] font-medium text-secondary">
+        <span className="text-xs font-medium text-secondary">
           Powered by Somnia Reactivity — zero off-chain infrastructure
         </span>
       </div>
