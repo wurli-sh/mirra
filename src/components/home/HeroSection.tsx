@@ -1,89 +1,74 @@
 import { motion } from 'framer-motion'
+import { Dithering } from '@paper-design/shaders-react'
 import { Link } from 'react-router-dom'
-import { useProtocolStats } from '@/hooks/useProtocolStats'
-import { fadeInUp, staggerContainer, scrollViewport } from '@/lib/animations'
 
 export function HeroSection() {
-  const { stats } = useProtocolStats()
-
   return (
-    <section className="relative overflow-hidden">
-      {/* Content */}
+    <section className="relative overflow-hidden min-h-screen flex flex-col justify-center -mx-6">
+      {/* Dithering canvas — fades in */}
       <motion.div
-        className="flex flex-col items-center py-28 gap-12"
-        variants={staggerContainer}
-        initial="hidden"
-        animate="visible"
+        className="absolute bottom-0 left-0 right-0 h-[65%] -mx-6 z-0"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 4, delay: 0.3 }}
       >
-        {/* Headline */}
-        <motion.div className="flex flex-col items-center gap-5 max-w-[900px]" variants={fadeInUp}>
-          <h1 className="text-7xl font-bold text-secondary tracking-[-0.04em] leading-[76px] text-center">
-            Your trades follow the best. Near-instant. Zero trust.
-          </h1>
-          <p className="text-xl text-text-muted leading-[30px] text-center max-w-[600px]">
-            Reactive copy-trading on Somnia. Leaders trade, followers mirror — fully on-chain, no bots, no infrastructure.
-          </p>
-        </motion.div>
-
-        {/* CTA Buttons */}
-        <motion.div className="flex items-center gap-4" variants={fadeInUp}>
-          <Link
-            to="/trade"
-            className="flex items-center px-9 py-4 bg-secondary text-white font-semibold text-base rounded-full hover:opacity-90 transition-opacity"
-          >
-            Become a Leader
-          </Link>
-          <Link
-            to="/leaderboard"
-            className="flex items-center px-9 py-4 bg-primary text-secondary font-semibold text-base rounded-full hover:opacity-90 transition-opacity"
-          >
-            Start Following
-          </Link>
-        </motion.div>
-
-        {/* Protocol Stats */}
-        <motion.div
-          className="flex items-center gap-16 px-12 py-8 bg-surface rounded-2xl border border-border"
-          variants={fadeInUp}
-          viewport={scrollViewport}
-        >
-          <div className="flex flex-col items-center gap-1">
-            <motion.span
-              className="text-4xl font-bold text-secondary tracking-tight"
-              initial={{ opacity: 0, scale: 0.5 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.6, type: 'spring', stiffness: 200 }}
-            >
-              {stats.leaders}
-            </motion.span>
-            <span className="text-xs text-text-faint uppercase tracking-widest">Active Leaders</span>
-          </div>
-          <div className="w-px h-12 bg-border" />
-          <div className="flex flex-col items-center gap-1">
-            <motion.span
-              className="text-4xl font-bold text-secondary tracking-tight"
-              initial={{ opacity: 0, scale: 0.5 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.7, type: 'spring', stiffness: 200 }}
-            >
-              {stats.followers.toLocaleString()}
-            </motion.span>
-            <span className="text-xs text-text-faint uppercase tracking-widest">Active Followers</span>
-          </div>
-          <div className="w-px h-12 bg-border" />
-          <div className="flex flex-col items-center gap-1">
-            <motion.span
-              className="text-4xl font-bold text-secondary tracking-tight"
-              initial={{ opacity: 0, scale: 0.5 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.8, type: 'spring', stiffness: 200 }}
-            >
-              {stats.volume}
-            </motion.span>
-            <span className="text-xs text-text-faint uppercase tracking-widest">Mirrored Volume</span>
-          </div>
-        </motion.div>
+        <Dithering
+          style={{ height: '100%', width: '100%' }}
+          colorBack="#FFFFFF"
+          colorFront="#F5B8D9"
+          shape="simplex"
+          type="4x4"
+          pxSize={2}
+          offsetX={0}
+          offsetY={0}
+          scale={0.5}
+          rotation={0}
+          speed={1.2}
+        />
       </motion.div>
+
+      {/* Content — sits above the canvas */}
+      <div className="relative z-10 flex flex-col items-center py-20 gap-12">
+        {/* Headline */}
+        <div className="flex flex-col items-center gap-5 max-w-[900px]">
+          <motion.h1
+            className="text-7xl font-bold text-secondary tracking-[-0.04em] leading-[76px] text-center"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, ease: 'easeOut' }}
+          >
+            Your trades follow the best. Near-instant. Zero trust.
+          </motion.h1>
+          <motion.p
+            className="text-xl text-text-muted leading-[30px] text-center max-w-[600px]"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2, ease: 'easeOut' }}
+          >
+            Reactive copy-trading on Somnia. Leaders trade, followers mirror — fully on-chain, no bots, no infrastructure.
+          </motion.p>
+        </div>
+
+        {/* CTA */}
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.4, ease: 'easeOut' }}
+        >
+          <motion.div
+            whileHover={{ scale: 1.03, y: -1 }}
+            whileTap={{ scale: 0.98 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+          >
+            <Link
+              to="/leaderboard"
+              className="inline-flex items-center px-8 py-3 bg-secondary text-white font-bold text-base rounded-full"
+            >
+              Launch App
+            </Link>
+          </motion.div>
+        </motion.div>
+      </div>
     </section>
   )
 }

@@ -4,22 +4,38 @@ import type { Variants, Transition } from 'framer-motion'
 
 export const fadeInUp: Variants = {
   hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, ease: 'easeOut' },
+  },
 }
 
 export const fadeInDown: Variants = {
   hidden: { opacity: 0, y: -20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, ease: 'easeOut' },
+  },
 }
 
 export const fadeInLeft: Variants = {
   hidden: { opacity: 0, x: -20 },
-  visible: { opacity: 1, x: 0, transition: { duration: 0.5, ease: 'easeOut' } },
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: { duration: 0.6, ease: 'easeOut' },
+  },
 }
 
 export const fadeInRight: Variants = {
   hidden: { opacity: 0, x: 20 },
-  visible: { opacity: 1, x: 0, transition: { duration: 0.5, ease: 'easeOut' } },
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: { duration: 0.6, ease: 'easeOut' },
+  },
 }
 
 export const fadeIn: Variants = {
@@ -35,26 +51,43 @@ export const scaleIn: Variants = {
 // --- Stagger containers ---
 
 export const staggerContainer: Variants = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.08, delayChildren: 0.1 } },
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.1, delayChildren: 0.1 },
+  },
 }
 
 export const staggerFast: Variants = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.05 } },
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.05 },
+  },
 }
 
 // --- Hover / Tap ---
 
-export const hoverScale = { scale: 1.03, transition: { type: 'spring' as const, stiffness: 300, damping: 20 } }
+export const hoverScale = {
+  rest: { scale: 1 },
+  hover: {
+    scale: 1.08,
+    transition: { type: 'spring' as const, stiffness: 200, damping: 15 },
+  },
+}
+
 export const tapScale = { scale: 0.97 }
 
-export const buttonHover = { scale: 1.02 }
-export const buttonTap = { scale: 0.98 }
+export const buttonHover = {
+  scale: 1.05,
+  transition: { type: 'spring' as const, stiffness: 300, damping: 20 },
+}
+
+export const buttonTap = { scale: 0.97 }
 
 // --- Scroll viewport trigger ---
 
-export const scrollViewport = { once: true, amount: 0.2 as const }
+export const scrollViewport = { once: true, amount: 0.3 as const }
 
 // --- Spring transition ---
 

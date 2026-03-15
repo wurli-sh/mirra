@@ -4,16 +4,16 @@
   --font-sans: "Space Grotesk", sans-serif;
 
   --color-primary: #FFD5F0;
-  --color-secondary: #370305;
+  --color-secondary: #0A0A0A;
   --color-bg: #FFFFFF;
-  --color-surface: #FFF5FB;
-  --color-surface-alt: #F9F5F6;
-  --color-surface-hover: #F0E8EA;
-  --color-text: #370305;
-  --color-text-muted: rgba(55, 3, 5, 0.5);
-  --color-text-faint: rgba(55, 3, 5, 0.35);
-  --color-border: rgba(55, 3, 5, 0.08);
-  --color-border-strong: rgba(55, 3, 5, 0.12);
+  --color-surface: #FAFAFA;
+  --color-surface-alt: #F5F5F5;
+  --color-surface-hover: #EBEBEB;
+  --color-text: #0A0A0A;
+  --color-text-muted: rgba(10, 10, 10, 0.5);
+  --color-text-faint: rgba(10, 10, 10, 0.35);
+  --color-border: rgba(10, 10, 10, 0.08);
+  --color-border-strong: rgba(10, 10, 10, 0.12);
   --color-success: #16A34A;
   --color-danger: #DC2626;
   --color-warning: #F59E0B;
@@ -40,4 +40,9 @@ body {
 
 html {
   scrollbar-width: none;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
 }

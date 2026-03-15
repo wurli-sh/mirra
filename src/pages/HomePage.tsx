@@ -1,13 +1,17 @@
 import { HeroSection } from '@/components/home/HeroSection'
+import { ProtocolGateway } from '@/components/home/ProtocolGateway'
 import { HowItWorks } from '@/components/home/HowItWorks'
-import { LiveMirrorFeed } from '@/components/home/LiveMirrorFeed'
+import { CallToAction } from '@/components/home/CallToAction'
+import { Footer } from '@/components/layout/Footer'
 
 export function HomePage() {
   return (
     <>
       <HeroSection />
       <HowItWorks />
-      <LiveMirrorFeed />
+      <ProtocolGateway />
+      <CallToAction />
+      <Footer />
     </>
   )
 }
