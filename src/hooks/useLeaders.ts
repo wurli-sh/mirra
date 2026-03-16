@@ -81,16 +81,15 @@ export function useLeaders() {
         const score = scoreResults?.[i]
         const followers = followerResults?.[i]
 
-        // Parse stats tuple: totalTrades, profitableTrades, totalPnlSTT, totalVolumeSTT, score, lastTradeBlock
+        // Parse stats struct: { totalTrades, profitableTrades, totalPnlSTT, totalVolumeSTT, score, lastTradeBlock }
         const statsRaw = stats?.status === 'success'
-          ? stats.result as unknown as readonly bigint[]
+          ? stats.result as unknown as { totalTrades: bigint; profitableTrades: bigint; totalPnlSTT: bigint; totalVolumeSTT: bigint; score: bigint; lastTradeBlock: bigint }
           : undefined
-        const statsData = Array.isArray(statsRaw) && statsRaw.length >= 4 ? statsRaw : undefined
 
-        const totalTrades = statsData ? Number(statsData[0]) : 0
-        const profitableTrades = statsData ? Number(statsData[1]) : 0
-        const totalPnlSTT = statsData && statsData[2] != null ? Number(formatEther(statsData[2])) : 0
-        const totalVolumeSTT = statsData && statsData[3] != null ? Number(formatEther(statsData[3])) : 0
+        const totalTrades = statsRaw ? Number(statsRaw.totalTrades) : 0
+        const profitableTrades = statsRaw ? Number(statsRaw.profitableTrades) : 0
+        const totalPnlSTT = statsRaw ? Number(formatEther(statsRaw.totalPnlSTT)) : 0
+        const totalVolumeSTT = statsRaw ? Number(formatEther(statsRaw.totalVolumeSTT)) : 0
         const leaderScore = score?.status === 'success' ? Number(score.result) : 0
         const followerCount = followers?.status === 'success' ? Number(followers.result) : 0
         const winRate = totalTrades > 0 ? (profitableTrades / totalTrades) * 100 : 0

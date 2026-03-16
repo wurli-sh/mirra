@@ -33,13 +33,13 @@ export function useLeaderStats() {
 
   const isLoading = statsLoading || scoreLoading || followersLoading
 
-  // Parse stats tuple: totalTrades, profitableTrades, totalPnlSTT, totalVolumeSTT, score, lastTradeBlock
-  const stats = statsData as unknown as readonly bigint[] | undefined
-  const hasStats = Array.isArray(stats) && stats.length >= 3 && stats[2] != null
+  // Parse stats struct: { totalTrades, profitableTrades, totalPnlSTT, totalVolumeSTT, score, lastTradeBlock }
+  const stats = statsData as unknown as { totalTrades: bigint; profitableTrades: bigint; totalPnlSTT: bigint; totalVolumeSTT: bigint; score: bigint; lastTradeBlock: bigint } | undefined
+  const hasStats = stats != null && stats.totalTrades != null
 
-  const totalTrades = hasStats ? Number(stats[0]) : 0
-  const profitableTrades = hasStats ? Number(stats[1]) : 0
-  const totalPnl = hasStats ? Number(formatEther(stats[2])) : 0
+  const totalTrades = hasStats ? Number(stats.totalTrades) : 0
+  const profitableTrades = hasStats ? Number(stats.profitableTrades) : 0
+  const totalPnl = hasStats ? Number(formatEther(stats.totalPnlSTT)) : 0
   const winRate = totalTrades > 0 ? (profitableTrades / totalTrades) * 100 : 0
   const score = scoreData ? Number(scoreData) : 0
   const followers = followerCount ? Number(followerCount) : 0

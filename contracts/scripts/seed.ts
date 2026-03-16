@@ -1,9 +1,25 @@
 import { ethers } from "hardhat";
+import * as dotenv from "dotenv";
+import * as path from "path";
+
+// Load root .env for VITE_* contract addresses
+dotenv.config({ path: path.resolve(__dirname, "../../.env"), override: true });
 
 async function main() {
   const [deployer, leader1, leader2, follower1, follower2, follower3, follower4] = await ethers.getSigners();
 
-  const ADDRESSES = { stt: "0x...", usdc: "0x...", dex: "0x...", registry: "0x...", vault: "0x..." };
+  const ADDRESSES = {
+    stt: process.env.VITE_STT_TOKEN ?? "",
+    usdc: process.env.VITE_USDC_TOKEN ?? "",
+    dex: process.env.VITE_SIMPLE_DEX ?? "",
+    registry: process.env.VITE_LEADER_REGISTRY ?? "",
+    vault: process.env.VITE_FOLLOWER_VAULT ?? "",
+  };
+
+  // Validate all addresses are set
+  for (const [name, addr] of Object.entries(ADDRESSES)) {
+    if (!addr || addr === "0x...") throw new Error(`Missing address for ${name} — set VITE_* env vars`);
+  }
 
   console.log("Seeding data with deployer:", deployer.address);
 

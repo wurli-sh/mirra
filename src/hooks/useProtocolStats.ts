@@ -64,9 +64,9 @@ export function useProtocolStats() {
 
   const totalVolume = statsResults?.reduce((sum, r) => {
     if (r.status !== 'success') return sum
-    const stats = r.result as unknown as readonly bigint[]
-    if (!Array.isArray(stats) || stats.length < 4 || stats[3] == null) return sum
-    return sum + Number(formatEther(stats[3]))
+    const stats = r.result as unknown as { totalTrades: bigint; profitableTrades: bigint; totalPnlSTT: bigint; totalVolumeSTT: bigint; score: bigint; lastTradeBlock: bigint }
+    if (!stats || stats.totalVolumeSTT == null) return sum
+    return sum + Number(formatEther(stats.totalVolumeSTT))
   }, 0) ?? 0
 
   const formatVolume = (vol: number): string => {

@@ -86,16 +86,17 @@ export function usePositions() {
       const posResult = positionResults[i]
       if (posResult?.status !== 'success') return
 
-      // FollowPosition tuple: follower, leader, depositedSTT, maxPerTrade, maxSlippageBps, stopLossSTT, active
-      const pos = posResult.result as unknown as readonly [
-        `0x${string}`, `0x${string}`, bigint, bigint, bigint, bigint, boolean
-      ]
-      if (!pos || !pos[6]) return // not active
+      // FollowPosition struct: { follower, leader, depositedSTT, maxPerTrade, maxSlippageBps, stopLossSTT, active }
+      const pos = posResult.result as unknown as {
+        follower: `0x${string}`; leader: `0x${string}`; depositedSTT: bigint;
+        maxPerTrade: bigint; maxSlippageBps: number; stopLossSTT: bigint; active: boolean;
+      }
+      if (!pos || !pos.active) return // not active
 
-      const deposited = Number(formatEther(pos[2]))
-      const maxPerTrade = Number(formatEther(pos[3]))
-      const slippage = Number(pos[4]) / 100 // bps to percent
-      const stopLoss = Number(formatEther(pos[5]))
+      const deposited = Number(formatEther(pos.depositedSTT))
+      const maxPerTrade = Number(formatEther(pos.maxPerTrade))
+      const slippage = Number(pos.maxSlippageBps) / 100 // bps to percent
+      const stopLoss = Number(formatEther(pos.stopLossSTT))
 
       const pnlRaw = pnlResults?.[i]?.status === 'success'
         ? Number(formatEther(pnlResults[i].result as bigint))

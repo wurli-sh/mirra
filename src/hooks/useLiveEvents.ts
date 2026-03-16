@@ -92,13 +92,14 @@ export function useLiveTradeFeed(limit = 20) {
 }
 
 // MirrorExecutor ABI fragment for the event we watch
+// Must match IMirrorExecutor.sol: MirrorExecuted(indexed follower, indexed leader, tokenIn, tokenOut, amountIn, amountOut)
 const MirrorExecutedEvent = [
   {
     anonymous: false,
     inputs: [
-      { indexed: true, internalType: 'address', name: 'leader', type: 'address' },
       { indexed: true, internalType: 'address', name: 'follower', type: 'address' },
-      { indexed: true, internalType: 'address', name: 'tokenIn', type: 'address' },
+      { indexed: true, internalType: 'address', name: 'leader', type: 'address' },
+      { indexed: false, internalType: 'address', name: 'tokenIn', type: 'address' },
       { indexed: false, internalType: 'address', name: 'tokenOut', type: 'address' },
       { indexed: false, internalType: 'uint256', name: 'amountIn', type: 'uint256' },
       { indexed: false, internalType: 'uint256', name: 'amountOut', type: 'uint256' },
