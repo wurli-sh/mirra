@@ -5,11 +5,14 @@ import { LeaderRegistryAbi } from '@/config/abi/LeaderRegistry'
 import { ReputationEngineAbi } from '@/config/abi/ReputationEngine'
 import { FollowerVaultAbi } from '@/config/abi/FollowerVault'
 
+const POLL_INTERVAL = 5_000
+
 export function useProtocolStats() {
   const { data: leaderCount, isLoading: countLoading } = useReadContract({
     address: contracts.leaderRegistry,
     abi: LeaderRegistryAbi,
     functionName: 'getLeaderCount',
+    query: { refetchInterval: POLL_INTERVAL },
   })
 
   const totalLeaders = leaderCount ? Number(leaderCount) : 0
@@ -24,7 +27,7 @@ export function useProtocolStats() {
 
   const { data: addressResults } = useReadContracts({
     contracts: addressCalls,
-    query: { enabled: totalLeaders > 0 },
+    query: { enabled: totalLeaders > 0, refetchInterval: POLL_INTERVAL },
   })
 
   const addresses = addressResults
@@ -49,12 +52,12 @@ export function useProtocolStats() {
 
   const { data: followerResults } = useReadContracts({
     contracts: followerCountCalls,
-    query: { enabled: addresses.length > 0 },
+    query: { enabled: addresses.length > 0, refetchInterval: POLL_INTERVAL },
   })
 
   const { data: statsResults } = useReadContracts({
     contracts: statsCalls,
-    query: { enabled: addresses.length > 0 },
+    query: { enabled: addresses.length > 0, refetchInterval: POLL_INTERVAL },
   })
 
   // Aggregate totals

@@ -16,7 +16,7 @@ export function usePositions() {
       abi: LeaderRegistryAbi,
       functionName: 'getLeaderCount',
     }],
-    query: { enabled: !!address },
+    query: { enabled: !!address, refetchInterval: 5_000 },
   })
 
   const leaderCount = countResult?.[0]?.status === 'success' ? Number(countResult[0].result) : 0
@@ -30,7 +30,7 @@ export function usePositions() {
 
   const { data: leaderAddresses } = useReadContracts({
     contracts: leaderAddressCalls,
-    query: { enabled: leaderCount > 0 && !!address },
+    query: { enabled: leaderCount > 0 && !!address, refetchInterval: 5_000 },
   })
 
   const fullAddresses = leaderAddresses
@@ -61,17 +61,17 @@ export function usePositions() {
 
   const { data: positionResults, isLoading: positionsLoading } = useReadContracts({
     contracts: positionCalls,
-    query: { enabled: fullAddresses.length > 0 && !!address },
+    query: { enabled: fullAddresses.length > 0 && !!address, refetchInterval: 5_000 },
   })
 
   const { data: pnlResults, isLoading: pnlLoading } = useReadContracts({
     contracts: pnlCalls,
-    query: { enabled: fullAddresses.length > 0 && !!address },
+    query: { enabled: fullAddresses.length > 0 && !!address, refetchInterval: 5_000 },
   })
 
   const { data: scoreResults, isLoading: scoresLoading } = useReadContracts({
     contracts: scoreCalls,
-    query: { enabled: fullAddresses.length > 0 && !!address },
+    query: { enabled: fullAddresses.length > 0 && !!address, refetchInterval: 5_000 },
   })
 
   const isLoading = positionsLoading || pnlLoading || scoresLoading

@@ -41,7 +41,7 @@ export function TradeFeed() {
           {items.map((item, i) => (
             <motion.div
               key={`${item.time}-${item.leader}-${i}`}
-              className="flex items-center px-5 py-3 gap-3 hover:bg-surface transition-colors duration-150"
+              className="flex items-center px-3 sm:px-5 py-3 gap-2 sm:gap-3 hover:bg-surface transition-colors duration-150"
               initial={{ opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.25, delay: i * 0.03 }}
@@ -58,12 +58,12 @@ export function TradeFeed() {
               </span>
 
               {/* Details */}
-              <span className="text-xs text-secondary flex-1 flex items-center gap-1">
-                <span className="font-medium">{item.leader}</span>
-                <ArrowRight size={10} className="text-text-faint" />
-                <span>{item.from}</span>
-                <ArrowRight size={10} className="text-text-faint" />
-                <span>{item.to}</span>
+              <span className="text-xs text-secondary flex-1 flex items-center gap-1 min-w-0">
+                <span className="font-medium truncate">{item.leader}</span>
+                <ArrowRight size={14} className="text-text-muted shrink-0" />
+                <span className="truncate">{item.from}</span>
+                <ArrowRight size={14} className="text-text-muted shrink-0" />
+                <span className="truncate">{item.to}</span>
               </span>
 
               {/* Result */}

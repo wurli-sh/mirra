@@ -1,12 +1,13 @@
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Wallet, ArrowRight, Shield, TrendingUp, Percent, Users, BarChart3 } from 'lucide-react'
+import { Wallet, ArrowRight, Shield, TrendingUp, Percent, Users, BarChart3, Copy } from 'lucide-react'
 import { cn } from '@/lib/cn'
 import { PositionCard } from '@/components/trade/PositionCard'
 import { SwapPanel } from '@/components/trade/SwapPanel'
 import { TradeFeed } from '@/components/trade/TradeFeed'
 import { usePositions } from '@/hooks/usePositions'
 import { useWallet } from '@/hooks/useWallet'
+import { useIsLeader } from '@/hooks/useRegisterLeader'
 import { useLeaderStats } from '@/hooks/useLeaderStats'
 import { usePendingFees } from '@/hooks/useClaimFees'
 import { usePageReady } from '@/hooks/usePageReady'
@@ -25,7 +26,7 @@ function PageSkeleton() {
       </div>
 
       {/* Stats bar skeleton */}
-      <div className="grid grid-cols-5 gap-3 mb-6">
+      <div className="grid grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3 mb-6">
         {Array.from({ length: 5 }).map((_, i) => (
           <div key={i} className="bg-surface rounded-xl px-4 py-3 flex items-center gap-3">
             <Skeleton className="w-8 h-8 rounded-lg" />
@@ -37,9 +38,9 @@ function PageSkeleton() {
         ))}
       </div>
 
-      <div className="flex gap-5">
+      <div className="flex flex-col lg:flex-row gap-5">
         {/* Left — Swap skeleton */}
-        <div className="w-[360px] shrink-0">
+        <div className="w-full lg:w-[360px] shrink-0">
           <div className="bg-surface rounded-2xl p-6 flex flex-col gap-5">
             <div className="flex items-center justify-between">
               <Skeleton className="h-5 w-16" />
@@ -105,6 +106,7 @@ export function TradePage() {
   const ready = usePageReady()
   const { positions, isLoading } = usePositions()
   const { isConnected, isConnecting } = useWallet()
+  const { isLeader, isLoading: leaderLoading } = useIsLeader()
   const stats = useLeaderStats()
   const { fees } = usePendingFees()
 
@@ -129,18 +131,28 @@ export function TradePage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
       >
-        <h1 className="text-3xl font-bold tracking-tight leading-none">Trade</h1>
+        <div className="flex items-center gap-3">
+          <h1 className="text-3xl font-bold tracking-tight leading-none">Trade</h1>
+          {isConnected && !leaderLoading && (
+            <span className={cn(
+              'text-[10px] font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full',
+              isLeader ? 'bg-primary/10 text-secondary' : 'bg-success/10 text-success'
+            )}>
+              {isLeader ? 'Leader' : 'Follower'}
+            </span>
+          )}
+        </div>
         <p className="text-sm text-text-muted mt-1.5">
-          Swap tokens on SimpleDEX. Your trades are mirrored to followers automatically.
+          {isLeader ? 'Swap tokens on SimpleDEX. Your trades are mirrored to followers automatically.' : 'View your mirrored positions and trade on SimpleDEX.'}
         </p>
       </motion.div>
 
       {/* Your stats bar */}
       {isConnecting ? (
-        <div className="grid grid-cols-5 gap-3 mb-6">
+        <div className="grid grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3 mb-6">
           {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="bg-surface rounded-xl px-4 py-3 flex items-center gap-3">
-              <Skeleton className="w-8 h-8 rounded-lg" />
+            <div key={i} className="bg-surface rounded-xl px-3 sm:px-4 py-3 flex items-center gap-2 sm:gap-3">
+              <Skeleton className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg" />
               <div className="flex flex-col gap-1.5">
                 <Skeleton className="h-4 w-12" />
                 <Skeleton className="h-2 w-16" />
@@ -148,17 +160,21 @@ export function TradePage() {
             </div>
           ))}
         </div>
-      ) : isConnected ? (
-        <div className="grid grid-cols-5 gap-3 mb-6">
-          {[
+      ) : isConnected && !leaderLoading ? (
+        <div className={cn('grid gap-2 sm:gap-3 mb-6', isLeader ? 'grid-cols-3 lg:grid-cols-5' : 'grid-cols-3')}>
+          {(isLeader ? [
             { icon: BarChart3, value: stats.isLoading ? null : (stats.score || '—'), label: 'Score' },
             { icon: Percent, value: stats.isLoading ? null : (stats.trades > 0 ? `${stats.winRate}%` : '—'), label: 'Win Rate' },
             { icon: TrendingUp, value: stats.isLoading ? null : (stats.trades > 0 ? `${stats.pnl >= 0 ? '+' : ''}${stats.pnl.toFixed(1)}` : '—'), label: 'P&L (STT)', color: stats.pnl >= 0 ? 'text-success' : 'text-danger' },
             { icon: Users, value: stats.isLoading ? null : stats.followers, label: 'Followers' },
             { icon: Wallet, value: stats.isLoading ? null : (fees > 0 ? `${fees.toFixed(1)}` : '0'), label: 'Pending Fees' },
-          ].map(({ icon: Icon, value, label, color }) => (
-            <div key={label} className="bg-surface rounded-xl px-4 py-3 flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-primary/15 flex items-center justify-center shrink-0">
+          ] : [
+            { icon: Copy, value: positions.length, label: 'Positions' },
+            { icon: TrendingUp, value: positions.length > 0 ? `${positions.reduce((s, p) => s + p.pnl, 0).toFixed(1)}` : '—', label: 'Total P&L', color: positions.reduce((s, p) => s + p.pnl, 0) >= 0 ? 'text-success' : 'text-danger' },
+            { icon: Wallet, value: positions.length > 0 ? `${positions.reduce((s, p) => s + p.deposited, 0).toFixed(0)}` : '—', label: 'Deposited (STT)' },
+          ]).map(({ icon: Icon, value, label, color }) => (
+            <div key={label} className="bg-surface rounded-xl px-3 sm:px-4 py-3 flex items-center gap-2 sm:gap-3">
+              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-primary/15 flex items-center justify-center shrink-0">
                 <Icon size={14} className="text-secondary" />
               </div>
               <div className="min-w-0">
@@ -174,10 +190,10 @@ export function TradePage() {
         </div>
       ) : null}
 
-      <div className="flex gap-5">
+      <div className="flex flex-col lg:flex-row gap-5">
         {/* Left — Swap */}
         <motion.div
-          className="w-[360px] shrink-0"
+          className="w-full lg:w-[360px] shrink-0"
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: 0.1 }}

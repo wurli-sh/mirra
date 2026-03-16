@@ -33,13 +33,13 @@ export function Navbar() {
 
   return (
     <header className="sticky top-0 z-40 flex justify-center px-4">
-      <div className="mt-4 grid h-14 w-full max-w-5xl grid-cols-3 items-center rounded-full bg-secondary px-6 shadow-lg backdrop-blur-md">
+      <div className="mt-4 grid h-14 w-full max-w-5xl grid-cols-2 sm:grid-cols-3 items-center rounded-full bg-secondary px-4 sm:px-6 shadow-lg backdrop-blur-md">
         {/* Brand */}
         <div>
           <Link to="/" className="flex items-center gap-2 font-bold text-white">
             <motion.div
               className="size-7 rounded-lg bg-primary"
-              whileHover={{ rotate: 12, scale: 1.1 }}
+              whileHover={{ rotate: 6, scale: 1.02 }}
               transition={{ type: 'spring', stiffness: 300 }}
             />
             <span className="text-base font-bold tracking-tight text-primary">Mirra</span>

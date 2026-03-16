@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Star, Loader2, ArrowRight, Users, TrendingUp, BarChart3, Trophy, Percent, Activity } from 'lucide-react'
 import { cn } from '@/lib/cn'
@@ -5,7 +6,7 @@ import { Tabs } from '@/components/ui/Tabs'
 import { LeaderTable } from '@/components/leaderboard/LeaderTable'
 import { FollowModal } from '@/components/leaderboard/FollowModal'
 import { useUIStore } from '@/stores/ui'
-import { useRegisterLeader, useIsLeader } from '@/hooks/useRegisterLeader'
+import { useRegisterLeader, useDeregisterLeader, useIsLeader } from '@/hooks/useRegisterLeader'
 import { useWallet } from '@/hooks/useWallet'
 import { useLeaders } from '@/hooks/useLeaders'
 import { useProtocolStats } from '@/hooks/useProtocolStats'
@@ -85,13 +86,20 @@ export function LeaderboardPage() {
   const setActiveTab = useUIStore((s) => s.setActiveLeaderboardTab)
   const followModalOpen = useUIStore((s) => s.followModalOpen)
   const { isConnected, isConnecting } = useWallet()
-  const { isLeader } = useIsLeader()
-  const { register, isPending, isConfirming } = useRegisterLeader()
+  const { isLeader, isLoading: leaderLoading, refetch: refetchLeader } = useIsLeader()
+  const { register, isPending, isConfirming, isSuccess: registerSuccess } = useRegisterLeader()
+  const { deregister, isPending: deregPending, isConfirming: deregConfirming, isSuccess: deregSuccess } = useDeregisterLeader()
   const { leaders, isLoading: leadersLoading } = useLeaders()
   const { stats, isLoading: statsLoading } = useProtocolStats()
   const { items: feedItems } = useLiveTradeFeed()
 
   const registerLoading = isPending || isConfirming
+  const deregLoading = deregPending || deregConfirming
+
+  // Refetch leader status after register/deregister confirms
+  useEffect(() => {
+    if (registerSuccess || deregSuccess) refetchLeader()
+  }, [registerSuccess, deregSuccess, refetchLeader])
   const loading = !ready || statsLoading
 
   const topLeader = leaders[0]
@@ -121,7 +129,7 @@ export function LeaderboardPage() {
     <div className="pt-16 pb-12">
       {/* Header */}
       <motion.div
-        className="flex items-start justify-between mb-8"
+        className="flex flex-col sm:flex-row items-start justify-between gap-4 mb-8"
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
@@ -132,28 +140,46 @@ export function LeaderboardPage() {
             Follow the best leaders to mirror their trades automatically.
           </p>
         </div>
-        {isConnecting ? (
-          <Skeleton className="w-40 h-10 rounded-full" />
+        {isConnecting || (isConnected && leaderLoading) ? (
+          <Skeleton className="w-44 h-10 rounded-full" />
+        ) : !isConnected ? (
+          <motion.button
+            className="rounded-full px-5 py-2.5 flex items-center gap-2 font-semibold text-sm cursor-pointer disabled:opacity-50 shrink-0 bg-secondary text-white"
+            disabled
+          >
+            <Star size={14} />
+            Connect to Start
+          </motion.button>
+        ) : isLeader ? (
+          <motion.button
+            className="rounded-full px-5 py-2.5 flex items-center gap-2 font-semibold text-sm cursor-pointer disabled:opacity-50 shrink-0 border border-danger/20 text-danger hover:bg-danger/10 transition-colors"
+            onClick={() => deregister()}
+            disabled={deregLoading}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.95 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+          >
+            {deregLoading ? <Loader2 size={14} className="animate-spin" /> : <Star size={14} />}
+            {deregLoading ? 'Deregistering...' : 'Deregister Leader'}
+          </motion.button>
         ) : (
           <motion.button
-            className={cn(
-              'rounded-full px-5 py-2.5 flex items-center gap-2 font-semibold text-sm cursor-pointer disabled:opacity-50 shrink-0',
-              isLeader ? 'bg-success/10 text-success border border-success/20' : 'bg-secondary text-white'
-            )}
+            className="rounded-full px-5 py-2.5 flex items-center gap-2 font-semibold text-sm cursor-pointer disabled:opacity-50 shrink-0 bg-secondary text-white"
             onClick={handleBecomeLeader}
-            disabled={registerLoading || isLeader || !isConnected}
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
+            disabled={registerLoading}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.95 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 15 }}
           >
             {registerLoading ? <Loader2 size={14} className="animate-spin" /> : <Star size={14} />}
-            {isLeader ? 'You are a Leader' : registerLoading ? 'Registering...' : 'Become a Leader'}
+            {registerLoading ? 'Registering...' : 'Become a Leader'}
           </motion.button>
         )}
       </motion.div>
 
       {/* Protocol counters */}
       <motion.div
-        className="grid grid-cols-3 gap-3 mb-6"
+        className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3 mb-6"
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3, delay: 0.1 }}
@@ -211,13 +237,13 @@ export function LeaderboardPage() {
       {/* === Stats === */}
       {activeTab === 'stats' && (
         <motion.div
-          className="mt-4 grid grid-cols-3 gap-3"
+          className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-3"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.25 }}
         >
           {/* Top performer */}
-          <div className="col-span-2 border border-border rounded-2xl p-5">
+          <div className="md:col-span-2 border border-border rounded-2xl p-5">
             <div className="flex items-center gap-2 mb-4">
               <Trophy size={14} className="text-rank-gold" />
               <h3 className="font-bold text-sm">Top Performer</h3>
@@ -239,7 +265,7 @@ export function LeaderboardPage() {
                 </div>
                 <div className="flex-1">
                   <span className="text-base font-bold">{topLeader.address}</span>
-                  <div className="flex items-center gap-5 mt-1.5">
+                  <div className="flex flex-wrap items-center gap-4 sm:gap-5 mt-1.5">
                     {[
                       { v: topLeader.score, l: 'Score' },
                       { v: `${topLeader.winRate}%`, l: 'Win Rate' },
@@ -282,7 +308,7 @@ export function LeaderboardPage() {
           </div>
 
           {/* Score distribution */}
-          <div className="col-span-3 border border-border rounded-2xl overflow-hidden">
+          <div className="md:col-span-3 border border-border rounded-2xl overflow-hidden">
             <div className="px-5 py-3 bg-surface-alt/60">
               <h3 className="font-bold text-sm">Score Distribution</h3>
             </div>
@@ -327,7 +353,7 @@ export function LeaderboardPage() {
                           {leader.score}
                         </span>
                       </div>
-                      <div className="flex items-center gap-3 shrink-0">
+                      <div className="hidden sm:flex items-center gap-3 shrink-0">
                         <span className="text-xs text-text-muted w-12 text-right">{leader.winRate}%</span>
                         <span className={cn('text-xs font-bold w-14 text-right tabular-nums', leader.pnl >= 0 ? 'text-success' : 'text-danger')}>
                           {formatPnl(leader.pnl)}
@@ -371,22 +397,22 @@ export function LeaderboardPage() {
             ) : (
               <div className="divide-y divide-border/40">
                 {feedItems.map((item, i) => (
-                  <div key={`${item.time}-${item.leader}-${i}`} className="flex items-center px-5 py-3 hover:bg-surface/40 transition-colors gap-3">
-                    <span className="text-xs text-text-faint w-12 shrink-0 tabular-nums font-medium">{item.time}</span>
+                  <div key={`${item.time}-${item.leader}-${i}`} className="flex items-center px-3 sm:px-5 py-3 hover:bg-surface/40 transition-colors gap-2 sm:gap-3">
+                    <span className="text-xs text-text-faint w-10 sm:w-12 shrink-0 tabular-nums font-medium">{item.time}</span>
                     <span className={cn(
                       'text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded shrink-0',
                       item.type === 'success' ? 'bg-success/10 text-success' : item.type === 'fail' ? 'bg-danger/10 text-danger' : 'bg-warning/10 text-warning'
                     )}>
                       {item.type === 'success' ? 'SWAP' : item.type === 'fail' ? 'FAIL' : 'STOP'}
                     </span>
-                    <span className="text-sm text-secondary flex-1 flex items-center gap-1.5">
-                      <span className="font-medium">{item.leader}</span>
-                      <ArrowRight size={11} className="text-text-faint" />
-                      <span>{item.from}</span>
-                      <ArrowRight size={11} className="text-text-faint" />
-                      <span>{item.to}</span>
+                    <span className="text-xs sm:text-sm text-secondary flex-1 flex items-center gap-1 sm:gap-1.5 min-w-0">
+                      <span className="font-medium truncate">{item.leader}</span>
+                      <ArrowRight size={14} className="text-text-muted shrink-0" />
+                      <span className="truncate">{item.from}</span>
+                      <ArrowRight size={14} className="text-text-muted shrink-0" />
+                      <span className="truncate">{item.to}</span>
                     </span>
-                    <span className="text-sm font-bold text-success tabular-nums shrink-0">{item.result}</span>
+                    <span className="text-xs sm:text-sm font-bold text-success tabular-nums shrink-0">{item.result}</span>
                   </div>
                 ))}
               </div>

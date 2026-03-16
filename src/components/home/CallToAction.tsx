@@ -32,7 +32,7 @@ export function CallToAction() {
           <Link to="/leaderboard">
             <motion.button
               className="inline-flex items-center gap-2 rounded-full bg-secondary px-8 py-3.5 text-base font-bold text-white cursor-pointer hover:bg-secondary/90 transition-colors"
-              whileHover={{ scale: 1.03, y: -1 }}
+              whileHover={{ scale: 1.02, y: -1 }}
               whileTap={{ scale: 0.98 }}
               transition={{ type: 'spring', stiffness: 400, damping: 15 }}
             >

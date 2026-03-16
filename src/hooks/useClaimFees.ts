@@ -26,7 +26,7 @@ export function usePendingFees() {
     abi: FollowerVaultAbi,
     functionName: 'pendingFees',
     args: address ? [address] : undefined,
-    query: { enabled: !!address },
+    query: { enabled: !!address, refetchInterval: 5_000 },
   })
 
   return {

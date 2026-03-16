@@ -6,11 +6,14 @@ import { ReputationEngineAbi } from '@/config/abi/ReputationEngine'
 import { FollowerVaultAbi } from '@/config/abi/FollowerVault'
 import type { Leader } from '@/data/types'
 
+const POLL_INTERVAL = 5_000
+
 export function useLeaderCount() {
   return useReadContract({
     address: contracts.leaderRegistry,
     abi: LeaderRegistryAbi,
     functionName: 'getLeaderCount',
+    query: { refetchInterval: POLL_INTERVAL },
   })
 }
 
@@ -28,7 +31,7 @@ export function useLeaders() {
 
   const { data: addressResults, isLoading: addressesLoading } = useReadContracts({
     contracts: addressCalls,
-    query: { enabled: leaderCount > 0 },
+    query: { enabled: leaderCount > 0, refetchInterval: POLL_INTERVAL },
   })
 
   const addresses = addressResults
@@ -59,17 +62,17 @@ export function useLeaders() {
 
   const { data: statsResults, isLoading: statsLoading } = useReadContracts({
     contracts: statsCalls,
-    query: { enabled: addresses.length > 0 },
+    query: { enabled: addresses.length > 0, refetchInterval: POLL_INTERVAL },
   })
 
   const { data: scoreResults, isLoading: scoresLoading } = useReadContracts({
     contracts: scoreCalls,
-    query: { enabled: addresses.length > 0 },
+    query: { enabled: addresses.length > 0, refetchInterval: POLL_INTERVAL },
   })
 
   const { data: followerResults, isLoading: followersLoading } = useReadContracts({
     contracts: followerCountCalls,
-    query: { enabled: addresses.length > 0 },
+    query: { enabled: addresses.length > 0, refetchInterval: POLL_INTERVAL },
   })
 
   const isLoading = countLoading || addressesLoading || statsLoading || scoresLoading || followersLoading

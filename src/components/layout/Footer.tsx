@@ -38,7 +38,7 @@ export function Footer() {
 
       {/* Giant brand text — pinned to bottom */}
       <motion.p
-        className="pointer-events-none absolute inset-x-0 bottom-0 z-10 select-none text-center font-black text-white/[0.06] leading-[0.8]"
+        className="pointer-events-none absolute inset-x-0 bottom-0 z-10 select-none text-center font-black text-white/10 leading-[0.8]"
         style={{ fontSize: '18vw' }}
         initial={{ opacity: 0, y: 40 }}
         whileInView={{ opacity: 1, y: 0 }}

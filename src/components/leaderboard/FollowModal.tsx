@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Loader2, X } from 'lucide-react'
+import { Loader2, X, AlertTriangle } from 'lucide-react'
+import { useReadContract } from 'wagmi'
 import { useUIStore } from '@/stores/ui'
 import { useFollow } from '@/hooks/useFollow'
 import { useApproveToken } from '@/hooks/useApproveToken'
 import { useWallet } from '@/hooks/useWallet'
 import { contracts } from '@/config/contracts'
+import { FollowerVaultAbi } from '@/config/abi/FollowerVault'
 import { parseEther } from 'viem'
 import { modalOverlay, modalContent } from '@/lib/animations'
 
@@ -13,12 +15,22 @@ export function FollowModal() {
   const closeFollowModal = useUIStore((s) => s.closeFollowModal)
   const selectedLeader = useUIStore((s) => s.selectedLeader)
   const selectedLeaderDisplay = useUIStore((s) => s.selectedLeaderDisplay)
-  const { isConnected } = useWallet()
+  const { isConnected, address } = useWallet()
 
-  const [depositAmount, setDepositAmount] = useState('500')
-  const [maxPerTrade, setMaxPerTrade] = useState('100')
-  const [slippage, setSlippage] = useState('0.5')
-  const [stopLoss, setStopLoss] = useState('100')
+  // Check if already following this leader
+  const { data: positionData } = useReadContract({
+    address: contracts.followerVault,
+    abi: FollowerVaultAbi,
+    functionName: 'getPosition',
+    args: address && selectedLeader ? [address, selectedLeader] : undefined,
+    query: { enabled: !!address && !!selectedLeader },
+  })
+  const alreadyFollowing = !!(positionData as any)?.active
+
+  const [depositAmount, setDepositAmount] = useState('20')
+  const [maxPerTrade, setMaxPerTrade] = useState('10')
+  const [slippage, setSlippage] = useState('1')
+  const [stopLoss, setStopLoss] = useState('15')
 
   const { follow, isPending: followPending, isConfirming: followConfirming, isSuccess: followSuccess, error: followError } = useFollow()
 
@@ -46,7 +58,7 @@ export function FollowModal() {
   }, [followSuccess, closeFollowModal])
 
   const handleSubmit = () => {
-    if (!selectedLeader || !isConnected) return
+    if (!selectedLeader || !isConnected || alreadyFollowing) return
     if (!depositAmount || Number(depositAmount) <= 0) return
 
     if (requiresApproval) {
@@ -90,7 +102,7 @@ export function FollowModal() {
 
         {/* Modal card */}
         <motion.div
-          className="relative w-[480px] bg-white rounded-2xl shadow-xl border border-border p-10"
+          className="relative w-[calc(100vw-2rem)] sm:w-[480px] bg-white rounded-2xl shadow-xl border border-border p-6 sm:p-10"
           variants={modalContent}
           initial="hidden"
           animate="visible"
@@ -162,8 +174,16 @@ export function FollowModal() {
             />
           </div>
 
+          {/* Already following warning */}
+          {alreadyFollowing && (
+            <div className="flex items-center gap-2 bg-warning/10 text-warning rounded-xl px-4 py-3 mb-4">
+              <AlertTriangle size={14} />
+              <span className="text-xs font-medium">You are already following this leader. Unfollow first from the Trade page.</span>
+            </div>
+          )}
+
           {/* Error */}
-          {followError && (
+          {followError && !alreadyFollowing && (
             <p className="text-xs text-danger mb-4">
               {(followError as any)?.shortMessage || followError.message}
             </p>
@@ -180,10 +200,10 @@ export function FollowModal() {
           <button
             className="bg-secondary text-white rounded-xl w-full py-4 font-semibold cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2"
             onClick={handleSubmit}
-            disabled={isLoading || followSuccess || !isConnected || !depositAmount || Number(depositAmount) <= 0}
+            disabled={isLoading || followSuccess || alreadyFollowing || !isConnected || !depositAmount || Number(depositAmount) <= 0}
           >
             {isLoading && <Loader2 size={16} className="animate-spin" />}
-            {buttonText()}
+            {alreadyFollowing ? 'Already Following' : buttonText()}
           </button>
 
           {!isConnected && (

@@ -23,12 +23,12 @@ export function LeaderTable() {
   return (
     <div className="border border-border rounded-2xl overflow-hidden">
       {/* Header */}
-      <div className="flex items-center gap-4 px-5 py-3 bg-surface-alt/60">
+      <div className="flex items-center gap-2 sm:gap-4 px-3 sm:px-5 py-3 bg-surface-alt/60">
         <div className="w-9 shrink-0" />
         <span className="text-xs text-text-faint uppercase tracking-widest font-medium flex-1">Leader</span>
-        <span className="text-xs text-text-faint uppercase tracking-widest font-medium w-16 text-center shrink-0">Score</span>
-        <span className="text-xs text-text-faint uppercase tracking-widest font-medium w-20 text-right shrink-0">P&L</span>
-        <span className="text-xs text-text-faint w-20 text-right shrink-0">{isLoading ? '' : `${leaders.length} total`}</span>
+        <span className="text-xs text-text-faint uppercase tracking-widest font-medium w-12 sm:w-16 text-center shrink-0">Score</span>
+        <span className="hidden sm:block text-xs text-text-faint uppercase tracking-widest font-medium w-20 text-right shrink-0">P&L</span>
+        <span className="text-xs text-text-faint w-20 sm:w-24 text-right shrink-0">{isLoading ? '' : `${leaders.length} total`}</span>
       </div>
 
       {/* Loading skeleton */}

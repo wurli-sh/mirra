@@ -12,7 +12,7 @@ export function useLeaderStats() {
     abi: ReputationEngineAbi,
     functionName: 'getStats',
     args: address ? [address] : undefined,
-    query: { enabled: !!address },
+    query: { enabled: !!address, refetchInterval: 5_000 },
   })
 
   const { data: scoreData, isLoading: scoreLoading } = useReadContract({
@@ -20,7 +20,7 @@ export function useLeaderStats() {
     abi: ReputationEngineAbi,
     functionName: 'getScore',
     args: address ? [address] : undefined,
-    query: { enabled: !!address },
+    query: { enabled: !!address, refetchInterval: 5_000 },
   })
 
   const { data: followerCount, isLoading: followersLoading } = useReadContract({
@@ -28,7 +28,7 @@ export function useLeaderStats() {
     abi: FollowerVaultAbi,
     functionName: 'getFollowerCount',
     args: address ? [address] : undefined,
-    query: { enabled: !!address },
+    query: { enabled: !!address, refetchInterval: 5_000 },
   })
 
   const isLoading = statsLoading || scoreLoading || followersLoading

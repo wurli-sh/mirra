@@ -6,6 +6,7 @@ import { TokenSelector } from './TokenSelector'
 import { useSwap, useAmountOut } from '@/hooks/useSwap'
 import { useApproveToken } from '@/hooks/useApproveToken'
 import { useWallet } from '@/hooks/useWallet'
+import { useIsLeader } from '@/hooks/useRegisterLeader'
 import { contracts } from '@/config/contracts'
 import { parseEther } from 'viem'
 
@@ -29,7 +30,8 @@ function isPairValid(sell: string, buy: string): boolean {
 
 export function SwapPanel() {
   const { isConnected } = useWallet()
-  const [sellAmount, setSellAmount] = useState('250')
+  const { isLeader, isLoading: leaderLoading } = useIsLeader()
+  const [sellAmount, setSellAmount] = useState('10')
   const [sellTokenIdx, setSellTokenIdx] = useState(0) // STT
   const [buyTokenIdx, setBuyTokenIdx] = useState(1)   // USDC
 
@@ -140,7 +142,9 @@ export function SwapPanel() {
           <Wallet size={16} className="text-primary" />
           <span className="font-bold text-base text-white">Swap</span>
         </div>
-        <Badge>Leader</Badge>
+        {isConnected && !leaderLoading && (
+          <Badge variant={isLeader ? 'default' : 'success'}>{isLeader ? 'Leader' : 'Follower'}</Badge>
+        )}
       </div>
 
       {/* Sell section */}
@@ -169,7 +173,7 @@ export function SwapPanel() {
           onClick={handleFlip}
           disabled={!isPairValid(buyToken.symbol, sellToken.symbol)}
           whileTap={{ scale: 0.95 }}
-          whileHover={{ scale: 1.2 }}
+          whileHover={{ scale: 1.02 }}
           transition={{ type: 'spring', stiffness: 400, damping: 15 }}
         >
           <ArrowDownUp size={16} className="text-secondary" />
@@ -245,7 +249,7 @@ export function SwapPanel() {
         className="relative z-10 bg-primary hover:bg-primary/90 transition-colors text-secondary rounded-2xl py-5 w-full font-bold text-lg text-center cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2.5 tracking-tight"
         onClick={handleSwap}
         disabled={isLoading || !sellAmount || Number(sellAmount) <= 0 || !pairValid}
-        whileHover={{ scale: 1.04, zIndex: 20 }}
+        whileHover={{ scale: 1.02, zIndex: 20 }}
         whileTap={{ scale: 0.97 }}
         transition={{ type: 'spring', stiffness: 400, damping: 20 }}
       >
@@ -255,7 +259,7 @@ export function SwapPanel() {
 
       {/* Disclaimer */}
       <p className="relative text-xs text-white/30 text-center">
-        Followers will automatically mirror this trade
+        {isLeader ? 'Followers will automatically mirror this trade' : 'Swap tokens on SimpleDEX'}
       </p>
     </div>
   )
