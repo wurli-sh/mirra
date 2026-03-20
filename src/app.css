@@ -1,19 +1,19 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Space Grotesk", sans-serif;
+  --font-sans: "Onest", sans-serif;
 
   --color-primary: #FFD5F0;
-  --color-secondary: #0A0A0A;
+  --color-secondary: #1A1A1A;
   --color-bg: #FFFFFF;
   --color-surface: #FAFAFA;
   --color-surface-alt: #F5F5F5;
   --color-surface-hover: #EBEBEB;
-  --color-text: #0A0A0A;
-  --color-text-muted: rgba(10, 10, 10, 0.5);
-  --color-text-faint: rgba(10, 10, 10, 0.35);
-  --color-border: rgba(10, 10, 10, 0.08);
-  --color-border-strong: rgba(10, 10, 10, 0.12);
+  --color-text: #1A1A1A;
+  --color-text-muted: rgba(26, 26, 26, 0.5);
+  --color-text-faint: rgba(26, 26, 26, 0.35);
+  --color-border: rgba(26, 26, 26, 0.08);
+  --color-border-strong: rgba(26, 26, 26, 0.12);
   --color-success: #16A34A;
   --color-danger: #DC2626;
   --color-warning: #F59E0B;

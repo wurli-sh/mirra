@@ -9,13 +9,13 @@ export function Footer() {
       <div className="absolute inset-0 z-0 opacity-40">
         <Dithering
           style={{ width: '100%', height: '100%' }}
-          colorBack="#0A0A0A"
+          colorBack="#1A1A1A"
           colorFront="#F5B8D9"
           shape="simplex"
           type="4x4"
           pxSize={2}
           scale={0.5}
-          speed={0.8}
+          speed={0.05}
         />
       </div>
 

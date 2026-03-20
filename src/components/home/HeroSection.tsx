@@ -13,7 +13,7 @@ export function HeroSection() {
         transition={{ duration: 4, delay: 0.3 }}
       >
         <Dithering
-          style={{ height: '100%', width: '100%' }}
+          style={{ height: '100%', width: '100%', willChange: 'transform' }}
           colorBack="#FFFFFF"
           colorFront="#F5B8D9"
           shape="simplex"
@@ -23,7 +23,7 @@ export function HeroSection() {
           offsetY={0}
           scale={0.5}
           rotation={0}
-          speed={1.2}
+          speed={0.15}
         />
       </motion.div>
 

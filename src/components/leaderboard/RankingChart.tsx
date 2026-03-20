@@ -3,7 +3,7 @@ import { useLeaders } from '@/hooks/useLeaders'
 import { cn } from '@/lib/cn'
 
 const CHART_COLORS = [
-  '#0A0A0A',
+  '#1A1A1A',
   '#6366F1',
   '#16A34A',
   '#F59E0B',

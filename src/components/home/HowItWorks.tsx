@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { CircleCheckBig, Zap, Copy, ShieldCheck, ArrowLeftRight, Coins, Users, Clock, Target, AlertTriangle } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@/lib/cn'
-import { fadeInUp, scrollViewport } from '@/lib/animations'
+import { fadeInUp, staggerContainer, scrollViewport } from '@/lib/animations'
 
 const steps = [
   {
@@ -59,32 +59,28 @@ export function HowItWorks() {
 
   return (
     <section className="py-[12vh]">
-      <div className="mx-auto max-w-4xl">
+      <motion.div
+        className="mx-auto max-w-4xl"
+        initial="hidden"
+        whileInView="visible"
+        viewport={scrollViewport}
+        variants={staggerContainer}
+      >
         <motion.h2
           variants={fadeInUp}
-          initial="hidden"
-          whileInView="visible"
-          viewport={scrollViewport}
           className="text-balance text-center text-4xl font-bold tracking-tight text-secondary md:text-5xl"
         >
           Three steps. Fully on-chain.
         </motion.h2>
         <motion.p
           variants={fadeInUp}
-          initial="hidden"
-          whileInView="visible"
-          viewport={scrollViewport}
-          transition={{ delay: 0.1 }}
           className="mt-4 text-center text-text-muted"
         >
           Reactive contracts cascade automatically — zero bots, zero infrastructure.
         </motion.p>
 
         <motion.div
-          initial={{ opacity: 0, y: 30, scale: 0.97 }}
-          whileInView={{ opacity: 1, y: 0, scale: 1 }}
-          viewport={scrollViewport}
-          transition={{ duration: 0.6, delay: 0.25, ease: 'easeOut' }}
+          variants={fadeInUp}
           className="mt-16 grid grid-cols-[200px_1fr] overflow-hidden rounded-2xl border border-border"
         >
           {/* Left — step list */}
@@ -195,7 +191,7 @@ export function HowItWorks() {
             </AnimatePresence>
           </div>
         </motion.div>
-      </div>
+      </motion.div>
     </section>
   )
 }
