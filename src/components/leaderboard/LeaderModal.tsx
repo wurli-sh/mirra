@@ -159,7 +159,7 @@ export function LeaderModal({ mode, open, onClose, onSuccess }: Props) {
                 className={`w-full rounded-lg py-3.5 font-semibold text-sm cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2 ${
                   isRegister
                     ? 'bg-secondary text-primary'
-                    : 'bg-danger text-white'
+                    : 'bg-red-800/90 text-white'
                 }`}
                 onClick={handleSubmit}
                 disabled={loading || success || (isRegister && (!stakeAmount || Number(stakeAmount) < 10))}

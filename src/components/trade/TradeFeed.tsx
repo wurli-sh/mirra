@@ -1,8 +1,11 @@
 import { motion } from 'framer-motion'
-import { Activity, ArrowRight } from 'lucide-react'
+import { Activity, ArrowRight, ExternalLink } from 'lucide-react'
 import { cn } from '@/lib/cn'
 import { useLiveTradeFeed } from '@/hooks/useLiveEvents'
+import { contracts } from '@/config/contracts'
 import { pulse } from '@/lib/animations'
+
+const EXPLORER = 'https://shannon-explorer.somnia.network'
 
 export function TradeFeed() {
   const { items, loaded, isReactive } = useLiveTradeFeed()
@@ -44,9 +47,12 @@ export function TradeFeed() {
       ) : (
         <div className="divide-y divide-border/40">
           {items.map((item, i) => (
-            <motion.div
+            <motion.a
               key={`${item.time}-${item.leader}-${i}`}
-              className="flex items-center px-3 sm:px-5 py-3.5 gap-2 sm:gap-4 hover:bg-surface transition-colors duration-150"
+              href={`${EXPLORER}/address/${contracts.simpleDex}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center px-3 sm:px-5 py-3.5 gap-2 sm:gap-4 hover:bg-surface transition-colors duration-150 cursor-pointer group"
               initial={{ opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.25, delay: i * 0.03 }}
@@ -56,7 +62,7 @@ export function TradeFeed() {
 
               {/* Type badge */}
               <span className={cn(
-                'text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded shrink-0',
+                'text-xs font-bold uppercase tracking-wider px-2 py-1 rounded shrink-0',
                 item.type === 'success' ? 'bg-success/10 text-success' : item.type === 'fail' ? 'bg-danger/10 text-danger' : 'bg-warning/10 text-warning'
               )}>
                 {item.type === 'success' ? 'SWAP' : item.type === 'fail' ? 'FAIL' : 'STOP'}
@@ -71,11 +77,12 @@ export function TradeFeed() {
                 <span className="truncate">{item.to}</span>
               </span>
 
-              {/* Result */}
+              {/* Result + explorer icon */}
               {item.type === 'success' && (
                 <span className="text-sm font-bold text-success tabular-nums shrink-0">{item.result}</span>
               )}
-            </motion.div>
+              <ExternalLink size={12} className="text-text-faint group-hover:text-text-muted transition-colors shrink-0" />
+            </motion.a>
           ))}
         </div>
       )}
