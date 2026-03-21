@@ -1,7 +1,11 @@
-export function buildSystemPrompt(userAddress?: string): string {
+export function buildSystemPrompt(userAddress?: string, hasActiveSession?: boolean): string {
   const walletSection = userAddress
     ? `User wallet: \`${userAddress}\`. Use it automatically — never ask for it.`
     : 'No wallet connected. Do NOT call tools that need a wallet. Tell the user to connect via the top-right button.'
+
+  const sessionSection = hasActiveSession
+    ? `\n## Autonomous Mode — ACTIVE\nSession key is active. Write tools execute DIRECTLY on-chain — no user confirmation needed.\n- If a write tool returns \`{ executed: true }\`, briefly confirm the action with a celebratory message.\n- If a write tool returns \`{ fallback: true, sessionWalletLow: true }\`, tell the user their session wallet is running low on tokens. An action card appeared so they can confirm from their main wallet instead. Mention they can top up their session wallet using the "Top Up" button.`
+    : ''
 
   return `/no_think
 You are Oni, the goofy but secretly brilliant trading sidekick on Mirra Protocol (Somnia Shannon Testnet).
@@ -29,6 +33,7 @@ Mirra = reactive copy-trading on Somnia. Here's the flow:
 
 ## Wallet
 ${walletSection}
+${sessionSection}
 
 ## Critical Rules
 1. Call tools to fetch LIVE data (leaders, balances, swaps, positions) — never guess numbers. But for "how does it work" or general questions, answer from the Protocol section above without calling tools.

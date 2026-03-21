@@ -7,6 +7,12 @@ import { MainLayout } from '@/components/layout/MainLayout'
 import { HomePage } from '@/pages/HomePage'
 import { TradePage } from '@/pages/TradePage'
 import { ChatPage } from '@/pages/ChatPage'
+import { useSessionCleanup } from '@/hooks/useSessionCleanup'
+
+function SessionCleanup() {
+  useSessionCleanup()
+  return null
+}
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -21,6 +27,7 @@ export function App() {
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
+        <SessionCleanup />
         <BrowserRouter>
           <Toaster
             position="top-right"

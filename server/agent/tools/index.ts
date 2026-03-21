@@ -14,10 +14,12 @@ import {
   request_claim_fees,
   request_approve,
 } from './write-actions'
+import { buildExecutableWriteTools } from './write-execute'
+import type { SessionData } from '../../lib/session-store'
 
-export function buildTools(userAddress?: string) {
-  return {
-    // Read tools
+export function buildTools(userAddress?: string, session?: SessionData | null) {
+  // Read tools are always the same
+  const readTools = {
     get_leaders,
     get_leader_stats,
     is_leader,
@@ -27,8 +29,17 @@ export function buildTools(userAddress?: string) {
     get_reserves,
     get_token_balances: makeGetTokenBalances(userAddress),
     get_recent_trades,
+  }
 
-    // Write tools (return ActionCard data)
+  // If user has an active session, use executable write tools (server-side execution)
+  if (session) {
+    console.log(`[buildTools] Using EXECUTABLE write tools for ${userAddress?.slice(0, 10)}...`)
+    return { ...readTools, ...buildExecutableWriteTools(session) }
+  }
+
+  // Default: return ActionCard-based write tools (manual user confirmation)
+  return {
+    ...readTools,
     request_swap,
     request_follow,
     request_unfollow,
