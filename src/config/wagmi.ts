@@ -11,6 +11,10 @@ export const config = createConfig({
     coinbaseWallet({ appName: 'Mirra' }),
     ...(projectId ? [walletConnect({ projectId })] : []),
   ],
+  batch: {
+    // Multicall3 is not deployed on Somnia testnet — disable batching
+    multicall: false,
+  },
   transports: {
     [somniaTestnet.id]: http(),
   },

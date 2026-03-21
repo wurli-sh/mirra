@@ -35,7 +35,7 @@ export function ProtocolGateway() {
         <div className="mt-16 grid gap-5 md:grid-cols-2">
           {/* Left — tall card: Reactive Mirroring with globe */}
           <motion.div
-            className="group relative row-span-2 overflow-hidden rounded-2xl bg-secondary p-8 text-white"
+            className="group relative row-span-2 overflow-hidden rounded-xl bg-secondary p-8 text-white"
             initial={{ opacity: 0, y: 25 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={scrollViewport}
@@ -63,7 +63,7 @@ export function ProtocolGateway() {
 
           {/* Right top — Risk Guardian with funnel */}
           <motion.div
-            className="group relative overflow-hidden rounded-2xl border border-border bg-primary/5"
+            className="group relative overflow-hidden rounded-xl border border-border bg-primary/5"
             initial={{ opacity: 0, y: 25 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={scrollViewport}
@@ -92,7 +92,7 @@ export function ProtocolGateway() {
 
           {/* Right bottom — Reputation Engine with cubes */}
           <motion.div
-            className="group relative overflow-hidden rounded-2xl border border-border bg-primary/5"
+            className="group relative overflow-hidden rounded-xl border border-border bg-primary/5"
             initial={{ opacity: 0, y: 25 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={scrollViewport}
@@ -122,7 +122,7 @@ export function ProtocolGateway() {
 
         {/* Bottom banner */}
         <motion.div
-          className="mt-8 flex items-center justify-center gap-3 rounded-2xl bg-surface border border-border px-6 py-4"
+          className="mt-8 flex items-center justify-center gap-3 rounded-xl bg-surface border border-border px-6 py-4"
           initial={{ opacity: 0, y: 15 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={scrollViewport}

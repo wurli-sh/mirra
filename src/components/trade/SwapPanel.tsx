@@ -30,7 +30,6 @@ function isPairValid(sell: string, buy: string): boolean {
 
 export function SwapPanel() {
   const { isConnected } = useWallet()
-  const { isLeader, isLoading: leaderLoading } = useIsLeader()
   const [sellAmount, setSellAmount] = useState('10')
   const [sellTokenIdx, setSellTokenIdx] = useState(0) // STT
   const [buyTokenIdx, setBuyTokenIdx] = useState(1)   // USDC
@@ -78,7 +77,7 @@ export function SwapPanel() {
     if (!isPairValid(buyToken.symbol, sellToken.symbol)) return
     setSellTokenIdx(buyTokenIdx)
     setBuyTokenIdx(sellTokenIdx)
-    setSellAmount(amountOut || '')
+    setSellAmount(amountOut ? Number(amountOut).toFixed(4) : '')
     reset()
   }
 
@@ -134,7 +133,7 @@ export function SwapPanel() {
   }
 
   return (
-    <div className="relative bg-secondary rounded-2xl p-6 flex flex-col gap-5">
+    <div className="relative bg-secondary rounded-xl p-6 flex flex-col gap-5">
 
       {/* Header */}
       <div className="relative flex items-center justify-between">
@@ -142,19 +141,23 @@ export function SwapPanel() {
           <Wallet size={16} className="text-primary" />
           <span className="font-bold text-base text-white">Swap</span>
         </div>
-        {isConnected && !leaderLoading && (
-          <Badge variant={isLeader ? 'default' : 'success'}>{isLeader ? 'Leader' : 'Follower'}</Badge>
-        )}
       </div>
 
       {/* Sell section */}
       <div className="relative">
         <div className="text-xs text-white/40 uppercase tracking-widest mb-2">You sell</div>
-        <div className="bg-white/10 rounded-xl p-3.5 flex items-center justify-between border border-white/10 focus-within:border-primary/40 transition-colors duration-200">
+        <div className="bg-white/10 rounded-lg p-3.5 flex items-center justify-between border border-white/10 focus-within:border-primary/40 transition-colors duration-200">
           <input
             type="text"
             value={sellAmount}
-            onChange={(e) => { setSellAmount(e.target.value); reset() }}
+            onChange={(e) => {
+              let v = e.target.value.replace(/[^0-9.]/g, '')
+              // Only allow up to 4 decimal places
+              const dot = v.indexOf('.')
+              if (dot >= 0) v = v.slice(0, dot + 5)
+              setSellAmount(v)
+              reset()
+            }}
             className="font-semibold text-xl text-white bg-transparent outline-none w-full mr-3 placeholder:text-white/40"
             placeholder="0"
           />
@@ -169,7 +172,7 @@ export function SwapPanel() {
       {/* Swap icon */}
       <div className="relative flex justify-center">
         <motion.button
-          className="w-10 h-10 bg-primary hover:bg-primary/90 transition-colors rounded-xl flex items-center justify-center cursor-pointer disabled:opacity-30"
+          className="w-10 h-10 bg-primary hover:bg-primary/90 transition-colors rounded-lg flex items-center justify-center cursor-pointer disabled:opacity-30"
           onClick={handleFlip}
           disabled={!isPairValid(buyToken.symbol, sellToken.symbol)}
           whileTap={{ scale: 0.95 }}
@@ -183,7 +186,7 @@ export function SwapPanel() {
       {/* Receive section */}
       <div className="relative z-20">
         <div className="text-xs text-white/40 uppercase tracking-widest mb-2">You receive</div>
-        <div className="bg-white/10 rounded-xl p-3.5 flex items-center justify-between border border-white/10 transition-colors duration-200">
+        <div className="bg-white/10 rounded-lg p-3.5 flex items-center justify-between border border-white/10 transition-colors duration-200">
           <span className="font-semibold text-xl text-white/70">
             {!pairValid ? '—' : quoteLoading ? '...' : amountOut ? `~${Number(amountOut).toFixed(2)}` : '0'}
           </span>
@@ -199,7 +202,7 @@ export function SwapPanel() {
       <AnimatePresence>
         {!pairValid && (
           <motion.div
-            className="flex items-center gap-2 bg-warning/10 text-warning rounded-xl px-3.5 py-2.5"
+            className="flex items-center gap-2 bg-warning/10 text-warning rounded-lg px-3.5 py-2.5"
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
@@ -215,7 +218,7 @@ export function SwapPanel() {
 
       {/* Details */}
       {pairValid && (
-        <div className="relative bg-white/5 rounded-xl p-3 flex flex-col gap-1.5 border border-white/5">
+        <div className="relative bg-white/5 rounded-lg p-3 flex flex-col gap-1.5 border border-white/5">
           <div className="flex items-center justify-between">
             <span className="text-xs text-white/30">Price impact</span>
             <span className="text-xs font-medium text-white/70">{priceImpact}%</span>
@@ -246,7 +249,7 @@ export function SwapPanel() {
 
       {/* Button */}
       <motion.button
-        className="relative z-10 bg-primary hover:bg-primary/90 transition-colors text-secondary rounded-2xl py-5 w-full font-bold text-lg text-center cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2.5 tracking-tight"
+        className="relative z-10 bg-primary hover:bg-primary/90 transition-colors text-secondary rounded-xl py-5 w-full font-bold text-lg text-center cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2.5 tracking-tight"
         onClick={handleSwap}
         disabled={isLoading || !sellAmount || Number(sellAmount) <= 0 || !pairValid}
         whileHover={{ scale: 1.02, zIndex: 20 }}
@@ -256,11 +259,6 @@ export function SwapPanel() {
         {isLoading && <Loader2 size={16} className="animate-spin" />}
         {buttonText()}
       </motion.button>
-
-      {/* Disclaimer */}
-      <p className="relative text-xs text-white/30 text-center">
-        {isLeader ? 'Followers will automatically mirror this trade' : 'Swap tokens on SimpleDEX'}
-      </p>
     </div>
   )
 }

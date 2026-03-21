@@ -4,6 +4,7 @@ import { formatEther } from 'viem'
 import { contracts } from '@/config/contracts'
 import { SimpleDEXAbi } from '@/config/abi/SimpleDEX'
 import type { FeedItem, MirrorEntry } from '@/data/types'
+import { useReactiveEvents } from './useReactiveEvents'
 
 function truncate(addr: string) {
   return `${addr.slice(0, 6)}...${addr.slice(-4)}`
@@ -43,52 +44,26 @@ const MIRROR_FEED_KEY = 'mirra_mirror_feed_v2'
 try { localStorage.removeItem('mirra_trade_feed'); localStorage.removeItem('mirra_mirror_feed') } catch {}
 
 export function useLiveTradeFeed(limit = 20) {
-  const client = usePublicClient()
-  const [items, setItems] = useState<FeedItem[]>(() => loadFromStorage<FeedItem>(TRADE_FEED_KEY))
-  const itemsRef = useRef(items)
+  const { events, isConnected } = useReactiveEvents(limit)
 
-  useEffect(() => { itemsRef.current = items }, [items])
-
-  const addItem = useCallback((item: FeedItem) => {
-    setItems((prev) => {
-      const next = [item, ...prev].slice(0, limit)
-      saveToStorage(TRADE_FEED_KEY, next)
-      return next
-    })
-  }, [limit])
-
-  useEffect(() => {
-    if (!client || !contracts.simpleDex) return
-
-    const unwatch = client.watchContractEvent({
-      address: contracts.simpleDex,
-      abi: SimpleDEXAbi,
-      eventName: 'Swap',
-      onLogs: (logs) => {
-        for (const log of logs) {
-          const args = log.args as any
-          if (!args) continue
-          const now = new Date()
-          const symIn = tokenSymbol(args.tokenIn ?? '')
-          const symOut = tokenSymbol(args.tokenOut ?? '')
-          addItem({
-            time: `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`,
-            type: 'success',
-            leader: truncate(args.trader ?? ''),
-            tokenIn: symIn,
-            tokenOut: symOut,
-            from: `${Number(formatEther(args.amountIn ?? 0n)).toFixed(2)} ${symIn}`,
-            to: `${Number(formatEther(args.amountOut ?? 0n)).toFixed(2)} ${symOut}`,
-            result: `+${Number(formatEther(args.amountOut ?? 0n)).toFixed(2)} ${symOut}`,
-          })
-        }
-      },
+  const items: FeedItem[] = [...events]
+    .sort((a, b) => b.timestamp - a.timestamp)
+    .filter((e) => e.type === 'swap')
+    .map((e) => {
+      const d = new Date(e.timestamp)
+      return {
+        time: `${d.getHours()}:${String(d.getMinutes()).padStart(2, '0')}`,
+        type: 'success' as const,
+        leader: e.leader,
+        tokenIn: e.tokenIn,
+        tokenOut: e.tokenOut,
+        from: `${e.amountIn} ${e.tokenIn}`,
+        to: `${e.amountOut} ${e.tokenOut}`,
+        result: `+${e.amountOut} ${e.tokenOut}`,
+      }
     })
 
-    return unwatch
-  }, [client, addItem])
-
-  return { items, loaded: true }
+  return { items, loaded: true, isReactive: isConnected }
 }
 
 // MirrorExecutor ABI fragment for the event we watch

@@ -5,7 +5,7 @@ import { fadeInUp, staggerContainer, scrollViewport } from '@/lib/animations'
 
 export function CallToAction() {
   return (
-    <section className="pb-0 pt-[8vh]">
+    <section className="py-24">
       <motion.div
         className="mx-auto max-w-4xl text-center"
         initial="hidden"
@@ -29,14 +29,14 @@ export function CallToAction() {
         </motion.p>
 
         <motion.div className="mt-10" variants={fadeInUp}>
-          <Link to="/leaderboard">
+          <Link to="/trade">
             <motion.button
-              className="inline-flex items-center gap-2 rounded-full bg-secondary px-8 py-3.5 text-base font-bold text-white cursor-pointer hover:bg-secondary/90 transition-colors"
+              className="inline-flex items-center gap-2 rounded-lg bg-secondary px-8 py-3.5 text-base font-base text-white cursor-pointer hover:bg-secondary/90 transition-colors"
               whileHover={{ scale: 1.02, y: -1 }}
               whileTap={{ scale: 0.98 }}
               transition={{ type: 'spring', stiffness: 400, damping: 15 }}
             >
-              Launch App
+              Follow a Leader
               <ArrowRight size={16} />
             </motion.button>
           </Link>

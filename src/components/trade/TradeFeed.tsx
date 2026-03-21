@@ -5,18 +5,23 @@ import { useLiveTradeFeed } from '@/hooks/useLiveEvents'
 import { pulse } from '@/lib/animations'
 
 export function TradeFeed() {
-  const { items, loaded } = useLiveTradeFeed()
+  const { items, loaded, isReactive } = useLiveTradeFeed()
 
   return (
-    <div className="border border-border rounded-2xl overflow-hidden">
+    <div className="border border-border rounded-xl overflow-hidden">
       {/* Header */}
       <div className="flex items-center px-5 py-3.5 bg-surface-alt/60 gap-2">
         <Activity size={14} className="text-secondary" />
-        <span className="font-bold text-xs text-secondary">Recent Activity</span>
+        <span className="font-bold text-sm text-secondary">Recent Activity</span>
         <div className="flex-1" />
-        <motion.div className="w-1.5 h-1.5 bg-success rounded-full" animate={pulse} />
+        {isReactive && (
+          <span className="text-[9px] font-semibold uppercase tracking-wider text-amber-600 bg-amber-100 px-1.5 py-0.5 rounded">
+            Somnia Reactivity
+          </span>
+        )}
+        <motion.div className={cn('w-1.5 h-1.5 rounded-full', isReactive ? 'bg-success' : 'bg-warning')} animate={pulse} />
         <span className="text-xs text-text-faint">
-          {items.length > 0 ? 'Live' : 'Listening...'}
+          {isReactive ? 'Live' : items.length > 0 ? 'Cached' : 'Connecting...'}
         </span>
       </div>
 
@@ -41,25 +46,25 @@ export function TradeFeed() {
           {items.map((item, i) => (
             <motion.div
               key={`${item.time}-${item.leader}-${i}`}
-              className="flex items-center px-3 sm:px-5 py-3 gap-2 sm:gap-3 hover:bg-surface transition-colors duration-150"
+              className="flex items-center px-3 sm:px-5 py-3.5 gap-2 sm:gap-4 hover:bg-surface transition-colors duration-150"
               initial={{ opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.25, delay: i * 0.03 }}
             >
               {/* Time */}
-              <span className="text-xs text-text-faint w-10 shrink-0 tabular-nums">{item.time}</span>
+              <span className="text-sm text-text-faint w-12 shrink-0 tabular-nums font-medium">{item.time}</span>
 
               {/* Type badge */}
               <span className={cn(
-                'text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded shrink-0',
+                'text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded shrink-0',
                 item.type === 'success' ? 'bg-success/10 text-success' : item.type === 'fail' ? 'bg-danger/10 text-danger' : 'bg-warning/10 text-warning'
               )}>
                 {item.type === 'success' ? 'SWAP' : item.type === 'fail' ? 'FAIL' : 'STOP'}
               </span>
 
               {/* Details */}
-              <span className="text-xs text-secondary flex-1 flex items-center gap-1 min-w-0">
-                <span className="font-medium truncate">{item.leader}</span>
+              <span className="text-sm text-secondary flex-1 flex items-center gap-1.5 min-w-0">
+                <span className="font-semibold truncate">{item.leader}</span>
                 <ArrowRight size={14} className="text-text-muted shrink-0" />
                 <span className="truncate">{item.from}</span>
                 <ArrowRight size={14} className="text-text-muted shrink-0" />
@@ -68,7 +73,7 @@ export function TradeFeed() {
 
               {/* Result */}
               {item.type === 'success' && (
-                <span className="text-xs font-bold text-success tabular-nums shrink-0">{item.result}</span>
+                <span className="text-sm font-bold text-success tabular-nums shrink-0">{item.result}</span>
               )}
             </motion.div>
           ))}

@@ -15,7 +15,7 @@ interface UIState {
 
 export const useUIStore = create<UIState>((set) => ({
   activeLeaderboardTab: 'standings',
-  activeTradeTab: 'positions',
+  activeTradeTab: 'leaders',
   followModalOpen: false,
   selectedLeader: null,
   selectedLeaderDisplay: '',

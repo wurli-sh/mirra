@@ -58,7 +58,7 @@ export function HowItWorks() {
   const Icon = step.icon
 
   return (
-    <section className="py-[12vh]">
+    <section className="py-24">
       <motion.div
         className="mx-auto max-w-4xl"
         initial="hidden"
@@ -81,7 +81,7 @@ export function HowItWorks() {
 
         <motion.div
           variants={fadeInUp}
-          className="mt-16 grid grid-cols-[200px_1fr] overflow-hidden rounded-2xl border border-border"
+          className="mt-16 grid grid-cols-[200px_1fr] overflow-hidden rounded-xl border border-border"
         >
           {/* Left — step list */}
           <div className="border-r border-border bg-primary/5">
@@ -103,7 +103,7 @@ export function HowItWorks() {
                 >
                   <div className="flex items-center gap-3">
                     <div className={cn(
-                      'flex items-center justify-center size-7 rounded-lg',
+                      'flex items-center justify-center size-7 rounded-md',
                       selectedStep === s.id ? 'bg-primary' : 'bg-primary/20'
                     )}>
                       <StepIcon
@@ -146,7 +146,7 @@ export function HowItWorks() {
                       {step.description}
                     </p>
                   </div>
-                  <div className="flex shrink-0 items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5">
+                  <div className="flex shrink-0 items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5">
                     <Icon size={14} className="text-secondary" />
                     <p className="text-sm font-bold text-secondary">Step {step.id}</p>
                   </div>
@@ -157,8 +157,8 @@ export function HowItWorks() {
                   {step.highlights.map((h) => {
                     const HIcon = h.icon
                     return (
-                      <div key={h.label} className="flex items-center gap-4 rounded-xl border border-primary/20 bg-primary/5 p-4">
-                        <div className="flex items-center justify-center size-10 rounded-lg bg-primary/20">
+                      <div key={h.label} className="flex items-center gap-4 rounded-lg border border-primary/20 bg-primary/5 p-4">
+                        <div className="flex items-center justify-center size-10 rounded-md bg-primary/20">
                           <HIcon size={18} className="text-secondary" />
                         </div>
                         <div>

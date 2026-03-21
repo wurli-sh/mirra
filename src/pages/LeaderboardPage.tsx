@@ -33,14 +33,14 @@ function PageSkeleton() {
           <Skeleton className="h-8 w-48" />
           <Skeleton className="h-4 w-72" />
         </div>
-        <Skeleton className="h-10 w-40 rounded-full" />
+        <Skeleton className="h-10 w-40 rounded-lg" />
       </div>
 
       {/* Counter skeletons */}
       <div className="grid grid-cols-3 gap-3 mb-6">
         {Array.from({ length: 3 }).map((_, i) => (
-          <div key={i} className="bg-surface rounded-xl px-4 py-3.5 flex items-center gap-3">
-            <Skeleton className="w-9 h-9 rounded-lg" />
+          <div key={i} className="bg-surface rounded-lg px-4 py-3.5 flex items-center gap-3">
+            <Skeleton className="w-9 h-9 rounded-md" />
             <div className="flex flex-col gap-1.5">
               <Skeleton className="h-5 w-16" />
               <Skeleton className="h-2.5 w-20" />
@@ -52,12 +52,12 @@ function PageSkeleton() {
       {/* Tab skeleton */}
       <div className="flex gap-1 mb-4">
         {Array.from({ length: 3 }).map((_, i) => (
-          <Skeleton key={i} className="h-9 w-24 rounded-lg" />
+          <Skeleton key={i} className="h-9 w-24 rounded-md" />
         ))}
       </div>
 
       {/* Table skeleton */}
-      <div className="border border-border rounded-2xl overflow-hidden">
+      <div className="border border-border rounded-xl overflow-hidden">
         <div className="px-5 py-3 bg-surface-alt/60 flex gap-4">
           {['w-10', 'w-40', 'w-20', 'w-20', 'w-20'].map((w, i) => (
             <Skeleton key={i} className={cn('h-3', w)} />
@@ -65,14 +65,14 @@ function PageSkeleton() {
         </div>
         {Array.from({ length: 6 }).map((_, i) => (
           <div key={i} className="flex items-center gap-4 px-5 py-4 border-t border-border/40">
-            <Skeleton className="w-8 h-8 rounded-lg" />
+            <Skeleton className="w-8 h-8 rounded-md" />
             <div className="flex-1 flex flex-col gap-1.5">
               <Skeleton className="h-4 w-28" />
               <Skeleton className="h-2.5 w-44" />
             </div>
             <Skeleton className="h-4 w-12" />
             <Skeleton className="h-4 w-14" />
-            <Skeleton className="h-8 w-20 rounded-lg" />
+            <Skeleton className="h-8 w-20 rounded-md" />
           </div>
         ))}
       </div>
@@ -141,10 +141,10 @@ export function LeaderboardPage() {
           </p>
         </div>
         {isConnecting || (isConnected && leaderLoading) ? (
-          <Skeleton className="w-44 h-10 rounded-full" />
+          <Skeleton className="w-44 h-10 rounded-lg" />
         ) : !isConnected ? (
           <motion.button
-            className="rounded-full px-5 py-2.5 flex items-center gap-2 font-semibold text-sm cursor-pointer disabled:opacity-50 shrink-0 bg-secondary text-white"
+            className="rounded-lg px-5 py-2.5 flex items-center gap-2 font-semibold text-sm cursor-pointer disabled:opacity-50 shrink-0 bg-secondary text-white"
             disabled
           >
             <Star size={14} />
@@ -152,7 +152,7 @@ export function LeaderboardPage() {
           </motion.button>
         ) : isLeader ? (
           <motion.button
-            className="rounded-full px-5 py-2.5 flex items-center gap-2 font-semibold text-sm cursor-pointer disabled:opacity-50 shrink-0 border border-danger/20 text-danger hover:bg-danger/10 transition-colors"
+            className="rounded-lg px-5 py-2.5 flex items-center gap-2 font-semibold text-sm cursor-pointer disabled:opacity-50 shrink-0 border border-danger/20 text-danger hover:bg-danger/10 transition-colors"
             onClick={() => deregister()}
             disabled={deregLoading}
             whileHover={{ scale: 1.02 }}
@@ -164,7 +164,7 @@ export function LeaderboardPage() {
           </motion.button>
         ) : (
           <motion.button
-            className="rounded-full px-5 py-2.5 flex items-center gap-2 font-semibold text-sm cursor-pointer disabled:opacity-50 shrink-0 bg-secondary text-white"
+            className="rounded-lg px-5 py-2.5 flex items-center gap-2 font-semibold text-sm cursor-pointer disabled:opacity-50 shrink-0 bg-secondary text-white"
             onClick={handleBecomeLeader}
             disabled={registerLoading}
             whileHover={{ scale: 1.02 }}
@@ -186,8 +186,8 @@ export function LeaderboardPage() {
       >
         {loading ? (
           Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="bg-surface rounded-xl px-4 py-3.5 flex items-center gap-3">
-              <Skeleton className="w-9 h-9 rounded-lg" />
+            <div key={i} className="bg-surface rounded-lg px-4 py-3.5 flex items-center gap-3">
+              <Skeleton className="w-9 h-9 rounded-md" />
               <div className="flex flex-col gap-1.5">
                 <Skeleton className="h-5 w-16" />
                 <Skeleton className="h-2.5 w-20" />
@@ -200,8 +200,8 @@ export function LeaderboardPage() {
             { icon: TrendingUp, value: stats.followers.toLocaleString(), label: 'Followers' },
             { icon: BarChart3, value: stats.volume, label: 'Mirrored Volume' },
           ].map(({ icon: Icon, value, label }) => (
-            <div key={label} className="bg-surface rounded-xl px-4 py-3.5 flex items-center gap-3">
-              <div className="w-9 h-9 rounded-lg bg-primary/20 flex items-center justify-center">
+            <div key={label} className="bg-surface rounded-lg px-4 py-3.5 flex items-center gap-3">
+              <div className="w-9 h-9 rounded-md bg-primary/20 flex items-center justify-center">
                 <Icon size={16} className="text-secondary" />
               </div>
               <div>
@@ -243,14 +243,14 @@ export function LeaderboardPage() {
           transition={{ duration: 0.25 }}
         >
           {/* Top performer */}
-          <div className="md:col-span-2 border border-border rounded-2xl p-5">
+          <div className="md:col-span-2 border border-border rounded-xl p-5">
             <div className="flex items-center gap-2 mb-4">
               <Trophy size={14} className="text-rank-gold" />
               <h3 className="font-bold text-sm">Top Performer</h3>
             </div>
             {leadersLoading ? (
               <div className="flex items-center gap-5">
-                <Skeleton className="w-12 h-12 rounded-xl" />
+                <Skeleton className="w-12 h-12 rounded-lg" />
                 <div className="flex-1 flex flex-col gap-2">
                   <Skeleton className="h-4 w-32" />
                   <div className="flex gap-6">
@@ -260,7 +260,7 @@ export function LeaderboardPage() {
               </div>
             ) : topLeader ? (
               <div className="flex items-center gap-5">
-                <div className="w-12 h-12 rounded-xl bg-rank-gold/10 flex items-center justify-center">
+                <div className="w-12 h-12 rounded-lg bg-rank-gold/10 flex items-center justify-center">
                   <span className="text-xl font-bold text-rank-gold">1</span>
                 </div>
                 <div className="flex-1">
@@ -287,14 +287,14 @@ export function LeaderboardPage() {
 
           {/* Aggregate cards */}
           <div className="flex flex-col gap-3">
-            <div className="border border-border rounded-2xl p-4 flex-1">
+            <div className="border border-border rounded-xl p-4 flex-1">
               <div className="flex items-center gap-2 mb-2">
                 <Percent size={12} className="text-text-faint" />
                 <span className="text-[10px] text-text-faint uppercase tracking-wider font-medium">Avg Win Rate</span>
               </div>
               {leadersLoading ? <Skeleton className="h-8 w-20" /> : <span className="text-2xl font-bold">{avgWinRate}%</span>}
             </div>
-            <div className="border border-border rounded-2xl p-4 flex-1">
+            <div className="border border-border rounded-xl p-4 flex-1">
               <div className="flex items-center gap-2 mb-2">
                 <TrendingUp size={12} className="text-text-faint" />
                 <span className="text-[10px] text-text-faint uppercase tracking-wider font-medium">Total P&L</span>
@@ -308,7 +308,7 @@ export function LeaderboardPage() {
           </div>
 
           {/* Score distribution */}
-          <div className="md:col-span-3 border border-border rounded-2xl overflow-hidden">
+          <div className="md:col-span-3 border border-border rounded-xl overflow-hidden">
             <div className="px-5 py-3 bg-surface-alt/60">
               <h3 className="font-bold text-sm">Score Distribution</h3>
             </div>
@@ -318,7 +318,7 @@ export function LeaderboardPage() {
                   <div key={i} className="flex items-center gap-3">
                     <Skeleton className="w-5 h-4" />
                     <Skeleton className="w-24 h-4" />
-                    <Skeleton className="flex-1 h-6 rounded-lg" />
+                    <Skeleton className="flex-1 h-6 rounded-md" />
                     <Skeleton className="w-28 h-4" />
                   </div>
                 ))}
@@ -341,10 +341,10 @@ export function LeaderboardPage() {
                         {leader.rank}
                       </span>
                       <span className="text-xs font-medium w-24 shrink-0 truncate">{leader.address}</span>
-                      <div className="flex-1 h-6 bg-surface-alt rounded-lg overflow-hidden relative">
+                      <div className="flex-1 h-6 bg-surface-alt rounded-md overflow-hidden relative">
                         <div
                           className={cn(
-                            'h-full rounded-lg',
+                            'h-full rounded-md',
                             leader.rank === 1 ? 'bg-rank-gold/25' : leader.rank === 2 ? 'bg-rank-silver/25' : leader.rank === 3 ? 'bg-rank-bronze/25' : 'bg-primary/30'
                           )}
                           style={{ width: `${Math.max(barWidth, 5)}%` }}
@@ -377,13 +377,13 @@ export function LeaderboardPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.25 }}
         >
-          <div className="border border-border rounded-2xl overflow-hidden">
+          <div className="border border-border rounded-xl overflow-hidden">
             <div className="flex items-center justify-between px-5 py-3 bg-surface-alt/60">
               <div className="flex items-center gap-2">
                 <Activity size={14} className="text-text-muted" />
                 <h3 className="font-bold text-sm">Live Swap Feed</h3>
               </div>
-              <span className="text-xs bg-surface-alt px-2 py-0.5 rounded-full text-text-faint font-medium tabular-nums">
+              <span className="text-xs bg-surface-alt px-2 py-0.5 rounded-lg text-text-faint font-medium tabular-nums">
                 {feedItems.length} event{feedItems.length !== 1 ? 's' : ''}
               </span>
             </div>
