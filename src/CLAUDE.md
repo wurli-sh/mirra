@@ -50,7 +50,10 @@ Key components in `components/chat/`:
 - `ChatInput` — Auto-resizing textarea with Enter-to-send
 - `SuggestedPrompts` — Quick prompt buttons for common queries
 - `ActionCard` — Wagmi-based transaction execution (9 action types) with toast notifications, follow-up quick action buttons, sessionStorage state persistence
+- `ExecutedCard` — Auto-executed result display for session key mode (green success card, tx link, follow-ups)
 - `DataCard` — Auto-rendered cards for read tool results (leaderboard table, positions, balances, protocol stats, recent activity with live SSE)
+- `ActivateAgentModal` — Session key onboarding (sign → fund STT → send gas → done)
+- `TopUpModal` — Transfer more STT tokens to session wallet
 
 UI primitives in `components/ui/`:
 - `OniAvatar` — Piggi SVG avatar with `bare` prop for no-bg mode

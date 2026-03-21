@@ -2,7 +2,7 @@
 
 ## Project
 
-Mirra — reactive copy-trading protocol on Somnia Shannon Testnet (Chain ID 50312). Leaders trade on SimpleDEX; followers' vaults mirror trades automatically via on-chain reactive subscriptions. Includes an AI chat agent ("Oni") at `/oni` that reads on-chain data and proposes transactions.
+Mirra — reactive copy-trading protocol on Somnia Shannon Testnet (Chain ID 50312). Leaders trade on SimpleDEX; followers' vaults mirror trades automatically via on-chain reactive subscriptions. Includes an autonomous AI agent ("Oni") at `/oni` that reads on-chain data and executes transactions via session keys.
 
 ## Structure
 
@@ -15,8 +15,8 @@ src/                     # React 19 + Vite frontend → src/CLAUDE.md
   components/            # Domain-grouped UI → src/components/CLAUDE.md
   hooks/                 # wagmi contract hooks → src/hooks/CLAUDE.md
   config/                # Chain, addresses (env), wagmi, ABIs
-  stores/                # Zustand (ui.ts)
-  lib/                   # cn, format, animations
+  stores/                # Zustand (ui.ts, session.ts)
+  lib/                   # cn, format, animations, session-key
   pages/                 # HomePage, TradePage, ChatPage
   data/                  # Shared types
 ```
@@ -58,26 +58,42 @@ SimpleDEX → [reactive] MirrorExecutor → [reactive] RiskGuardian
 /              → HomePage (hero, how-it-works, Oni section, CTA, footer)
 /trade         → TradePage (unified: swap panel + tabbed leaders/positions/activity)
 /leaderboard   → TradePage (alias)
-/oni           → ChatPage (AI chat agent)
+/oni           → ChatPage (autonomous AI agent with session keys)
 *              → Redirect to /
 ```
 
-## Chat Agent Architecture
+## AI Agent Architecture
 
 ```
 Frontend (useChat) → POST /api/chat → Hono server → streamText() with tools
   ├── Read tools: server-side viem readContract → rendered as DataCards
-  ├── Write tools: return ActionCard data (swap, follow, unfollow, deposit, withdraw, etc.)
-  └── ActionCard: rendered in ChatMessage, executes via wagmi useWriteContract on user confirm
+  ├── Session active: write tools execute on-chain directly → rendered as ExecutedCards
+  └── No session: write tools return ActionCard data → user confirms via wagmi
 ```
 
 - **LLM:** Ollama with `ollama-ai-provider-v2` (local, default qwen3:8b) or Groq (prod)
 - **Personality:** Oni — piggi-themed trading sidekick with casual humor
 - **DataCards:** Auto-rendered for read tool results (leaderboard, positions, balances, activity)
-- **ActionCards:** Swap, follow, unfollow, deposit, withdraw, register, deregister, claimFees, approve
-- **Text suppression:** Text after a DataCard/ActionCard is hidden to prevent LLM data repetition
+- **ExecutedCards:** Auto-executed results when session key is active (green success card, tx link)
+- **ActionCards:** Manual fallback — swap, follow, unfollow, deposit, withdraw, register, deregister, claimFees, approve
+- **Text suppression:** Text after a DataCard/ActionCard/ExecutedCard is hidden to prevent LLM data repetition
 - **Parameter aliases:** Tools accept both `tokenIn`/`fromToken` naming for qwen3 compatibility
 - **Toast notifications:** Sonner toasts for tx lifecycle (pending → confirming → success/error)
+
+### Session Key System (Autonomous Mode)
+
+```
+1. User clicks "Activate" → signs EIP-191 message (wallet popup)
+2. Server generates ephemeral keypair (private key never leaves server)
+3. User transfers ERC-20 STT + native STT gas to session wallet
+4. Server auto-approves contracts, executes trades on behalf of user
+5. Session expires after 30 min, spending capped at 50 STT
+```
+
+- **Endpoints:** `POST /api/session` (create, EIP-191 auth), `POST /api/session/revoke` (unauthenticated cleanup), `GET /api/session/status`
+- **Session store:** In-memory Map with 30-min fixed TTL, auto-cleanup every 5 min
+- **Security:** toJSON strips private key, operation count capped at 50, contract whitelist, balance pre-checks
+- **Fallback:** When session wallet has insufficient tokens, falls back to ActionCard (manual mode)
 
 ### Somnia Reactivity Integration
 

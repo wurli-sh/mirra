@@ -33,7 +33,10 @@ components/
 │   ├── ChatInput.tsx         # Auto-resizing textarea input
 │   ├── SuggestedPrompts.tsx  # Quick prompt buttons
 │   ├── ActionCard.tsx        # Wagmi-based tx execution card (9 action types, toast, follow-ups)
-│   └── DataCard.tsx          # Read tool result cards (leaderboard, positions, balances, activity)
+│   ├── ExecutedCard.tsx      # Auto-executed result card for session key mode (green, tx link)
+│   ├── DataCard.tsx          # Read tool result cards (leaderboard, positions, balances, activity)
+│   ├── ActivateAgentModal.tsx # Session key onboarding flow (sign → fund → gas → done)
+│   └── TopUpModal.tsx        # Transfer more STT to session wallet
 └── ui/            # Reusable primitives
     ├── OniAvatar.tsx         # Piggi SVG avatar (bare/bg modes, sm/md/lg sizes)
     ├── AnimatedImage.tsx     # Image with skeleton loader
@@ -54,9 +57,11 @@ components/
 
 ## Chat Component Patterns
 
-- **ActionCard flow:** Server write tools return structured data → `ChatMessage` detects `request_*` tool names → renders `ActionCard` → user clicks Confirm → wagmi `useWriteContract` → toast lifecycle → follow-up buttons
+- **ExecutedCard flow (autonomous):** Session active → server executes tx → returns `{ executed: true, txHash }` → `ChatMessage` renders `ExecutedCard` (green success, tx link, follow-ups)
+- **ActionCard flow (manual):** No session → server returns ActionCard data → `ChatMessage` renders `ActionCard` → user clicks Confirm → wagmi `useWriteContract` → toast lifecycle → follow-up buttons
+- **Fallback:** When session wallet has insufficient tokens, executable tools return ActionCard data instead (graceful degradation)
 - **DataCard flow:** Server read tools return data → `ChatMessage` detects data tool names → renders `DataCard` (leaderboard table, positions, balances, recent activity with live SSE)
-- **Text suppression:** Text parts after a DataCard/ActionCard are hidden — prevents LLM from repeating card data
+- **Text suppression:** Text parts after a DataCard/ActionCard/ExecutedCard are hidden — prevents LLM from repeating card data
 - **XML sanitization:** `sanitizeText()` strips hallucinated `<PascalCase>` tags from LLM output
 - **Session persistence:** Messages in `sessionStorage`, ActionCard tx hashes in `sessionStorage`
 - **Loading labels:** Randomized piggi-themed labels picked once per loading session via `useRef`

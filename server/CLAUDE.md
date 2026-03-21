@@ -2,29 +2,32 @@
 
 ## Overview
 
-Lightweight Hono server providing `POST /api/chat` for the AI chat agent and `GET /api/events` for SSE event streaming. Runs via `tsx watch` on port 3001. Vite proxies `/api` to it in dev.
+Hono server providing `POST /api/chat` (AI agent), `GET /api/events` (SSE), and session key endpoints for autonomous execution. Runs via `tsx watch` on port 3001. Vite proxies `/api` to it in dev.
 
 ## Structure
 
 ```
 server/
-├── index.ts               # Hono app, CORS, POST /api/chat, GET /api/events (SSE)
+├── index.ts               # Hono app, CORS, /api/chat, /api/events, /api/session endpoints
 ├── tsconfig.json          # Extends root paths, includes src/config/abi
 ├── lib/
 │   ├── provider.ts        # getModels() — Ollama (ollama-ai-provider-v2) or Groq
 │   ├── viem-client.ts     # publicClient for Somnia (http transport with retry) + contract addresses + TOKEN_MAP
-│   ├── rate-limit.ts      # In-memory sliding window rate limiter
-│   └── reactive-stream.ts # WebSocket event watcher, ring buffer, SSE broadcast
+│   ├── rate-limit.ts      # In-memory sliding window rate limiter + IP detection
+│   ├── reactive-stream.ts # WebSocket event watcher, ring buffer, SSE broadcast
+│   ├── session-store.ts   # In-memory session key store (30-min TTL, spending cap, toJSON guard)
+│   └── session-executor.ts # Creates walletClient from session key, executes on-chain txs
 └── agent/
-    ├── system-prompt.ts   # buildSystemPrompt(userAddress?) — Oni piggi personality
+    ├── system-prompt.ts   # buildSystemPrompt(userAddress?, hasActiveSession?) — Oni personality
     └── tools/
-        ├── index.ts       # buildTools(userAddress) — exports all tools
+        ├── index.ts       # buildTools(userAddress, session?) — routes to executable or ActionCard tools
         ├── read-leaders.ts    # get_leaders, get_leader_stats (accepts truncated addresses), is_leader
         ├── read-protocol.ts   # get_protocol_stats
         ├── read-positions.ts  # get_user_positions (named struct fields, not tuple indices)
         ├── read-dex.ts        # get_amount_out (accepts fromToken/toToken aliases), get_reserves, get_token_balances
         ├── read-recent.ts     # get_recent_trades (from WebSocket event cache)
-        └── write-actions.ts   # request_swap (aliases), request_follow (defaults), etc.
+        ├── write-actions.ts   # request_swap (aliases), request_follow (defaults) — returns ActionCard data
+        └── write-execute.ts   # Executable versions of write tools — execute on-chain via session key
 ```
 
 ## Request Flow
