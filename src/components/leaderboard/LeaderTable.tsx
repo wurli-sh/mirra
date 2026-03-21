@@ -5,7 +5,7 @@ import { Users } from 'lucide-react'
 function SkeletonRow() {
   return (
     <div className="flex items-center gap-4 px-5 py-4">
-      <div className="w-9 h-9 rounded-xl bg-surface-alt animate-pulse" />
+      <div className="w-9 h-9 rounded-lg bg-surface-alt animate-pulse" />
       <div className="flex-1 flex flex-col gap-2">
         <div className="h-3.5 w-28 rounded bg-surface-alt animate-pulse" />
         <div className="h-2.5 w-40 rounded bg-surface-alt/60 animate-pulse" />
@@ -21,7 +21,7 @@ export function LeaderTable() {
   const { leaders, isLoading } = useLeaders()
 
   return (
-    <div className="border border-border rounded-2xl overflow-hidden">
+    <div className="border border-border rounded-xl overflow-hidden">
       {/* Header */}
       <div className="flex items-center gap-2 sm:gap-4 px-3 sm:px-5 py-3 bg-surface-alt/60">
         <div className="w-9 shrink-0" />

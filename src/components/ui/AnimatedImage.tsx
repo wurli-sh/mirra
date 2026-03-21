@@ -22,7 +22,7 @@ export function AnimatedImage({ src, alt, className = '', placeholderClass = '' 
     <div className="relative">
       {/* Skeleton */}
       <div
-        className={`absolute inset-0 z-20 rounded-xl overflow-hidden transition-opacity duration-500 ${placeholderClass} ${ready ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+        className={`absolute inset-0 z-20 rounded-lg overflow-hidden transition-opacity duration-500 ${placeholderClass} ${ready ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
       >
         <div className="h-full w-full animate-pulse bg-primary" />
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-[shimmer_1.5s_infinite]" />

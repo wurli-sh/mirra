@@ -49,7 +49,7 @@ export function RankingChart() {
 
   if (isLoading) {
     return (
-      <div className="border border-border rounded-2xl flex items-center justify-center py-20">
+      <div className="border border-border rounded-xl flex items-center justify-center py-20">
         <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
         <span className="text-sm text-text-muted ml-3">Loading chart...</span>
       </div>
@@ -58,7 +58,7 @@ export function RankingChart() {
 
   if (lines.length === 0) {
     return (
-      <div className="border border-border rounded-2xl text-center py-20">
+      <div className="border border-border rounded-xl text-center py-20">
         <TrendingUp size={28} className="text-text-faint mx-auto mb-3" />
         <p className="text-sm text-text-muted">No leaders registered yet</p>
         <p className="text-xs text-text-faint mt-1">Chart will populate when leaders are active.</p>
@@ -67,7 +67,7 @@ export function RankingChart() {
   }
 
   return (
-    <div className="border border-border rounded-2xl overflow-hidden">
+    <div className="border border-border rounded-xl overflow-hidden">
       {/* Header */}
       <div className="flex items-center justify-between px-6 py-4 bg-surface-alt/60">
         <div className="flex items-center gap-2">

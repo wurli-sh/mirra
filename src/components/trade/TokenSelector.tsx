@@ -24,7 +24,7 @@ export function TokenSelector({ token, tokens = [], onChange }: TokenSelectorPro
   const filteredTokens = tokens.filter((t) => t !== token)
   if (filteredTokens.length === 0) {
     return (
-      <div className="flex items-center px-3.5 py-1.5 bg-primary/20 rounded-full">
+      <div className="flex items-center px-3.5 py-1.5 bg-primary/20 rounded-lg">
         <span className="text-xs font-semibold text-white">{token}</span>
       </div>
     )
@@ -33,7 +33,7 @@ export function TokenSelector({ token, tokens = [], onChange }: TokenSelectorPro
   return (
     <div className="relative z-50" ref={ref}>
       <button
-        className="flex items-center gap-1.5 px-3.5 py-1.5 bg-primary/20 hover:bg-primary/30 transition-colors rounded-full cursor-pointer"
+        className="flex items-center gap-1.5 px-3.5 py-1.5 bg-primary/20 hover:bg-primary/30 transition-colors rounded-lg cursor-pointer"
         onClick={(e) => {
           e.stopPropagation()
           setOpen(!open)
@@ -46,7 +46,7 @@ export function TokenSelector({ token, tokens = [], onChange }: TokenSelectorPro
       <AnimatePresence>
         {open && (
           <motion.div
-            className="absolute right-0 top-full mt-1 bg-secondary border border-white/10 rounded-b-xl shadow-lg z-50 py-1 min-w-[100px]"
+            className="absolute right-0 top-full mt-1 bg-secondary border border-white/10 rounded-b-lg shadow-lg z-50 py-1 min-w-[100px]"
             initial={{ opacity: 0, y: -4 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -4 }}

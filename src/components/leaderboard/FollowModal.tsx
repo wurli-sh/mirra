@@ -102,7 +102,7 @@ export function FollowModal() {
 
         {/* Modal card */}
         <motion.div
-          className="relative w-[calc(100vw-2rem)] sm:w-[480px] bg-white rounded-2xl shadow-xl border border-border p-6 sm:p-10"
+          className="relative w-[calc(100vw-2rem)] sm:w-[480px] bg-white rounded-xl shadow-xl border border-border p-6 sm:p-10"
           variants={modalContent}
           initial="hidden"
           animate="visible"
@@ -131,7 +131,7 @@ export function FollowModal() {
               type="text"
               value={depositAmount}
               onChange={(e) => setDepositAmount(e.target.value)}
-              className="w-full border border-border-strong rounded-xl px-4 py-3.5 text-sm outline-none focus:border-secondary transition-colors"
+              className="w-full border border-border-strong rounded-lg px-4 py-3.5 text-sm outline-none focus:border-secondary transition-colors"
             />
           </div>
 
@@ -145,7 +145,7 @@ export function FollowModal() {
                 type="text"
                 value={maxPerTrade}
                 onChange={(e) => setMaxPerTrade(e.target.value)}
-                className="w-full border border-border-strong rounded-xl px-4 py-3.5 text-sm outline-none focus:border-secondary transition-colors"
+                className="w-full border border-border-strong rounded-lg px-4 py-3.5 text-sm outline-none focus:border-secondary transition-colors"
               />
             </div>
             <div className="flex-1">
@@ -156,7 +156,7 @@ export function FollowModal() {
                 type="text"
                 value={slippage}
                 onChange={(e) => setSlippage(e.target.value)}
-                className="w-full border border-border-strong rounded-xl px-4 py-3.5 text-sm outline-none focus:border-secondary transition-colors"
+                className="w-full border border-border-strong rounded-lg px-4 py-3.5 text-sm outline-none focus:border-secondary transition-colors"
               />
             </div>
           </div>
@@ -170,13 +170,13 @@ export function FollowModal() {
               type="text"
               value={stopLoss}
               onChange={(e) => setStopLoss(e.target.value)}
-              className="w-full border border-border-strong rounded-xl px-4 py-3.5 text-sm outline-none focus:border-secondary transition-colors"
+              className="w-full border border-border-strong rounded-lg px-4 py-3.5 text-sm outline-none focus:border-secondary transition-colors"
             />
           </div>
 
           {/* Already following warning */}
           {alreadyFollowing && (
-            <div className="flex items-center gap-2 bg-warning/10 text-warning rounded-xl px-4 py-3 mb-4">
+            <div className="flex items-center gap-2 bg-warning/10 text-warning rounded-lg px-4 py-3 mb-4">
               <AlertTriangle size={14} />
               <span className="text-xs font-medium">You are already following this leader. Unfollow first from the Trade page.</span>
             </div>
@@ -198,7 +198,7 @@ export function FollowModal() {
 
           {/* Confirm button */}
           <button
-            className="bg-secondary text-white rounded-xl w-full py-4 font-semibold cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2"
+            className="bg-secondary text-white rounded-lg w-full py-4 font-semibold cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2"
             onClick={handleSubmit}
             disabled={isLoading || followSuccess || alreadyFollowing || !isConnected || !depositAmount || Number(depositAmount) <= 0}
           >

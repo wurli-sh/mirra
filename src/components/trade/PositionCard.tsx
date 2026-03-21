@@ -53,7 +53,7 @@ export function PositionCard({ position }: PositionCardProps) {
         <div className="flex items-center gap-3">
           <div
             className={cn(
-              'w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold',
+              'w-8 h-8 rounded-md flex items-center justify-center text-xs font-bold',
               danger ? 'bg-danger/10 text-danger' : 'bg-primary text-secondary'
             )}
           >
@@ -136,7 +136,7 @@ export function PositionCard({ position }: PositionCardProps) {
       {/* Action buttons */}
       <div className="flex flex-wrap gap-2 mt-3">
         <motion.button
-          className="flex items-center gap-1.5 bg-primary text-secondary px-4 py-2 rounded-lg text-xs font-medium cursor-pointer disabled:opacity-50"
+          className="flex items-center gap-1.5 bg-primary text-secondary px-4 py-2 rounded-md text-xs font-medium cursor-pointer disabled:opacity-50"
           onClick={() => { setShowDeposit(!showDeposit); setShowWithdraw(false) }}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
@@ -146,7 +146,7 @@ export function PositionCard({ position }: PositionCardProps) {
           Deposit
         </motion.button>
         <motion.button
-          className="flex items-center gap-1.5 border border-border-strong text-text-muted px-4 py-2 rounded-lg text-xs cursor-pointer disabled:opacity-50"
+          className="flex items-center gap-1.5 border border-border-strong text-text-muted px-4 py-2 rounded-md text-xs cursor-pointer disabled:opacity-50"
           onClick={() => { setShowWithdraw(!showWithdraw); setShowDeposit(false) }}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
@@ -156,7 +156,7 @@ export function PositionCard({ position }: PositionCardProps) {
           Withdraw
         </motion.button>
         <motion.button
-          className="flex items-center gap-1.5 border border-danger/20 text-danger px-4 py-2 rounded-lg text-xs cursor-pointer disabled:opacity-50"
+          className="flex items-center gap-1.5 border border-danger/20 text-danger px-4 py-2 rounded-md text-xs cursor-pointer disabled:opacity-50"
           onClick={handleUnfollow}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
@@ -182,10 +182,10 @@ export function PositionCard({ position }: PositionCardProps) {
               value={inputAmount}
               onChange={(e) => setInputAmount(e.target.value)}
               placeholder={`Amount (${position.token})`}
-              className="flex-1 border border-border-strong rounded-lg px-3 py-2 text-xs outline-none focus:border-secondary transition-colors duration-200"
+              className="flex-1 border border-border-strong rounded-md px-3 py-2 text-xs outline-none focus:border-secondary transition-colors duration-200"
             />
             <button
-              className="bg-secondary text-white px-4 py-2 rounded-lg text-xs font-medium cursor-pointer disabled:opacity-50"
+              className="bg-secondary text-white px-4 py-2 rounded-md text-xs font-medium cursor-pointer disabled:opacity-50"
               onClick={showDeposit ? handleDeposit : handleWithdraw}
               disabled={!inputAmount || anyLoading}
             >

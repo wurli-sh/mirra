@@ -1,6 +1,6 @@
 export function LeaderLegend() {
   return (
-    <div className="bg-surface-alt rounded-b-xl px-4 py-4 flex items-center justify-between">
+    <div className="bg-surface-alt rounded-b-lg px-4 py-4 flex items-center justify-between">
       {/* Rank legend */}
       <div className="flex items-center gap-5">
         <div className="flex items-center gap-2">

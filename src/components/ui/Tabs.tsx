@@ -22,7 +22,7 @@ export function Tabs({ items, active, onChange, className, trailing }: TabsProps
           key={item.key}
           onClick={() => onChange(item.key)}
           className={cn(
-            'relative px-4 py-2.5 text-sm rounded-lg cursor-pointer transition-colors duration-200 outline-none focus-visible:ring-2 focus-visible:ring-primary/40',
+            'relative px-4 py-2.5 text-sm rounded-md cursor-pointer transition-colors duration-200 outline-none focus-visible:ring-2 focus-visible:ring-primary/40',
             active === item.key
               ? 'font-semibold text-secondary'
               : 'text-text-faint hover:text-text-muted'
@@ -31,7 +31,7 @@ export function Tabs({ items, active, onChange, className, trailing }: TabsProps
           {active === item.key && (
             <motion.div
               layoutId="activeTab"
-              className="absolute inset-0 rounded-lg bg-surface-alt"
+              className="absolute inset-0 rounded-md bg-surface-alt"
               transition={{ type: 'spring', stiffness: 400, damping: 30 }}
             />
           )}

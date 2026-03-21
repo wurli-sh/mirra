@@ -16,22 +16,22 @@ interface LeaderRowProps {
 
 const RankBadge = ({ rank }: { rank: number }) => {
   if (rank === 1) return (
-    <div className="w-9 h-9 rounded-xl bg-rank-gold/15 flex items-center justify-center">
+    <div className="w-9 h-9 rounded-lg bg-rank-gold/15 flex items-center justify-center">
       <Crown size={16} className="text-rank-gold" />
     </div>
   )
   if (rank === 2) return (
-    <div className="w-9 h-9 rounded-xl bg-rank-silver/15 flex items-center justify-center">
+    <div className="w-9 h-9 rounded-lg bg-rank-silver/15 flex items-center justify-center">
       <Medal size={16} className="text-rank-silver" />
     </div>
   )
   if (rank === 3) return (
-    <div className="w-9 h-9 rounded-xl bg-rank-bronze/15 flex items-center justify-center">
+    <div className="w-9 h-9 rounded-lg bg-rank-bronze/15 flex items-center justify-center">
       <Award size={16} className="text-rank-bronze" />
     </div>
   )
   return (
-    <div className="w-9 h-9 rounded-xl bg-surface-alt flex items-center justify-center">
+    <div className="w-9 h-9 rounded-lg bg-surface-alt flex items-center justify-center">
       <span className="text-sm font-bold text-text-faint">{rank}</span>
     </div>
   )
@@ -68,7 +68,7 @@ export function LeaderRow({ leader }: LeaderRowProps) {
   return (
     <motion.div
       className={cn(
-        'group flex items-center gap-2 sm:gap-4 px-3 sm:px-5 py-3 sm:py-4 rounded-xl transition-colors duration-200 cursor-default',
+        'group flex items-center gap-2 sm:gap-4 px-3 sm:px-5 py-3 sm:py-4 rounded-lg transition-colors duration-200 cursor-default',
         isTop3 ? 'bg-surface hover:bg-surface-alt' : 'hover:bg-surface',
       )}
       whileHover={{ x: 2 }}
@@ -84,7 +84,7 @@ export function LeaderRow({ leader }: LeaderRowProps) {
             {leader.address}
           </span>
           {isSelf && (
-            <span className="text-[10px] font-medium text-primary bg-primary/10 px-1.5 py-0.5 rounded-full">you</span>
+            <span className="text-[10px] font-semibold text-secondary bg-primary px-1.5 py-0.5 rounded-lg">you</span>
           )}
         </div>
         <span className="text-[10px] sm:text-xs text-text-faint mt-0.5">
@@ -114,7 +114,7 @@ export function LeaderRow({ leader }: LeaderRowProps) {
           <span className="text-xs text-text-faint italic">—</span>
         ) : isFollowing ? (
           <motion.button
-            className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold cursor-pointer disabled:opacity-50 border border-danger/20 text-danger hover:bg-danger/10 transition-colors"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-md text-xs font-semibold cursor-pointer disabled:opacity-50 border border-danger/20 text-danger hover:bg-danger/10 transition-colors"
             onClick={handleUnfollow}
             disabled={unfollowLoading}
             whileHover={{ scale: 1.02 }}
@@ -126,7 +126,7 @@ export function LeaderRow({ leader }: LeaderRowProps) {
         ) : (
           <motion.button
             className={cn(
-              'flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold cursor-pointer transition-all',
+              'flex items-center gap-1.5 px-4 py-2 rounded-md text-xs font-semibold cursor-pointer transition-all',
               'bg-primary text-secondary opacity-0 group-hover:opacity-100 hover:bg-primary/80 transition-opacity duration-200',
             )}
             onClick={handleFollow}

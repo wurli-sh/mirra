@@ -16,13 +16,13 @@ export function StatsPanel() {
   const claimLoading = isPending || isConfirming
 
   return (
-    <div className="border border-border rounded-2xl p-5 flex flex-col gap-4">
+    <div className="border border-border rounded-xl p-5 flex flex-col gap-4">
       {/* Header */}
       <div className="flex items-center gap-2">
         <BarChart3 size={15} className="text-secondary" />
         <span className="font-bold text-sm text-secondary">Your Stats</span>
         {isLeader && (
-          <span className="ml-auto text-xs bg-primary text-secondary px-2 py-0.5 rounded-full font-medium">
+          <span className="ml-auto text-xs bg-primary text-secondary px-2 py-0.5 rounded-lg font-medium">
             Leader
           </span>
         )}
@@ -60,7 +60,7 @@ export function StatsPanel() {
       {/* Buttons */}
       <div className="flex gap-2">
         <motion.button
-          className="flex-1 bg-secondary text-white rounded-xl py-2.5 flex items-center justify-center gap-1.5 text-xs font-semibold cursor-pointer disabled:opacity-50"
+          className="flex-1 bg-secondary text-white rounded-lg py-2.5 flex items-center justify-center gap-1.5 text-xs font-semibold cursor-pointer disabled:opacity-50"
           onClick={() => claim()}
           disabled={claimLoading || !isConnected || fees <= 0}
           whileHover={{ scale: 1.01 }}
@@ -69,7 +69,7 @@ export function StatsPanel() {
           {claimLoading ? <Loader2 size={14} className="animate-spin" /> : <Wallet size={14} className="text-white" />}
           {claimLoading ? 'Claiming...' : `Claim ${fees > 0 ? fees.toFixed(1) : '0'} STT`}
         </motion.button>
-        <button className="border border-border-strong rounded-xl py-2.5 px-4 flex items-center justify-center gap-1.5 text-xs text-text-muted cursor-pointer">
+        <button className="border border-border-strong rounded-lg py-2.5 px-4 flex items-center justify-center gap-1.5 text-xs text-text-muted cursor-pointer">
           <LogOut size={14} />
           Exit
         </button>
