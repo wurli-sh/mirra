@@ -48,7 +48,7 @@ export function LeaderRow({ leader }: LeaderRowProps) {
     args: address ? [address, leader.fullAddress] : undefined,
     query: { enabled: !!address, refetchInterval: 5_000 },
   })
-  const isFollowing = !!(positionData as any)?.active
+  const isFollowing = !!(positionData as { active?: boolean } | undefined)?.active
 
   const { unfollow, isPending: unfollowPending, isConfirming: unfollowConfirming } = useUnfollow()
   const unfollowLoading = unfollowPending || unfollowConfirming

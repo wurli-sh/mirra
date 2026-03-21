@@ -6,7 +6,7 @@ import { getRecentEvents, getLastTradeTimestamp } from '../../lib/reactive-strea
 export const get_recent_trades = tool({
   description: 'Get the most recent trades and mirror events from the protocol, streamed in real-time via Somnia Reactivity. Use when user asks "what just happened", "any recent trades", "latest activity", or "what are leaders doing".',
   parameters: z.object({
-    limit: z.number().default(10).describe('Number of recent events to return (max 50)'),
+    limit: z.number().int().min(1).max(50).default(10).describe('Number of recent events to return (max 50)'),
   }),
   execute: async ({ limit }) => {
     const events = getRecentEvents(Math.min(limit, 50))

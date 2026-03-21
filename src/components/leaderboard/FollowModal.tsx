@@ -25,7 +25,7 @@ export function FollowModal() {
     args: address && selectedLeader ? [address, selectedLeader] : undefined,
     query: { enabled: !!address && !!selectedLeader },
   })
-  const alreadyFollowing = !!(positionData as any)?.active
+  const alreadyFollowing = !!(positionData as { active?: boolean } | undefined)?.active
 
   const [depositAmount, setDepositAmount] = useState('20')
   const [maxPerTrade, setMaxPerTrade] = useState('10')
@@ -128,7 +128,9 @@ export function FollowModal() {
               Deposit Amount (STT)
             </label>
             <input
-              type="text"
+              type="number"
+              min="0"
+              step="any"
               value={depositAmount}
               onChange={(e) => setDepositAmount(e.target.value)}
               className="w-full border border-border-strong rounded-lg px-4 py-3.5 text-sm outline-none focus:border-secondary transition-colors"
@@ -142,7 +144,9 @@ export function FollowModal() {
                 Max Per Trade (STT)
               </label>
               <input
-                type="text"
+                type="number"
+                min="0"
+                step="any"
                 value={maxPerTrade}
                 onChange={(e) => setMaxPerTrade(e.target.value)}
                 className="w-full border border-border-strong rounded-lg px-4 py-3.5 text-sm outline-none focus:border-secondary transition-colors"
@@ -153,7 +157,10 @@ export function FollowModal() {
                 Slippage %
               </label>
               <input
-                type="text"
+                type="number"
+                min="0"
+                max="100"
+                step="0.1"
                 value={slippage}
                 onChange={(e) => setSlippage(e.target.value)}
                 className="w-full border border-border-strong rounded-lg px-4 py-3.5 text-sm outline-none focus:border-secondary transition-colors"
@@ -167,7 +174,9 @@ export function FollowModal() {
               Stop-Loss (STT)
             </label>
             <input
-              type="text"
+              type="number"
+              min="0"
+              step="any"
               value={stopLoss}
               onChange={(e) => setStopLoss(e.target.value)}
               className="w-full border border-border-strong rounded-lg px-4 py-3.5 text-sm outline-none focus:border-secondary transition-colors"

@@ -108,7 +108,11 @@ export function useLeaders() {
           pnl: Math.round(totalPnlSTT * 100) / 100,
           volume: Math.round(totalVolumeSTT * 100) / 100,
           followers: followerCount,
-          trend: Array.from({ length: 7 }, () => Math.floor(Math.random() * 16) + 2),
+          trend: Array.from({ length: 7 }, (_, j) => {
+            // Deterministic trend from address bytes — stable across re-renders
+            const byte = parseInt(addr.slice(2 + (j * 2), 4 + (j * 2)), 16)
+            return (byte % 16) + 2
+          }),
         }
       })
       // Sort by score descending, reassign ranks

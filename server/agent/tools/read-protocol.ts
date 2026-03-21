@@ -27,18 +27,18 @@ export const get_protocol_stats = tool({
       functionName: 'getLeaderCount',
     })
     const leaderCount = Number(count)
-    if (leaderCount === 0) return { leaders: 0, followers: 0, volume: '$0' }
+    if (leaderCount === 0) return { leaders: 0, followers: 0, volume: '0 STT' }
 
-    const addresses: Address[] = []
-    for (let i = 0; i < leaderCount; i++) {
-      const addr = await publicClient.readContract({
-        address: contracts.leaderRegistry,
-        abi: LeaderRegistryAbi,
-        functionName: 'getLeaderAt',
-        args: [BigInt(i)],
-      })
-      addresses.push(addr)
-    }
+    const addresses = await Promise.all(
+      Array.from({ length: leaderCount }, (_, i) =>
+        publicClient.readContract({
+          address: contracts.leaderRegistry,
+          abi: LeaderRegistryAbi,
+          functionName: 'getLeaderAt',
+          args: [BigInt(i)],
+        })
+      )
+    )
 
     let totalFollowers = 0
     let totalVolume = 0
@@ -66,9 +66,9 @@ export const get_protocol_stats = tool({
     )
 
     const formatVolume = (vol: number): string => {
-      if (vol >= 1_000_000) return `$${(vol / 1_000_000).toFixed(1)}M`
-      if (vol >= 1_000) return `$${(vol / 1_000).toFixed(1)}K`
-      return `$${vol.toFixed(0)}`
+      if (vol >= 1_000_000) return `${(vol / 1_000_000).toFixed(1)}M STT`
+      if (vol >= 1_000) return `${(vol / 1_000).toFixed(1)}K STT`
+      return `${vol.toFixed(0)} STT`
     }
 
     const recentEvents = getRecentEvents(10)

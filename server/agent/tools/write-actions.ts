@@ -4,6 +4,7 @@ import { z } from 'zod'
 import { formatEther, parseEther } from 'viem'
 import { publicClient, contracts, resolveToken } from '../../lib/viem-client'
 import { SimpleDEXAbi } from '../../../src/config/abi/SimpleDEX'
+import { LeaderRegistryAbi } from '../../../src/config/abi/LeaderRegistry'
 
 const VALID_PAIRS: Record<string, string[]> = {
   STT: ['USDC', 'WETH'],
@@ -31,6 +32,10 @@ export const request_swap = tool({
     const amountIn = params.amountIn ?? params.amount
     if (!tokenIn || !tokenOut || !amountIn) {
       return { error: 'Missing parameters. Need: tokenIn, tokenOut, amountIn' }
+    }
+    const parsedAmt = Number(amountIn)
+    if (!isFinite(parsedAmt) || parsedAmt <= 0) {
+      return { error: 'amountIn must be a positive number string, e.g. "10"' }
     }
     try {
       const tIn = resolveToken(tokenIn)
@@ -81,22 +86,28 @@ export const request_follow = tool({
       try {
         const count = await publicClient.readContract({
           address: contracts.leaderRegistry,
-          abi: [{inputs:[],name:'getLeaderCount',outputs:[{type:'uint256'}],stateMutability:'view',type:'function'}],
+          abi: LeaderRegistryAbi,
           functionName: 'getLeaderCount',
         })
         const prefix = leader?.slice(0, 6).toLowerCase() ?? ''
         const suffix = leader?.slice(-4).toLowerCase() ?? ''
-        for (let i = 0; i < Number(count); i++) {
-          const candidate = await publicClient.readContract({
-            address: contracts.leaderRegistry,
-            abi: [{inputs:[{type:'uint256'}],name:'getLeaderAt',outputs:[{type:'address'}],stateMutability:'view',type:'function'}],
-            functionName: 'getLeaderAt',
-            args: [BigInt(i)],
-          })
-          if (!prefix || (candidate.toLowerCase().startsWith(prefix) && candidate.toLowerCase().endsWith(suffix))) {
-            leader = candidate
-            break
-          }
+        const candidates = await Promise.all(
+          Array.from({ length: Number(count) }, (_, i) =>
+            publicClient.readContract({
+              address: contracts.leaderRegistry,
+              abi: LeaderRegistryAbi,
+              functionName: 'getLeaderAt',
+              args: [BigInt(i)],
+            })
+          )
+        )
+        const matches = candidates.filter(c =>
+          !prefix || (c.toLowerCase().startsWith(prefix) && c.toLowerCase().endsWith(suffix))
+        )
+        if (matches.length === 1) {
+          leader = matches[0]
+        } else if (matches.length > 1) {
+          return { error: `Multiple leaders match "${leader}". Please provide the full address.` }
         }
       } catch { /* fallthrough */ }
       if (!leader || leader.includes('...') || leader.length < 42) {

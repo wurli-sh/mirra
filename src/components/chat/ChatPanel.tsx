@@ -1,9 +1,9 @@
 import { useChat } from '@ai-sdk/react'
 import { DefaultChatTransport } from 'ai'
 import { useAccount } from 'wagmi'
-import { useEffect, useMemo, useRef } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import { motion } from 'framer-motion'
-import { SquarePen } from 'lucide-react'
+import { SquarePen, Coins } from 'lucide-react'
 import { ChatMessage } from './ChatMessage'
 import { ChatInput } from './ChatInput'
 import { SuggestedPrompts } from './SuggestedPrompts'
@@ -11,11 +11,17 @@ import { TextShimmer } from '@/components/ui/TextShimmer'
 import { TextLoop } from '@/components/ui/TextLoop'
 import { ThinkingSpinner } from '@/components/ui/ThinkingSpinner'
 import { OniAvatar } from '@/components/ui/OniAvatar'
+import { TopUpModal } from './TopUpModal'
+import { useSessionStore } from '@/stores/session'
+import { useSessionBalance } from '@/hooks/useSessionBalance'
 
 const SESSION_KEY = 'mirra_chat_messages'
 
 export function ChatPanel() {
   const { address } = useAccount()
+  const isSessionActive = useSessionStore((s) => s.status === 'active')
+  const { stt: sessionStt, gas: sessionGas } = useSessionBalance()
+  const [topUpOpen, setTopUpOpen] = useState(false)
 
   const transport = useMemo(
     () =>
@@ -133,7 +139,7 @@ export function ChatPanel() {
               {' '}today?
             </h2>
             <p className="text-sm text-text-muted mt-1.5">
-              Oni — Your trading piggi on Mirra 🐷
+              Oni — Your AI agent on Mirra 🐷
             </p>
           </motion.div>
           <motion.div
@@ -148,18 +154,43 @@ export function ChatPanel() {
         </div>
       ) : (
         <>
-          {/* New Chat */}
-          <div className="shrink-0 flex justify-center pt-3 pb-1">
-            <button
-              type="button"
-              onClick={handleClearChat}
-              className="flex items-center gap-1.5 text-text-muted hover:text-[#c4389a] text-xs font-medium px-3 py-1.5 rounded-lg border border-border-strong hover:border-primary hover:bg-primary/10 transition-colors cursor-pointer"
-              title="New Chat"
-            >
-              <SquarePen size={13} />
-              New Chat
-            </button>
+          {/* Header bar */}
+          <div className="shrink-0 pt-2.5 pb-1 px-4 sm:px-6">
+            <div className="max-w-3xl mx-auto flex items-center justify-between gap-2">
+              <button
+                type="button"
+                onClick={handleClearChat}
+                className="flex items-center gap-1.5 text-text-muted hover:text-[#c4389a] text-xs font-medium px-3 py-1.5 rounded-md border border-border-strong hover:border-primary hover:bg-primary/10 transition-colors cursor-pointer"
+              >
+                <SquarePen size={12} />
+                New Session
+              </button>
+
+              {isSessionActive && (
+                <button
+                  type="button"
+                  onClick={() => setTopUpOpen(true)}
+                  className="flex items-center gap-2 text-xs px-3 py-1.5 rounded-md border border-border-strong hover:border-primary hover:bg-primary/10 transition-colors cursor-pointer group"
+                >
+                  <div className="flex items-center gap-1.5">
+                    <div className={`size-1.5 rounded-full ${sessionStt > 0 ? 'bg-success' : 'bg-danger'}`} />
+                    <span className="font-medium text-text tabular-nums">{sessionStt} STT</span>
+                  </div>
+                  <div className="w-px h-3 bg-border-strong" />
+                  <div className="flex items-center gap-1">
+                    <span className="text-text-faint">Gas</span>
+                    <span className="font-medium text-text tabular-nums">{sessionGas}</span>
+                  </div>
+                  <div className="w-px h-3 bg-border-strong" />
+                  <span className="text-text-muted group-hover:text-[#c4389a] transition-colors flex items-center gap-1">
+                    <Coins size={11} />
+                    Top Up
+                  </span>
+                </button>
+              )}
+            </div>
           </div>
+          <TopUpModal open={topUpOpen} onClose={() => setTopUpOpen(false)} />
 
           {/* Messages */}
           <div className="flex-1 overflow-y-auto scrollbar-custom">

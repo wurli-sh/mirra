@@ -3,6 +3,7 @@ import { type UIMessage } from 'ai'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { ActionCard, type ActionType } from './ActionCard'
+import { ExecutedCard } from './ExecutedCard'
 import { DataCard, isDataTool } from './DataCard'
 import { OniAvatar } from '@/components/ui/OniAvatar'
 
@@ -34,9 +35,9 @@ function getToolName(part: { type: string; toolName?: string }): string {
   return ''
 }
 
-/** Strip hallucinated XML/HTML tags (e.g. <ActionCard .../>) from LLM text */
+/** Strip hallucinated XML/HTML tags from LLM text (both PascalCase and lowercase) */
 function sanitizeText(text: string): string {
-  return text.replace(/<\/?[A-Z][A-Za-z]*[^>]*\/?>/g, '').trim()
+  return text.replace(/<\/?[A-Za-z][A-Za-z0-9]*[^>]*\/?>/g, '').trim()
 }
 
 export function ChatMessage({ message, onQuickAction }: Props) {
@@ -93,18 +94,37 @@ export function ChatMessage({ message, onQuickAction }: Props) {
                 if (part.type === 'tool-invocation' || (part.type as string).startsWith('tool-')) {
                   const toolName = getToolName(part as { type: string; toolName?: string })
 
-                  // Action tools render as ActionCards
+                  // Action tools render as ExecutedCards (autonomous) or ActionCards (manual)
                   if (ACTION_TYPES.has(toolName)) {
                     const output = 'result' in part ? part.result : 'output' in part ? (part as { output: unknown }).output : null
-                    if (output && typeof output === 'object' && 'type' in (output as Record<string, unknown>)) {
-                      cardRendered = true
-                      return (
-                        <ActionCard
-                          key={`action-${i}`}
-                          data={output as { type: ActionType } & Record<string, unknown>}
-                          onQuickAction={onQuickAction}
-                        />
-                      )
+                    if (output && typeof output === 'object') {
+                      const result = output as Record<string, unknown>
+
+                      // Autonomous mode: server already executed the tx
+                      if (result.executed === true && typeof result.txHash === 'string') {
+                        cardRendered = true
+                        return (
+                          <ExecutedCard
+                            key={`exec-${i}`}
+                            data={result as { executed: true; txHash: string; type: string }}
+                            onQuickAction={onQuickAction}
+                          />
+                        )
+                      }
+
+                      // Manual mode: render ActionCard for user confirmation
+                      if ('type' in result) {
+                        cardRendered = true
+                        return (
+                          <ActionCard
+                            key={`action-${i}`}
+                            data={result as { type: ActionType } & Record<string, unknown>}
+                            onQuickAction={onQuickAction}
+                          />
+                        )
+                      }
+
+                      // Error from executable tool — don't suppress text, let LLM explain
                     }
                     return null
                   }

@@ -26,6 +26,7 @@ export interface ReactiveEvent {
 const MAX_EVENTS = 50
 const eventBuffer: ReactiveEvent[] = []
 export const eventEmitter = new EventEmitter()
+eventEmitter.setMaxListeners(100)
 
 export function getRecentEvents(limit = 20): ReactiveEvent[] {
   return eventBuffer.slice(0, limit)
@@ -148,4 +149,12 @@ export async function initReactiveSubscription() {
     console.error('[reactive] WebSocket init failed:', err)
     console.warn('[reactive] Server continues without live events — LLM tools still work via RPC')
   }
+}
+
+/** Start WebSocket subscription with automatic reconnect on failure */
+export function startWithReconnect(delay = 5000) {
+  initReactiveSubscription().catch((err) => {
+    console.error('[reactive] Init failed, retrying in', delay / 1000, 's:', err instanceof Error ? err.message : err)
+    setTimeout(() => startWithReconnect(Math.min(delay * 2, 60_000)), delay)
+  })
 }

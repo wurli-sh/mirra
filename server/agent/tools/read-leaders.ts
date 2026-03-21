@@ -1,7 +1,7 @@
 // @ts-nocheck — server-only, runs via tsx without type checking
 import { tool } from 'ai'
 import { z } from 'zod'
-import { formatEther, type Address } from 'viem'
+import { formatEther, isAddress, type Address } from 'viem'
 import { publicClient, contracts } from '../../lib/viem-client'
 import { getLastTradeTimestamp } from '../../lib/reactive-stream'
 import { LeaderRegistryAbi } from '../../../src/config/abi/LeaderRegistry'
@@ -29,16 +29,16 @@ export const get_leaders = tool({
     const leaderCount = Number(count)
     if (leaderCount === 0) return { leaders: [], count: 0 }
 
-    const addresses: Address[] = []
-    for (let i = 0; i < leaderCount; i++) {
-      const addr = await publicClient.readContract({
-        address: contracts.leaderRegistry,
-        abi: LeaderRegistryAbi,
-        functionName: 'getLeaderAt',
-        args: [BigInt(i)],
-      })
-      addresses.push(addr)
-    }
+    const addresses = await Promise.all(
+      Array.from({ length: leaderCount }, (_, i) =>
+        publicClient.readContract({
+          address: contracts.leaderRegistry,
+          abi: LeaderRegistryAbi,
+          functionName: 'getLeaderAt',
+          args: [BigInt(i)],
+        })
+      )
+    )
 
     const leaders = await Promise.all(
       addresses.map(async (addr) => {
@@ -107,21 +107,24 @@ export const get_leader_stats = tool({
         abi: LeaderRegistryAbi,
         functionName: 'getLeaderCount',
       })
-      for (let i = 0; i < Number(count); i++) {
-        const candidate = await publicClient.readContract({
-          address: contracts.leaderRegistry,
-          abi: LeaderRegistryAbi,
-          functionName: 'getLeaderAt',
-          args: [BigInt(i)],
-        })
-        if (candidate.toLowerCase().startsWith(prefix) && candidate.toLowerCase().endsWith(suffix)) {
-          addr = candidate
-          break
-        }
-      }
-      if (addr === address as Address) {
+      const candidates = await Promise.all(
+        Array.from({ length: Number(count) }, (_, i) =>
+          publicClient.readContract({
+            address: contracts.leaderRegistry,
+            abi: LeaderRegistryAbi,
+            functionName: 'getLeaderAt',
+            args: [BigInt(i)],
+          })
+        )
+      )
+      const matches = candidates.filter(c => c.toLowerCase().startsWith(prefix) && c.toLowerCase().endsWith(suffix))
+      if (matches.length === 0) {
         return { error: `Could not find a registered leader matching "${address}". Use get_leaders to see all leaders.` }
       }
+      if (matches.length > 1) {
+        return { error: `Multiple leaders match "${address}": ${matches.map(m => `${m.slice(0,6)}...${m.slice(-4)}`).join(', ')}. Please provide the full address.` }
+      }
+      addr = matches[0]
     }
     const [rawStats, score, followerCount] = await Promise.all([
       publicClient.readContract({
@@ -168,6 +171,9 @@ export const is_leader = tool({
     address: z.string().describe('Wallet address to check'),
   }),
   execute: async ({ address }: { address: string }) => {
+    if (!isAddress(address)) {
+      return { error: `"${address}" is not a valid Ethereum address. Provide a full 0x... address.` }
+    }
     const result = await publicClient.readContract({
       address: contracts.leaderRegistry,
       abi: LeaderRegistryAbi,

@@ -63,7 +63,7 @@ export function HeroSection() {
             </motion.button>
           </Link>
           <motion.a
-            href="https://github.com/prabinKsh);/mirra"
+            href="https://github.com/wurli-sh/mirra"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex h-12 items-center gap-2 rounded-lg border border-border bg-bg px-6 text-base font-medium text-secondary cursor-pointer hover:bg-surface transition-colors"

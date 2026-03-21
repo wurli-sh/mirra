@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { useWriteContract, useWaitForTransactionReceipt, useReadContract, useAccount } from 'wagmi'
 import { maxUint256 } from 'viem'
 import { ERC20Abi } from '@/config/abi/ERC20'
@@ -15,6 +16,11 @@ export function useApproveToken(tokenAddress: `0x${string}` | undefined, spender
 
   const { writeContract, data: hash, isPending } = useWriteContract()
   const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({ hash })
+
+  // Refetch allowance after successful approval
+  useEffect(() => {
+    if (isSuccess) refetchAllowance()
+  }, [isSuccess, refetchAllowance])
 
   const approve = () => {
     if (!tokenAddress || !spender) return

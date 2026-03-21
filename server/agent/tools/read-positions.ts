@@ -24,16 +24,16 @@ export function makeGetUserPositions(userAddress?: string) {
       const leaderCount = Number(count)
       if (leaderCount === 0) return { positions: [] }
 
-      const leaderAddresses: Address[] = []
-      for (let i = 0; i < leaderCount; i++) {
-        const a = await publicClient.readContract({
-          address: contracts.leaderRegistry,
-          abi: LeaderRegistryAbi,
-          functionName: 'getLeaderAt',
-          args: [BigInt(i)],
-        })
-        leaderAddresses.push(a)
-      }
+      const leaderAddresses = await Promise.all(
+        Array.from({ length: leaderCount }, (_, i) =>
+          publicClient.readContract({
+            address: contracts.leaderRegistry,
+            abi: LeaderRegistryAbi,
+            functionName: 'getLeaderAt',
+            args: [BigInt(i)],
+          })
+        )
+      )
 
       const positions = await Promise.all(
         leaderAddresses.map(async (leader) => {

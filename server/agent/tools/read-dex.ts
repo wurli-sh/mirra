@@ -41,6 +41,10 @@ export const get_amount_out = tool({
       if (!tIn || !tOut) return { error: `Unknown token "${!tIn ? tokenIn : tokenOut}". Available: STT, USDC, WETH` }
       if (!isPairValid(tIn.symbol, tOut.symbol)) return { error: `No liquidity pool for ${tIn.symbol}↔${tOut.symbol}. Valid pairs: STT↔USDC, STT↔WETH. Swap through STT first.` }
 
+      const parsedAmt = Number(amountIn)
+      if (!isFinite(parsedAmt) || parsedAmt <= 0) {
+        return { error: 'amountIn must be a positive number string, e.g. "10"' }
+      }
       console.log(`[tool] get_amount_out: ${amountIn} ${tIn.symbol} → ${tOut.symbol}`)
       const result = await publicClient.readContract({
         address: contracts.simpleDex,
@@ -74,16 +78,20 @@ export const get_reserves = tool({
     const tB = resolveToken(tokenB)
     if (!tA || !tB) return { error: 'Unknown token. Available: STT, USDC, WETH' }
 
-    const result = await publicClient.readContract({
-      address: contracts.simpleDex,
-      abi: SimpleDEXAbi,
-      functionName: 'getReserves',
-      args: [tA.address, tB.address],
-    })
+    try {
+      const result = await publicClient.readContract({
+        address: contracts.simpleDex,
+        abi: SimpleDEXAbi,
+        functionName: 'getReserves',
+        args: [tA.address, tB.address],
+      })
 
-    return {
-      [tA.symbol]: formatEther(result[0]),
-      [tB.symbol]: formatEther(result[1]),
+      return {
+        [tA.symbol]: formatEther(result[0]),
+        [tB.symbol]: formatEther(result[1]),
+      }
+    } catch (err) {
+      return { error: `Could not get reserves for ${tA.symbol}/${tB.symbol}: ${err instanceof Error ? err.message.slice(0, 200) : 'pool may not exist'}` }
     }
   },
 })

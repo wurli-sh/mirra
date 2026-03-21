@@ -27,15 +27,17 @@ export function PositionCard({ position }: PositionCardProps) {
   const leaderAddr = position.fullLeaderAddress
 
   const handleDeposit = () => {
-    if (!inputAmount) return
-    deposit(leaderAddr, inputAmount)
+    const val = parseFloat(inputAmount)
+    if (!isFinite(val) || val <= 0) return
+    deposit(leaderAddr, val.toString())
     setInputAmount('')
     setShowDeposit(false)
   }
 
   const handleWithdraw = () => {
-    if (!inputAmount) return
-    withdraw(leaderAddr, inputAmount)
+    const val = parseFloat(inputAmount)
+    if (!isFinite(val) || val <= 0) return
+    withdraw(leaderAddr, val.toString())
     setInputAmount('')
     setShowWithdraw(false)
   }
@@ -74,8 +76,8 @@ export function PositionCard({ position }: PositionCardProps) {
             )}
           >
             {positive
-              ? `+$${Math.abs(position.pnl).toFixed(2)}`
-              : `-$${Math.abs(position.pnl).toFixed(2)}`}
+              ? `+${Math.abs(position.pnl).toFixed(2)} STT`
+              : `-${Math.abs(position.pnl).toFixed(2)} STT`}
           </span>
           {danger ? (
             <span className="text-xs text-danger font-medium">
@@ -178,7 +180,9 @@ export function PositionCard({ position }: PositionCardProps) {
             transition={{ duration: 0.2, ease: 'easeOut' }}
           >
             <input
-              type="text"
+              type="number"
+              min="0"
+              step="any"
               value={inputAmount}
               onChange={(e) => setInputAmount(e.target.value)}
               placeholder={`Amount (${position.token})`}

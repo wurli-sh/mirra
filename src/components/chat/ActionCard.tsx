@@ -138,7 +138,7 @@ export function ActionCard({ data, onQuickAction }: Props) {
         id: `tx-${data.type}`,
         action: {
           label: 'Explorer',
-          onClick: () => window.open(`https://explorer.somnia.network/tx/${hash}`, '_blank'),
+          onClick: () => window.open(`https://shannon-explorer.somnia.network/tx/${hash}`, '_blank'),
         },
       })
     }
@@ -168,10 +168,27 @@ export function ActionCard({ data, onQuickAction }: Props) {
       return
     }
 
+    // Validate that any contract/spender addresses in the action data match known contracts
+    const knownAddresses = new Set(Object.values(contracts).map(a => a?.toLowerCase()).filter(Boolean))
+    for (const key of ['contractAddress', 'spenderAddress', 'tokenInAddress', 'tokenOutAddress', 'tokenAddress'] as const) {
+      const addr = data[key] as string | undefined
+      if (addr && !knownAddresses.has(addr.toLowerCase())) {
+        setErrorMsg(`Unrecognized contract address in action data.`)
+        setStatus('error')
+        return
+      }
+    }
+
     setStatus('confirming')
 
+    try {
     switch (data.type) {
-      case 'swap':
+      case 'swap': {
+        const amtIn = parseFloat(data.amountIn)
+        const estOut = parseFloat(data.estimatedOut)
+        if (!isFinite(amtIn) || amtIn <= 0 || !isFinite(estOut) || estOut <= 0) {
+          setErrorMsg('Invalid swap amounts.'); setStatus('error'); return
+        }
         writeContract({
           address: contracts.simpleDex,
           abi: SimpleDEXAbi,
@@ -179,26 +196,34 @@ export function ActionCard({ data, onQuickAction }: Props) {
           args: [
             data.tokenInAddress as Address,
             data.tokenOutAddress as Address,
-            parseEther(data.amountIn),
-            parseEther(String(Number(data.estimatedOut) * 0.95)), // 5% slippage
+            parseEther(amtIn.toString()),
+            parseEther((estOut * 0.95).toString()), // 5% slippage
           ],
         })
         break
+      }
 
-      case 'follow':
+      case 'follow': {
+        const amt = parseFloat(data.amount)
+        const maxPT = parseFloat(data.maxPerTrade)
+        const sl = parseFloat(data.stopLoss)
+        if (!isFinite(amt) || amt <= 0 || !isFinite(maxPT) || maxPT <= 0 || !isFinite(sl) || sl <= 0) {
+          setErrorMsg('Invalid follow parameters.'); setStatus('error'); return
+        }
         writeContract({
           address: contracts.followerVault,
           abi: FollowerVaultAbi,
           functionName: 'follow',
           args: [
             data.leader as Address,
-            parseEther(data.amount),
-            parseEther(data.maxPerTrade),
+            parseEther(amt.toString()),
+            parseEther(maxPT.toString()),
             data.slippageBps,
-            parseEther(data.stopLoss),
+            parseEther(sl.toString()),
           ],
         })
         break
+      }
 
       case 'unfollow':
         writeContract({
@@ -210,31 +235,33 @@ export function ActionCard({ data, onQuickAction }: Props) {
         break
 
       case 'deposit':
+      case 'withdraw': {
+        const dAmt = parseFloat(data.amount)
+        if (!isFinite(dAmt) || dAmt <= 0) {
+          setErrorMsg('Invalid amount.'); setStatus('error'); return
+        }
         writeContract({
           address: contracts.followerVault,
           abi: FollowerVaultAbi,
-          functionName: 'deposit',
-          args: [data.leader as Address, parseEther(data.amount)],
+          functionName: data.type === 'deposit' ? 'deposit' : 'withdraw',
+          args: [data.leader as Address, parseEther(dAmt.toString())],
         })
         break
+      }
 
-      case 'withdraw':
-        writeContract({
-          address: contracts.followerVault,
-          abi: FollowerVaultAbi,
-          functionName: 'withdraw',
-          args: [data.leader as Address, parseEther(data.amount)],
-        })
-        break
-
-      case 'register':
+      case 'register': {
+        const stake = parseFloat(data.stakeAmount)
+        if (!isFinite(stake) || stake <= 0) {
+          setErrorMsg('Invalid stake amount.'); setStatus('error'); return
+        }
         writeContract({
           address: contracts.leaderRegistry,
           abi: LeaderRegistryAbi,
           functionName: 'registerLeader',
-          value: parseEther(data.stakeAmount),
+          value: parseEther(stake.toString()),
         })
         break
+      }
 
       case 'deregister':
         writeContract({
@@ -260,6 +287,10 @@ export function ActionCard({ data, onQuickAction }: Props) {
           args: [data.spenderAddress as Address, maxUint256],
         })
         break
+    }
+    } catch (err) {
+      setErrorMsg(err instanceof Error ? err.message.slice(0, 120) : 'Failed to build transaction.')
+      setStatus('error')
     }
   }, [data, isConnected, writeContract])
 
@@ -432,7 +463,7 @@ export function ActionCard({ data, onQuickAction }: Props) {
                 <span className="text-xs font-medium text-success">Confirmed</span>
               </div>
               <a
-                href={`https://explorer.somnia.network/tx/${txHash}`}
+                href={`https://shannon-explorer.somnia.network/tx/${txHash}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-1 text-xs text-text-muted hover:text-text transition-colors"

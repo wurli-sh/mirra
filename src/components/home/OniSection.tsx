@@ -7,8 +7,8 @@ import { OniAvatar } from '@/components/ui/OniAvatar'
 const FEATURES = [
   {
     icon: MessageCircle,
-    title: 'Chat to Trade',
-    desc: 'Tell Oni what you want — swap tokens, follow leaders, check positions. No forms, just conversation.',
+    title: 'Talk to Trade',
+    desc: 'Tell Oni what you want — swap tokens, follow leaders, check positions. No forms, just your AI agent.',
   },
   {
     icon: Zap,
@@ -39,7 +39,7 @@ export function OniSection() {
             Meet Oni
           </h2>
           <p className="text-lg text-text-muted mt-3 max-w-lg">
-            Your AI trading piggi. Chat with Oni to swap, follow leaders, and manage your portfolio — all through natural conversation.
+            Your on-chain AI agent. Oni swaps, follows leaders, and manages your portfolio — all through natural conversation.
           </p>
         </motion.div>
 
@@ -64,15 +64,15 @@ export function OniSection() {
           <div className="shrink-0 text-center md:text-left">
             <h3 className="text-2xl font-bold text-white mb-2">Try Oni now</h3>
             <p className="text-sm text-white/50 mb-5 max-w-[200px]">
-              No complicated UIs. Just tell Oni what you need.
+              No complicated UIs. Your AI agent handles it.
             </p>
-            <Link to="/chat/piggi">
+            <Link to="/oni">
               <motion.button
                 className="inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 text-sm font-medium text-secondary cursor-pointer"
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
               >
-                Chat with Oni
+                Try Oni Agent
                 <ArrowRight size={14} />
               </motion.button>
             </Link>
