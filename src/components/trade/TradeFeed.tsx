@@ -11,11 +11,11 @@ export function TradeFeed() {
   const { items, loaded, isReactive } = useLiveTradeFeed()
 
   return (
-    <div className="border border-border rounded-xl overflow-hidden">
+    <div className="border border-border rounded-xl overflow-hidden max-h-[460px] flex flex-col">
       {/* Header */}
       <div className="flex items-center px-5 py-3.5 bg-surface-alt/60 gap-2">
         <Activity size={14} className="text-secondary" />
-        <span className="font-bold text-sm text-secondary">Recent Activity</span>
+        <span className="font-semibold text-sm text-secondary">Recent Activity</span>
         <div className="flex-1" />
         {isReactive && (
           <span className="text-[9px] font-semibold uppercase tracking-wider text-amber-600 bg-amber-100 px-1.5 py-0.5 rounded">
@@ -45,7 +45,7 @@ export function TradeFeed() {
           <p className="text-xs text-text-muted">No trades yet. Swap events will appear here in real time.</p>
         </div>
       ) : (
-        <div className="divide-y divide-border/40">
+        <div className="divide-y divide-border/40 overflow-y-auto flex-1">
           {items.map((item, i) => (
             <motion.a
               key={`${item.time}-${item.leader}-${i}`}

@@ -52,7 +52,6 @@ export function App() {
             <Route element={<MainLayout />}>
               <Route path="/" element={<HomePage />} />
               <Route path="/trade" element={<TradePage />} />
-              <Route path="/leaderboard" element={<TradePage />} />
               <Route path="/oni" element={<ChatPage />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Route>
