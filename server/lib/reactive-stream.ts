@@ -56,6 +56,7 @@ function pushEvent(event: ReactiveEvent) {
 const SWAP_SIG = keccak256(toBytes('Swap(address,address,address,uint256,uint256)'))
 const MIRROR_SIG = keccak256(toBytes('MirrorExecuted(address,address,address,address,uint256,uint256)'))
 
+
 // MirrorExecuted ABI fragment
 const MirrorExecutedAbi = [
   {
@@ -239,12 +240,17 @@ export async function initReactiveSubscription() {
     transport: webSocket(wsUrl),
   })
 
-  try {
-    // Try Somnia Reactivity SDK first (native somnia_watch)
-    await initWithSDK(wsClient)
-  } catch (err) {
-    console.warn('[reactive] SDK init failed:', err instanceof Error ? err.message.slice(0, 200) : err)
-    // Fallback to standard viem (eth_subscribe)
+  // Use viem watchContractEvent (eth_subscribe) — reliable and proven.
+  // Somnia Reactivity SDK (somnia_watch) can be enabled via REACTIVE_USE_SDK=true
+  // but currently silently succeeds without delivering events.
+  if (process.env.REACTIVE_USE_SDK === 'true') {
+    try {
+      await initWithSDK(wsClient)
+    } catch (err) {
+      console.warn('[reactive] SDK init failed:', err instanceof Error ? err.message.slice(0, 200) : err)
+      await initWithViem(wsClient)
+    }
+  } else {
     await initWithViem(wsClient)
   }
 }

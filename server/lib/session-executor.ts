@@ -305,10 +305,13 @@ export async function executeAction(
       }
 
       case 'claimFees': {
+        const token = resolveToken(params.token as string || 'STT')
+        if (!token) return { error: 'Unknown token' }
         const hash = await wallet.writeContract({
           address: contracts.followerVault,
           abi: FollowerVaultAbi,
           functionName: 'claimFees',
+          args: [token],
         })
         await waitForTx(hash)
         commitOperation(session.ownerAddress)

@@ -77,7 +77,7 @@ async function main() {
   console.log("Access controls set");
 
   console.log("\n--- Adding Liquidity ---");
-  const LIQUIDITY = ethers.parseEther("10000");
+  const LIQUIDITY = ethers.parseEther("1000");  // 1000 per side — demo pool
   await stt.mint(deployer.address, LIQUIDITY * 3n);
   await usdc.mint(deployer.address, LIQUIDITY * 2n);
   await weth.mint(deployer.address, LIQUIDITY);
@@ -86,7 +86,7 @@ async function main() {
   await weth.approve(await dex.getAddress(), ethers.MaxUint256);
   await dex.addLiquidity(await stt.getAddress(), await usdc.getAddress(), LIQUIDITY, LIQUIDITY);
   await dex.addLiquidity(await stt.getAddress(), await weth.getAddress(), LIQUIDITY, LIQUIDITY);
-  console.log("Liquidity added");
+  console.log("Liquidity added: 1000 STT / 1000 USDC, 1000 STT / 1000 WETH");
 
   console.log("\n========================================");
   console.log("       MirrorX Deployment Summary");

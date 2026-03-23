@@ -145,9 +145,11 @@ export function buildExecutableWriteTools(session: SessionData) {
   })
 
   const exec_claimFees = tool({
-    description: 'Claim leader fees immediately.',
-    parameters: z.object({}),
-    execute: async () => executeAction(session, 'claimFees', {}),
+    description: 'Claim leader fees immediately. Specify which token to claim (STT, USDC, WETH).',
+    parameters: z.object({
+      token: z.string().optional().describe('Token to claim fees in (STT, USDC, WETH). Defaults to STT.'),
+    }),
+    execute: async ({ token }) => executeAction(session, 'claimFees', { token: token || 'STT' }),
   })
 
   const exec_approve = tool({

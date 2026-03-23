@@ -17,7 +17,12 @@ contract FollowerVault is IFollowerVault, Ownable, ReentrancyGuard {
     mapping(address => mapping(address => FollowPosition)) public positions;
     mapping(address => address[]) public leaderFollowers;
     mapping(address => uint256) public totalFollowingSTT;
-    mapping(address => uint256) public pendingFees;
+
+    // Multi-token balances: follower → leader → token → balance
+    mapping(address => mapping(address => mapping(address => uint256))) public tokenBalances;
+
+    // Leader fees per token: leader → token → amount
+    mapping(address => mapping(address => uint256)) public pendingFees;
 
     address public mirrorExecutor;
     address public riskGuardian;
@@ -42,6 +47,7 @@ contract FollowerVault is IFollowerVault, Ownable, ReentrancyGuard {
         require(stopLossSTT > 0, "Invalid stopLoss");
         baseToken.safeTransferFrom(msg.sender, address(this), amount);
         positions[msg.sender][leader] = FollowPosition({ follower: msg.sender, leader: leader, depositedSTT: amount, maxPerTrade: maxPerTrade, maxSlippageBps: maxSlippageBps, stopLossSTT: stopLossSTT, active: true });
+        tokenBalances[msg.sender][leader][address(baseToken)] = amount;
         leaderFollowers[leader].push(msg.sender);
         totalFollowingSTT[leader] += amount;
         emit Followed(msg.sender, leader, amount, maxPerTrade);
@@ -53,6 +59,7 @@ contract FollowerVault is IFollowerVault, Ownable, ReentrancyGuard {
         uint256 returnAmount = pos.depositedSTT;
         totalFollowingSTT[leader] -= returnAmount;
         pos.active = false; pos.depositedSTT = 0;
+        tokenBalances[msg.sender][leader][address(baseToken)] = 0;
         address[] storage followers = leaderFollowers[leader];
         for (uint256 i = 0; i < followers.length; i++) { if (followers[i] == msg.sender) { followers[i] = followers[followers.length - 1]; followers.pop(); break; } }
         if (returnAmount > 0) { baseToken.safeTransfer(msg.sender, returnAmount); }
@@ -65,6 +72,7 @@ contract FollowerVault is IFollowerVault, Ownable, ReentrancyGuard {
         require(pos.active, "Not following");
         baseToken.safeTransferFrom(msg.sender, address(this), amount);
         pos.depositedSTT += amount;
+        tokenBalances[msg.sender][leader][address(baseToken)] += amount;
         totalFollowingSTT[leader] += amount;
         emit Deposited(msg.sender, leader, amount);
     }
@@ -72,8 +80,9 @@ contract FollowerVault is IFollowerVault, Ownable, ReentrancyGuard {
     function withdraw(address leader, uint256 amount) external nonReentrant {
         FollowPosition storage pos = positions[msg.sender][leader];
         require(pos.active, "Not following");
-        require(pos.depositedSTT >= amount, "Insufficient balance");
+        require(tokenBalances[msg.sender][leader][address(baseToken)] >= amount, "Insufficient balance");
         pos.depositedSTT -= amount;
+        tokenBalances[msg.sender][leader][address(baseToken)] -= amount;
         totalFollowingSTT[leader] -= amount;
         baseToken.safeTransfer(msg.sender, amount);
         emit Withdrawn(msg.sender, leader, amount);
@@ -91,17 +100,37 @@ contract FollowerVault is IFollowerVault, Ownable, ReentrancyGuard {
 
     function getFollowerCount(address leader) external view returns (uint256) { return leaderFollowers[leader].length; }
     function getPosition(address follower, address leader) external view returns (FollowPosition memory) { return positions[follower][leader]; }
+    function getTokenBalance(address follower, address leader, address token) external view returns (uint256) { return tokenBalances[follower][leader][token]; }
 
     function pullTokens(address follower, address leader, address token, uint256 amount) external onlyMirrorExecutor {
         FollowPosition storage pos = positions[follower][leader];
         require(pos.active, "Not following");
-        require(pos.depositedSTT >= amount, "Insufficient balance");
-        pos.depositedSTT -= amount;
-        totalFollowingSTT[leader] -= amount;
+        require(tokenBalances[follower][leader][token] >= amount, "Insufficient balance");
+        tokenBalances[follower][leader][token] -= amount;
+        if (token == address(baseToken)) {
+            pos.depositedSTT -= amount;
+            totalFollowingSTT[leader] -= amount;
+        }
         IERC20(token).safeTransfer(msg.sender, amount);
     }
 
-    function accrueFee(address leader, uint256 amount) external onlyMirrorExecutor { pendingFees[leader] += amount; }
+    function creditTokens(address follower, address leader, address token, uint256 amount) external onlyMirrorExecutor {
+        tokenBalances[follower][leader][token] += amount;
+        if (token == address(baseToken)) {
+            positions[follower][leader].depositedSTT += amount;
+            totalFollowingSTT[leader] += amount;
+        }
+    }
+
+    function accrueFee(address follower, address leader, address token, uint256 amount) external onlyMirrorExecutor {
+        require(tokenBalances[follower][leader][token] >= amount, "Insufficient for fee");
+        tokenBalances[follower][leader][token] -= amount;
+        if (token == address(baseToken)) {
+            positions[follower][leader].depositedSTT -= amount;
+            totalFollowingSTT[leader] -= amount;
+        }
+        pendingFees[leader][token] += amount;
+    }
 
     function emergencyClose(address follower, address leader) external onlyRiskGuardian nonReentrant {
         FollowPosition storage pos = positions[follower][leader];
@@ -109,18 +138,19 @@ contract FollowerVault is IFollowerVault, Ownable, ReentrancyGuard {
         uint256 returnAmount = pos.depositedSTT;
         totalFollowingSTT[leader] -= returnAmount;
         pos.active = false; pos.depositedSTT = 0;
+        tokenBalances[follower][leader][address(baseToken)] = 0;
         address[] storage followers = leaderFollowers[leader];
         for (uint256 i = 0; i < followers.length; i++) { if (followers[i] == follower) { followers[i] = followers[followers.length - 1]; followers.pop(); break; } }
         if (returnAmount > 0) { baseToken.safeTransfer(follower, returnAmount); }
         emit EmergencyClosed(follower, leader, returnAmount, "stop-loss");
     }
 
-    function claimFees() external nonReentrant {
+    function claimFees(address token) external nonReentrant {
         require(leaderRegistry.isLeader(msg.sender), "Not a leader");
-        uint256 amount = pendingFees[msg.sender];
+        uint256 amount = pendingFees[msg.sender][token];
         require(amount > 0, "No fees to claim");
-        pendingFees[msg.sender] = 0;
-        baseToken.safeTransfer(msg.sender, amount);
-        emit FeesClaimed(msg.sender, amount);
+        pendingFees[msg.sender][token] = 0;
+        IERC20(token).safeTransfer(msg.sender, amount);
+        emit FeesClaimed(msg.sender, token, amount);
     }
 }

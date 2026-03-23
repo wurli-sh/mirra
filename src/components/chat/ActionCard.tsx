@@ -271,13 +271,17 @@ export function ActionCard({ data, onQuickAction }: Props) {
         })
         break
 
-      case 'claimFees':
+      case 'claimFees': {
+        const tokenMap: Record<string, Address> = { STT: contracts.sttToken, USDC: contracts.usdcToken }
+        const feeToken = tokenMap[(data.token as string) || 'STT'] || contracts.sttToken
         writeContract({
           address: contracts.followerVault,
           abi: FollowerVaultAbi,
           functionName: 'claimFees',
+          args: [feeToken],
         })
         break
+      }
 
       case 'approve':
         writeContract({

@@ -1,69 +1,36 @@
 import { ethers } from "hardhat";
 import * as dotenv from "dotenv";
 import * as path from "path";
+dotenv.config({ path: path.resolve(__dirname, "../../.env") });
 
-// Load root .env for VITE_* contract addresses
-dotenv.config({ path: path.resolve(__dirname, "../../.env"), override: true });
+const LEADER = process.env.LEADER_ADDRESS ?? "0xFbc83d9aDA8F06242a528b62A63728e1EF7DE066";
+const FOLLOWER = process.env.FOLLOWER_ADDRESS ?? "0x46fD7D09cE6693669C83d41C7212DB1189511e97";
 
 async function main() {
-  const [deployer, leader1, leader2, follower1, follower2, follower3, follower4] = await ethers.getSigners();
+  const stt = await ethers.getContractAt("MockERC20", process.env.VITE_STT_TOKEN!);
+  const usdc = await ethers.getContractAt("MockERC20", process.env.VITE_USDC_TOKEN!);
+  const weth = await ethers.getContractAt("MockERC20", process.env.VITE_WETH_TOKEN!);
 
-  const ADDRESSES = {
-    stt: process.env.VITE_STT_TOKEN ?? "",
-    usdc: process.env.VITE_USDC_TOKEN ?? "",
-    dex: process.env.VITE_SIMPLE_DEX ?? "",
-    registry: process.env.VITE_LEADER_REGISTRY ?? "",
-    vault: process.env.VITE_FOLLOWER_VAULT ?? "",
-  };
+  console.log("--- Minting tokens to Leader ---");
+  // Leader already has 1000 STT + 1000 USDC from deploy, mint extra WETH
+  await stt.mint(LEADER, ethers.parseEther("500"));
+  await usdc.mint(LEADER, ethers.parseEther("500"));
+  await weth.mint(LEADER, ethers.parseEther("500"));
+  console.log(`Leader (${LEADER}): +500 STT, +500 USDC, +500 WETH`);
 
-  // Validate all addresses are set
-  for (const [name, addr] of Object.entries(ADDRESSES)) {
-    if (!addr || addr === "0x...") throw new Error(`Missing address for ${name} — set VITE_* env vars`);
-  }
+  console.log("\n--- Minting tokens to Follower ---");
+  await stt.mint(FOLLOWER, ethers.parseEther("200"));
+  await usdc.mint(FOLLOWER, ethers.parseEther("100"));
+  await weth.mint(FOLLOWER, ethers.parseEther("100"));
+  console.log(`Follower (${FOLLOWER}): +200 STT, +100 USDC, +100 WETH`);
 
-  console.log("Seeding data with deployer:", deployer.address);
-
-  const registry = await ethers.getContractAt("LeaderRegistry", ADDRESSES.registry);
-  const vault = await ethers.getContractAt("FollowerVault", ADDRESSES.vault);
-  const dex = await ethers.getContractAt("SimpleDEX", ADDRESSES.dex);
-  const stt = await ethers.getContractAt("MockERC20", ADDRESSES.stt);
-
-  console.log("\n--- Registering Leaders ---");
-  const LEADER_STAKE = ethers.parseEther("10");
-  await registry.connect(leader1).registerLeader({ value: LEADER_STAKE });
-  console.log("Leader 1 registered:", leader1.address);
-  await registry.connect(leader2).registerLeader({ value: LEADER_STAKE });
-  console.log("Leader 2 registered:", leader2.address);
-
-  console.log("\n--- Creating Follower Positions ---");
-  const DEPOSIT = ethers.parseEther("50");
-  const MAX_PER_TRADE = ethers.parseEther("10");
-  const SLIPPAGE_BPS = 300;
-  const STOP_LOSS = ethers.parseEther("15");
-
-  // Mint and approve base tokens for followers
-  for (const f of [follower1, follower2, follower3, follower4]) {
-    await stt.mint(f.address, DEPOSIT);
-    await stt.connect(f).approve(ADDRESSES.vault, DEPOSIT);
-  }
-
-  await vault.connect(follower1).follow(leader1.address, DEPOSIT, MAX_PER_TRADE, SLIPPAGE_BPS, STOP_LOSS);
-  await vault.connect(follower2).follow(leader1.address, DEPOSIT, MAX_PER_TRADE, SLIPPAGE_BPS, STOP_LOSS);
-  await vault.connect(follower3).follow(leader2.address, DEPOSIT, MAX_PER_TRADE, SLIPPAGE_BPS, STOP_LOSS);
-  await vault.connect(follower4).follow(leader2.address, DEPOSIT, MAX_PER_TRADE, SLIPPAGE_BPS, STOP_LOSS);
-  console.log("4 followers created");
-
-  console.log("\n--- Executing Leader Swap ---");
-  const SWAP_AMOUNT = ethers.parseEther("100");
-  await stt.mint(leader1.address, SWAP_AMOUNT);
-  await stt.connect(leader1).approve(ADDRESSES.dex, SWAP_AMOUNT);
-  const tx = await dex.connect(leader1).swap(ADDRESSES.stt, ADDRESSES.usdc, SWAP_AMOUNT, 0);
-  const receipt = await tx.wait();
-  console.log("Leader 1 swapped 100 STT -> USDC, gas:", receipt?.gasUsed.toString());
-
-  console.log("\n========================================");
-  console.log("  Seed Data Complete!");
-  console.log("========================================");
+  console.log("\n--- Final Balances ---");
+  console.log(`Leader  STT: ${ethers.formatEther(await stt.balanceOf(LEADER))}`);
+  console.log(`Leader USDC: ${ethers.formatEther(await usdc.balanceOf(LEADER))}`);
+  console.log(`Leader WETH: ${ethers.formatEther(await weth.balanceOf(LEADER))}`);
+  console.log(`Follower  STT: ${ethers.formatEther(await stt.balanceOf(FOLLOWER))}`);
+  console.log(`Follower USDC: ${ethers.formatEther(await usdc.balanceOf(FOLLOWER))}`);
+  console.log(`Follower WETH: ${ethers.formatEther(await weth.balanceOf(FOLLOWER))}`);
 }
 
 main().catch((error) => { console.error(error); process.exitCode = 1; });

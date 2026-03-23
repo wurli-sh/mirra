@@ -2,7 +2,8 @@ import { createPublicClient, createWalletClient, http, defineChain, parseGwei, k
 import { privateKeyToAccount } from "viem/accounts";
 import { SDK } from "@somnia-chain/reactivity";
 import * as dotenv from "dotenv";
-dotenv.config();
+import * as path from "path";
+dotenv.config({ path: path.resolve(__dirname, "../../.env") });
 
 const somniaTestnet = defineChain({
   id: 50312,
@@ -13,9 +14,9 @@ const somniaTestnet = defineChain({
 });
 
 const ADDRESSES = {
-  simpleDEX: "0x25949a1AFe1bdDEA5822aa8371CdF8E256D498fb" as `0x${string}`,
-  mirrorExecutor: "0xaa8404e8Af97C178A9C2FBFce595e283D0C1a47c" as `0x${string}`,
-  riskGuardian: "0x5F918046FB4EeAF298631393e9B877dc5149F032" as `0x${string}`,
+  simpleDEX: process.env.VITE_SIMPLE_DEX! as `0x${string}`,
+  mirrorExecutor: process.env.VITE_MIRROR_EXECUTOR! as `0x${string}`,
+  riskGuardian: process.env.VITE_RISK_GUARDIAN! as `0x${string}`,
 };
 
 const SIGS = {
@@ -31,6 +32,8 @@ async function main() {
   const walletClient = createWalletClient({ account, chain: somniaTestnet, transport: http() });
   const sdk = new SDK({ public: publicClient, wallet: walletClient });
 
+  const wait = (ms: number) => new Promise(r => setTimeout(r, ms));
+
   console.log("Setting up reactive subscriptions...");
   console.log("Account:", account.address);
 
@@ -41,11 +44,12 @@ async function main() {
     eventTopics: [SIGS.swap],
     priorityFeePerGas: parseGwei("10"),
     maxFeePerGas: parseGwei("20"),
-    gasLimit: 10_000_000n,
+    gasLimit: 30_000_000n,
     isGuaranteed: true,
     isCoalesced: false,
   });
   console.log("Sub 1 created:", sub1);
+  await wait(3000);
 
   console.log("\n--- Sub 2: MirrorExecuted -> RiskGuardian ---");
   const sub2 = await sdk.createSoliditySubscription({
@@ -59,6 +63,7 @@ async function main() {
     isCoalesced: false,
   });
   console.log("Sub 2 created:", sub2);
+  await wait(3000);
 
   console.log("\n--- Sub 3: MirrorContinue -> MirrorExecutor ---");
   const sub3 = await sdk.createSoliditySubscription({
@@ -67,7 +72,7 @@ async function main() {
     eventTopics: [SIGS.mirrorContinue],
     priorityFeePerGas: parseGwei("10"),
     maxFeePerGas: parseGwei("20"),
-    gasLimit: 10_000_000n,
+    gasLimit: 30_000_000n,
     isGuaranteed: true,
     isCoalesced: false,
   });

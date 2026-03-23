@@ -204,12 +204,15 @@ export const request_deregister = tool({
 })
 
 export const request_claim_fees = tool({
-  description: 'Propose claiming accrued leader fees from the FollowerVault. Returns an ActionCard.',
-  parameters: z.object({}),
-  execute: async () => {
+  description: 'Propose claiming accrued leader fees from the FollowerVault. Specify which token to claim (STT, USDC, or WETH). Returns an ActionCard.',
+  parameters: z.object({
+    token: z.string().optional().describe('Token to claim fees in (STT, USDC, WETH). Defaults to STT.'),
+  }),
+  execute: async ({ token }) => {
     return {
       type: 'claimFees' as const,
       contractAddress: contracts.followerVault,
+      token: token || 'STT',
     }
   },
 })

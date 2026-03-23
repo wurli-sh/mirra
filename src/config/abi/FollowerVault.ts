@@ -1,720 +1,833 @@
 export const FollowerVaultAbi = [
   {
-    inputs: [
+    "inputs": [
       {
-        internalType: 'address',
-        name: '_leaderRegistry',
-        type: 'address',
+        "internalType": "address",
+        "name": "_leaderRegistry",
+        "type": "address"
       },
       {
-        internalType: 'address',
-        name: '_baseToken',
-        type: 'address',
-      },
+        "internalType": "address",
+        "name": "_baseToken",
+        "type": "address"
+      }
     ],
-    stateMutability: 'nonpayable',
-    type: 'constructor',
+    "stateMutability": "nonpayable",
+    "type": "constructor"
   },
   {
-    inputs: [
+    "inputs": [
       {
-        internalType: 'address',
-        name: 'owner',
-        type: 'address',
-      },
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      }
     ],
-    name: 'OwnableInvalidOwner',
-    type: 'error',
+    "name": "OwnableInvalidOwner",
+    "type": "error"
   },
   {
-    inputs: [
+    "inputs": [
       {
-        internalType: 'address',
-        name: 'account',
-        type: 'address',
-      },
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
     ],
-    name: 'OwnableUnauthorizedAccount',
-    type: 'error',
+    "name": "OwnableUnauthorizedAccount",
+    "type": "error"
   },
   {
-    inputs: [],
-    name: 'ReentrancyGuardReentrantCall',
-    type: 'error',
+    "inputs": [],
+    "name": "ReentrancyGuardReentrantCall",
+    "type": "error"
   },
   {
-    inputs: [
+    "inputs": [
       {
-        internalType: 'address',
-        name: 'token',
-        type: 'address',
-      },
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      }
     ],
-    name: 'SafeERC20FailedOperation',
-    type: 'error',
+    "name": "SafeERC20FailedOperation",
+    "type": "error"
   },
   {
-    anonymous: false,
-    inputs: [
+    "anonymous": false,
+    "inputs": [
       {
-        indexed: true,
-        internalType: 'address',
-        name: 'follower',
-        type: 'address',
+        "indexed": true,
+        "internalType": "address",
+        "name": "follower",
+        "type": "address"
       },
       {
-        indexed: true,
-        internalType: 'address',
-        name: 'leader',
-        type: 'address',
+        "indexed": true,
+        "internalType": "address",
+        "name": "leader",
+        "type": "address"
       },
       {
-        indexed: false,
-        internalType: 'uint256',
-        name: 'amount',
-        type: 'uint256',
-      },
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
     ],
-    name: 'Deposited',
-    type: 'event',
+    "name": "Deposited",
+    "type": "event"
   },
   {
-    anonymous: false,
-    inputs: [
+    "anonymous": false,
+    "inputs": [
       {
-        indexed: true,
-        internalType: 'address',
-        name: 'follower',
-        type: 'address',
+        "indexed": true,
+        "internalType": "address",
+        "name": "follower",
+        "type": "address"
       },
       {
-        indexed: true,
-        internalType: 'address',
-        name: 'leader',
-        type: 'address',
+        "indexed": true,
+        "internalType": "address",
+        "name": "leader",
+        "type": "address"
       },
       {
-        indexed: false,
-        internalType: 'uint256',
-        name: 'returnedSTT',
-        type: 'uint256',
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "returnedSTT",
+        "type": "uint256"
       },
       {
-        indexed: false,
-        internalType: 'string',
-        name: 'reason',
-        type: 'string',
-      },
+        "indexed": false,
+        "internalType": "string",
+        "name": "reason",
+        "type": "string"
+      }
     ],
-    name: 'EmergencyClosed',
-    type: 'event',
+    "name": "EmergencyClosed",
+    "type": "event"
   },
   {
-    anonymous: false,
-    inputs: [
+    "anonymous": false,
+    "inputs": [
       {
-        indexed: true,
-        internalType: 'address',
-        name: 'leader',
-        type: 'address',
+        "indexed": true,
+        "internalType": "address",
+        "name": "leader",
+        "type": "address"
       },
       {
-        indexed: false,
-        internalType: 'uint256',
-        name: 'amount',
-        type: 'uint256',
+        "indexed": true,
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
       },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
     ],
-    name: 'FeesClaimed',
-    type: 'event',
+    "name": "FeesClaimed",
+    "type": "event"
   },
   {
-    anonymous: false,
-    inputs: [
+    "anonymous": false,
+    "inputs": [
       {
-        indexed: true,
-        internalType: 'address',
-        name: 'follower',
-        type: 'address',
+        "indexed": true,
+        "internalType": "address",
+        "name": "follower",
+        "type": "address"
       },
       {
-        indexed: true,
-        internalType: 'address',
-        name: 'leader',
-        type: 'address',
+        "indexed": true,
+        "internalType": "address",
+        "name": "leader",
+        "type": "address"
       },
       {
-        indexed: false,
-        internalType: 'uint256',
-        name: 'depositedSTT',
-        type: 'uint256',
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "depositedSTT",
+        "type": "uint256"
       },
       {
-        indexed: false,
-        internalType: 'uint256',
-        name: 'maxPerTrade',
-        type: 'uint256',
-      },
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "maxPerTrade",
+        "type": "uint256"
+      }
     ],
-    name: 'Followed',
-    type: 'event',
+    "name": "Followed",
+    "type": "event"
   },
   {
-    anonymous: false,
-    inputs: [
+    "anonymous": false,
+    "inputs": [
       {
-        indexed: true,
-        internalType: 'address',
-        name: 'previousOwner',
-        type: 'address',
+        "indexed": true,
+        "internalType": "address",
+        "name": "previousOwner",
+        "type": "address"
       },
       {
-        indexed: true,
-        internalType: 'address',
-        name: 'newOwner',
-        type: 'address',
-      },
+        "indexed": true,
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
     ],
-    name: 'OwnershipTransferred',
-    type: 'event',
+    "name": "OwnershipTransferred",
+    "type": "event"
   },
   {
-    anonymous: false,
-    inputs: [
+    "anonymous": false,
+    "inputs": [
       {
-        indexed: true,
-        internalType: 'address',
-        name: 'follower',
-        type: 'address',
+        "indexed": true,
+        "internalType": "address",
+        "name": "follower",
+        "type": "address"
       },
       {
-        indexed: true,
-        internalType: 'address',
-        name: 'leader',
-        type: 'address',
+        "indexed": true,
+        "internalType": "address",
+        "name": "leader",
+        "type": "address"
       },
       {
-        indexed: false,
-        internalType: 'uint256',
-        name: 'returnedSTT',
-        type: 'uint256',
-      },
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "returnedSTT",
+        "type": "uint256"
+      }
     ],
-    name: 'Unfollowed',
-    type: 'event',
+    "name": "Unfollowed",
+    "type": "event"
   },
   {
-    anonymous: false,
-    inputs: [
+    "anonymous": false,
+    "inputs": [
       {
-        indexed: true,
-        internalType: 'address',
-        name: 'follower',
-        type: 'address',
+        "indexed": true,
+        "internalType": "address",
+        "name": "follower",
+        "type": "address"
       },
       {
-        indexed: true,
-        internalType: 'address',
-        name: 'leader',
-        type: 'address',
+        "indexed": true,
+        "internalType": "address",
+        "name": "leader",
+        "type": "address"
       },
       {
-        indexed: false,
-        internalType: 'uint256',
-        name: 'amount',
-        type: 'uint256',
-      },
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
     ],
-    name: 'Withdrawn',
-    type: 'event',
+    "name": "Withdrawn",
+    "type": "event"
   },
   {
-    inputs: [
+    "inputs": [
       {
-        internalType: 'address',
-        name: 'leader',
-        type: 'address',
+        "internalType": "address",
+        "name": "follower",
+        "type": "address"
       },
       {
-        internalType: 'uint256',
-        name: 'amount',
-        type: 'uint256',
+        "internalType": "address",
+        "name": "leader",
+        "type": "address"
       },
+      {
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
     ],
-    name: 'accrueFee',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
+    "name": "accrueFee",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
   },
   {
-    inputs: [],
-    name: 'baseToken',
-    outputs: [
+    "inputs": [],
+    "name": "baseToken",
+    "outputs": [
       {
-        internalType: 'contract IERC20',
-        name: '',
-        type: 'address',
-      },
+        "internalType": "contract IERC20",
+        "name": "",
+        "type": "address"
+      }
     ],
-    stateMutability: 'view',
-    type: 'function',
+    "stateMutability": "view",
+    "type": "function"
   },
   {
-    inputs: [],
-    name: 'claimFees',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      }
+    ],
+    "name": "claimFees",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
   },
   {
-    inputs: [
+    "inputs": [
       {
-        internalType: 'address',
-        name: 'leader',
-        type: 'address',
+        "internalType": "address",
+        "name": "follower",
+        "type": "address"
       },
       {
-        internalType: 'uint256',
-        name: 'amount',
-        type: 'uint256',
+        "internalType": "address",
+        "name": "leader",
+        "type": "address"
       },
+      {
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
     ],
-    name: 'deposit',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
+    "name": "creditTokens",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
   },
   {
-    inputs: [
+    "inputs": [
       {
-        internalType: 'address',
-        name: 'follower',
-        type: 'address',
+        "internalType": "address",
+        "name": "leader",
+        "type": "address"
       },
       {
-        internalType: 'address',
-        name: 'leader',
-        type: 'address',
-      },
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
     ],
-    name: 'emergencyClose',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
+    "name": "deposit",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
   },
   {
-    inputs: [
+    "inputs": [
       {
-        internalType: 'address',
-        name: 'leader',
-        type: 'address',
+        "internalType": "address",
+        "name": "follower",
+        "type": "address"
       },
       {
-        internalType: 'uint256',
-        name: 'amount',
-        type: 'uint256',
-      },
-      {
-        internalType: 'uint256',
-        name: 'maxPerTrade',
-        type: 'uint256',
-      },
-      {
-        internalType: 'uint16',
-        name: 'maxSlippageBps',
-        type: 'uint16',
-      },
-      {
-        internalType: 'uint256',
-        name: 'stopLossSTT',
-        type: 'uint256',
-      },
+        "internalType": "address",
+        "name": "leader",
+        "type": "address"
+      }
     ],
-    name: 'follow',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
+    "name": "emergencyClose",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
   },
   {
-    inputs: [
+    "inputs": [
       {
-        internalType: 'address',
-        name: 'leader',
-        type: 'address',
+        "internalType": "address",
+        "name": "leader",
+        "type": "address"
       },
-    ],
-    name: 'getFollowerCount',
-    outputs: [
       {
-        internalType: 'uint256',
-        name: '',
-        type: 'uint256',
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
       },
+      {
+        "internalType": "uint256",
+        "name": "maxPerTrade",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint16",
+        "name": "maxSlippageBps",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint256",
+        "name": "stopLossSTT",
+        "type": "uint256"
+      }
     ],
-    stateMutability: 'view',
-    type: 'function',
+    "name": "follow",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
   },
   {
-    inputs: [
+    "inputs": [
       {
-        internalType: 'address',
-        name: 'leader',
-        type: 'address',
-      },
-      {
-        internalType: 'uint256',
-        name: 'offset',
-        type: 'uint256',
-      },
-      {
-        internalType: 'uint256',
-        name: 'limit',
-        type: 'uint256',
-      },
+        "internalType": "address",
+        "name": "leader",
+        "type": "address"
+      }
     ],
-    name: 'getFollowers',
-    outputs: [
+    "name": "getFollowerCount",
+    "outputs": [
       {
-        internalType: 'address[]',
-        name: '',
-        type: 'address[]',
-      },
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
     ],
-    stateMutability: 'view',
-    type: 'function',
+    "stateMutability": "view",
+    "type": "function"
   },
   {
-    inputs: [
+    "inputs": [
       {
-        internalType: 'address',
-        name: 'follower',
-        type: 'address',
+        "internalType": "address",
+        "name": "leader",
+        "type": "address"
       },
       {
-        internalType: 'address',
-        name: 'leader',
-        type: 'address',
+        "internalType": "uint256",
+        "name": "offset",
+        "type": "uint256"
       },
+      {
+        "internalType": "uint256",
+        "name": "limit",
+        "type": "uint256"
+      }
     ],
-    name: 'getPosition',
-    outputs: [
+    "name": "getFollowers",
+    "outputs": [
       {
-        components: [
+        "internalType": "address[]",
+        "name": "",
+        "type": "address[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "follower",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "leader",
+        "type": "address"
+      }
+    ],
+    "name": "getPosition",
+    "outputs": [
+      {
+        "components": [
           {
-            internalType: 'address',
-            name: 'follower',
-            type: 'address',
+            "internalType": "address",
+            "name": "follower",
+            "type": "address"
           },
           {
-            internalType: 'address',
-            name: 'leader',
-            type: 'address',
+            "internalType": "address",
+            "name": "leader",
+            "type": "address"
           },
           {
-            internalType: 'uint256',
-            name: 'depositedSTT',
-            type: 'uint256',
+            "internalType": "uint256",
+            "name": "depositedSTT",
+            "type": "uint256"
           },
           {
-            internalType: 'uint256',
-            name: 'maxPerTrade',
-            type: 'uint256',
+            "internalType": "uint256",
+            "name": "maxPerTrade",
+            "type": "uint256"
           },
           {
-            internalType: 'uint16',
-            name: 'maxSlippageBps',
-            type: 'uint16',
+            "internalType": "uint16",
+            "name": "maxSlippageBps",
+            "type": "uint16"
           },
           {
-            internalType: 'uint256',
-            name: 'stopLossSTT',
-            type: 'uint256',
+            "internalType": "uint256",
+            "name": "stopLossSTT",
+            "type": "uint256"
           },
           {
-            internalType: 'bool',
-            name: 'active',
-            type: 'bool',
-          },
+            "internalType": "bool",
+            "name": "active",
+            "type": "bool"
+          }
         ],
-        internalType: 'struct IFollowerVault.FollowPosition',
-        name: '',
-        type: 'tuple',
-      },
+        "internalType": "struct IFollowerVault.FollowPosition",
+        "name": "",
+        "type": "tuple"
+      }
     ],
-    stateMutability: 'view',
-    type: 'function',
+    "stateMutability": "view",
+    "type": "function"
   },
   {
-    inputs: [
+    "inputs": [
       {
-        internalType: 'address',
-        name: '',
-        type: 'address',
+        "internalType": "address",
+        "name": "follower",
+        "type": "address"
       },
       {
-        internalType: 'uint256',
-        name: '',
-        type: 'uint256',
+        "internalType": "address",
+        "name": "leader",
+        "type": "address"
       },
+      {
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      }
     ],
-    name: 'leaderFollowers',
-    outputs: [
+    "name": "getTokenBalance",
+    "outputs": [
       {
-        internalType: 'address',
-        name: '',
-        type: 'address',
-      },
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
     ],
-    stateMutability: 'view',
-    type: 'function',
+    "stateMutability": "view",
+    "type": "function"
   },
   {
-    inputs: [],
-    name: 'leaderRegistry',
-    outputs: [
+    "inputs": [
       {
-        internalType: 'contract ILeaderRegistry',
-        name: '',
-        type: 'address',
+        "internalType": "address",
+        "name": "",
+        "type": "address"
       },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
     ],
-    stateMutability: 'view',
-    type: 'function',
+    "name": "leaderFollowers",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
-    inputs: [],
-    name: 'mirrorExecutor',
-    outputs: [
+    "inputs": [],
+    "name": "leaderRegistry",
+    "outputs": [
       {
-        internalType: 'address',
-        name: '',
-        type: 'address',
-      },
+        "internalType": "contract ILeaderRegistry",
+        "name": "",
+        "type": "address"
+      }
     ],
-    stateMutability: 'view',
-    type: 'function',
+    "stateMutability": "view",
+    "type": "function"
   },
   {
-    inputs: [],
-    name: 'owner',
-    outputs: [
+    "inputs": [],
+    "name": "mirrorExecutor",
+    "outputs": [
       {
-        internalType: 'address',
-        name: '',
-        type: 'address',
-      },
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
     ],
-    stateMutability: 'view',
-    type: 'function',
+    "stateMutability": "view",
+    "type": "function"
   },
   {
-    inputs: [
+    "inputs": [],
+    "name": "owner",
+    "outputs": [
       {
-        internalType: 'address',
-        name: '',
-        type: 'address',
-      },
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
     ],
-    name: 'pendingFees',
-    outputs: [
-      {
-        internalType: 'uint256',
-        name: '',
-        type: 'uint256',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
+    "stateMutability": "view",
+    "type": "function"
   },
   {
-    inputs: [
+    "inputs": [
       {
-        internalType: 'address',
-        name: '',
-        type: 'address',
+        "internalType": "address",
+        "name": "",
+        "type": "address"
       },
       {
-        internalType: 'address',
-        name: '',
-        type: 'address',
-      },
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
     ],
-    name: 'positions',
-    outputs: [
+    "name": "pendingFees",
+    "outputs": [
       {
-        internalType: 'address',
-        name: 'follower',
-        type: 'address',
-      },
-      {
-        internalType: 'address',
-        name: 'leader',
-        type: 'address',
-      },
-      {
-        internalType: 'uint256',
-        name: 'depositedSTT',
-        type: 'uint256',
-      },
-      {
-        internalType: 'uint256',
-        name: 'maxPerTrade',
-        type: 'uint256',
-      },
-      {
-        internalType: 'uint16',
-        name: 'maxSlippageBps',
-        type: 'uint16',
-      },
-      {
-        internalType: 'uint256',
-        name: 'stopLossSTT',
-        type: 'uint256',
-      },
-      {
-        internalType: 'bool',
-        name: 'active',
-        type: 'bool',
-      },
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
     ],
-    stateMutability: 'view',
-    type: 'function',
+    "stateMutability": "view",
+    "type": "function"
   },
   {
-    inputs: [
+    "inputs": [
       {
-        internalType: 'address',
-        name: 'follower',
-        type: 'address',
+        "internalType": "address",
+        "name": "",
+        "type": "address"
       },
       {
-        internalType: 'address',
-        name: 'leader',
-        type: 'address',
-      },
-      {
-        internalType: 'address',
-        name: 'token',
-        type: 'address',
-      },
-      {
-        internalType: 'uint256',
-        name: 'amount',
-        type: 'uint256',
-      },
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
     ],
-    name: 'pullTokens',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
+    "name": "positions",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "follower",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "leader",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "depositedSTT",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "maxPerTrade",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint16",
+        "name": "maxSlippageBps",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint256",
+        "name": "stopLossSTT",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bool",
+        "name": "active",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
-    inputs: [],
-    name: 'renounceOwnership',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "follower",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "leader",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "pullTokens",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
   },
   {
-    inputs: [],
-    name: 'riskGuardian',
-    outputs: [
-      {
-        internalType: 'address',
-        name: '',
-        type: 'address',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
+    "inputs": [],
+    "name": "renounceOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
   },
   {
-    inputs: [
+    "inputs": [],
+    "name": "riskGuardian",
+    "outputs": [
       {
-        internalType: 'address',
-        name: '_mirrorExecutor',
-        type: 'address',
-      },
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
     ],
-    name: 'setMirrorExecutor',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
+    "stateMutability": "view",
+    "type": "function"
   },
   {
-    inputs: [
+    "inputs": [
       {
-        internalType: 'address',
-        name: '_riskGuardian',
-        type: 'address',
-      },
+        "internalType": "address",
+        "name": "_mirrorExecutor",
+        "type": "address"
+      }
     ],
-    name: 'setRiskGuardian',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
+    "name": "setMirrorExecutor",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
   },
   {
-    inputs: [
+    "inputs": [
       {
-        internalType: 'address',
-        name: '',
-        type: 'address',
-      },
+        "internalType": "address",
+        "name": "_riskGuardian",
+        "type": "address"
+      }
     ],
-    name: 'totalFollowingSTT',
-    outputs: [
-      {
-        internalType: 'uint256',
-        name: '',
-        type: 'uint256',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
+    "name": "setRiskGuardian",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
   },
   {
-    inputs: [
+    "inputs": [
       {
-        internalType: 'address',
-        name: 'newOwner',
-        type: 'address',
+        "internalType": "address",
+        "name": "",
+        "type": "address"
       },
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
     ],
-    name: 'transferOwnership',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
+    "name": "tokenBalances",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
-    inputs: [
+    "inputs": [
       {
-        internalType: 'address',
-        name: 'leader',
-        type: 'address',
-      },
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
     ],
-    name: 'unfollow',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
+    "name": "totalFollowingSTT",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
-    inputs: [
+    "inputs": [
       {
-        internalType: 'address',
-        name: 'leader',
-        type: 'address',
-      },
-      {
-        internalType: 'uint256',
-        name: 'amount',
-        type: 'uint256',
-      },
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
     ],
-    name: 'withdraw',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
+    "name": "transferOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
   },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "leader",
+        "type": "address"
+      }
+    ],
+    "name": "unfollow",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "leader",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "withdraw",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
 ] as const

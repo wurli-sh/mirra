@@ -153,11 +153,11 @@ describe("FollowerVault", function () {
 
   describe("claimFees", function () {
     it("should revert if not a leader", async function () {
-      await expect(vault.connect(follower1).claimFees()).to.be.revertedWith("Not a leader");
+      await expect(vault.connect(follower1).claimFees(await baseToken.getAddress())).to.be.revertedWith("Not a leader");
     });
 
     it("should revert if no fees", async function () {
-      await expect(vault.connect(leader).claimFees()).to.be.revertedWith("No fees to claim");
+      await expect(vault.connect(leader).claimFees(await baseToken.getAddress())).to.be.revertedWith("No fees to claim");
     });
   });
 });

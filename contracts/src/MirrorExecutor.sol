@@ -22,6 +22,7 @@ contract MirrorExecutor is IMirrorExecutor, SomniaEventHandler, ReentrancyGuard 
     IReputationEngine public immutable reputationEngine;
 
     uint256 public constant MAX_FOLLOWERS_PER_MIRROR = 5;
+    uint256 public constant LEADER_FEE_BPS = 500; // 5%
 
     bytes32 public constant SWAP_SIG = keccak256("Swap(address,address,address,uint256,uint256)");
     bytes32 public constant MIRROR_CONTINUE_SIG = keccak256("MirrorContinue(address,address,address,uint256,uint256,uint256)");
@@ -32,6 +33,12 @@ contract MirrorExecutor is IMirrorExecutor, SomniaEventHandler, ReentrancyGuard 
         followerVault = IFollowerVault(_followerVault);
         positionTracker = IPositionTracker(_positionTracker);
         reputationEngine = IReputationEngine(_reputationEngine);
+    }
+
+    /// @notice Manual trigger for mirror execution — fallback when reactive subscriptions aren't firing
+    function triggerMirror(address leader, address tokenIn, address tokenOut, uint256 amountIn, uint256 amountOut) external nonReentrant {
+        require(leaderRegistry.isLeader(leader), "Not a leader");
+        _mirrorToFollowers(leader, tokenIn, tokenOut, amountIn, amountOut, 0);
     }
 
     function _onEvent(address, bytes32[] calldata topics, bytes calldata data) internal override nonReentrant {
@@ -57,27 +64,32 @@ contract MirrorExecutor is IMirrorExecutor, SomniaEventHandler, ReentrancyGuard 
             IFollowerVault.FollowPosition memory pos = followerVault.getPosition(followers[i], leader);
             if (!pos.active) continue;
 
-            uint256 followerAmount = _calculateMirrorAmount(pos, leaderAmountIn);
+            uint256 followerBalance = followerVault.getTokenBalance(followers[i], leader, tokenIn);
+            uint256 followerAmount = _calculateMirrorAmount(pos, leaderAmountIn, followerBalance);
             if (followerAmount == 0) continue;
 
-            uint256 expectedOut = (leaderAmountOut * followerAmount) / leaderAmountIn;
-            uint256 minOut = expectedOut * (10000 - pos.maxSlippageBps) / 10000;
+            // 5% leader commission on trade amount (charged in input token)
+            uint256 fee = followerAmount * LEADER_FEE_BPS / 10000;
+            uint256 swapAmount = followerAmount - fee;
 
-            followerVault.pullTokens(followers[i], leader, tokenIn, followerAmount);
-            IERC20(tokenIn).forceApprove(address(dex), followerAmount);
+            // Use live pool price (not leader's pre-swap rate) to avoid slippage failures
+            // Leader's swap already moved the price, so using leader's rate would always fail
+            uint256 liveExpectedOut = dex.getAmountOut(tokenIn, tokenOut, swapAmount);
+            uint256 minOut = liveExpectedOut * (10000 - pos.maxSlippageBps) / 10000;
 
-            try dex.swapFor(tokenIn, tokenOut, followerAmount, minOut, address(this), address(followerVault)) returns (uint256 actualOut) {
-                positionTracker.updatePosition(followers[i], leader, tokenOut, actualOut, followerAmount);
-                reputationEngine.recordTrade(leader, followerAmount);
-                if (actualOut > expectedOut) {
-                    uint256 profit = actualOut - expectedOut;
-                    uint256 fee = profit * 5 / 100;
-                    if (fee > 0) { followerVault.accrueFee(leader, fee); }
-                }
-                emit MirrorExecuted(followers[i], leader, tokenIn, tokenOut, followerAmount, actualOut);
+            followerVault.pullTokens(followers[i], leader, tokenIn, swapAmount);
+            if (fee > 0) { followerVault.accrueFee(followers[i], leader, tokenIn, fee); }
+            IERC20(tokenIn).forceApprove(address(dex), swapAmount);
+
+            try dex.swapFor(tokenIn, tokenOut, swapAmount, minOut, address(this), address(followerVault)) returns (uint256 actualOut) {
+                followerVault.creditTokens(followers[i], leader, tokenOut, actualOut);
+                positionTracker.updatePosition(followers[i], leader, tokenOut, actualOut, swapAmount);
+                reputationEngine.recordTrade(leader, swapAmount);
+                emit MirrorExecuted(followers[i], leader, tokenIn, tokenOut, swapAmount, actualOut);
             } catch {
-                IERC20(tokenIn).safeTransfer(address(followerVault), followerAmount);
-                emit MirrorFailed(followers[i], leader, tokenIn, tokenOut, followerAmount, "swap failed");
+                IERC20(tokenIn).safeTransfer(address(followerVault), swapAmount);
+                followerVault.creditTokens(followers[i], leader, tokenIn, swapAmount);
+                emit MirrorFailed(followers[i], leader, tokenIn, tokenOut, swapAmount, "swap failed");
             }
         }
 
@@ -87,10 +99,10 @@ contract MirrorExecutor is IMirrorExecutor, SomniaEventHandler, ReentrancyGuard 
         }
     }
 
-    function _calculateMirrorAmount(IFollowerVault.FollowPosition memory pos, uint256 leaderAmountIn) internal pure returns (uint256) {
+    function _calculateMirrorAmount(IFollowerVault.FollowPosition memory pos, uint256 leaderAmountIn, uint256 followerBalance) internal pure returns (uint256) {
         uint256 amount = leaderAmountIn;
         if (amount > pos.maxPerTrade) { amount = pos.maxPerTrade; }
-        if (amount > pos.depositedSTT) { amount = pos.depositedSTT; }
+        if (amount > followerBalance) { amount = followerBalance; }
         return amount;
     }
 }

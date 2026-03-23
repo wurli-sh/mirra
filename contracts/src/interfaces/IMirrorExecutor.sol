@@ -18,6 +18,7 @@ interface IMirrorExecutor {
         uint256 amountIn,
         string reason
     );
+    function triggerMirror(address leader, address tokenIn, address tokenOut, uint256 amountIn, uint256 amountOut) external;
     event MirrorContinue(
         address indexed leader,
         address tokenIn,
