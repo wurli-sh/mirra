@@ -1,5 +1,3 @@
-# Mirra
-
 <div align="center">
   <img src="./assets/mirra.png" width="100%" alt="mirra" />
 </div>
