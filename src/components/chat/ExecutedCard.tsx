@@ -38,6 +38,8 @@ interface Props {
   onQuickAction?: (text: string) => void
 }
 
+const TX_HASH_RE = /^0x[a-fA-F0-9]{64}$/
+
 function truncateHash(hash: string) {
   return `${hash.slice(0, 10)}...${hash.slice(-6)}`
 }
@@ -47,6 +49,7 @@ export function ExecutedCard({ data, onQuickAction }: Props) {
   const config = ACTION_CONFIG[actionType] ?? { icon: ArrowRightLeft, label: data.type }
   const Icon = config.icon
   const followUps = FOLLOW_UPS[actionType]
+  const isValidHash = TX_HASH_RE.test(data.txHash)
 
   // Build summary text
   let summary = ''
@@ -87,15 +90,19 @@ export function ExecutedCard({ data, onQuickAction }: Props) {
 
       {/* Tx link + follow-ups */}
       <div className="px-4 py-3 bg-surface space-y-2.5">
-        <a
-          href={`https://shannon-explorer.somnia.network/tx/${data.txHash}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center justify-between text-xs text-text-muted hover:text-text transition-colors"
-        >
-          <span className="font-mono">{truncateHash(data.txHash)}</span>
-          <ExternalLink size={11} />
-        </a>
+        {isValidHash ? (
+          <a
+            href={`https://shannon-explorer.somnia.network/tx/${data.txHash}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-between text-xs text-text-muted hover:text-text transition-colors"
+          >
+            <span className="font-mono">{truncateHash(data.txHash)}</span>
+            <ExternalLink size={11} />
+          </a>
+        ) : (
+          <span className="text-xs text-text-muted font-mono">Invalid tx hash</span>
+        )}
 
         {onQuickAction && followUps && (
           <div className="flex flex-wrap gap-1.5 pt-1">

@@ -52,5 +52,6 @@ Scripts in `scripts/`:
 1. `deploy.ts` — deploys all contracts
 2. `seed.ts` — seeds test data (leaders, followers, swaps)
 3. `setup-subscriptions.ts` — registers reactive subscriptions on Somnia
+4. `whale.ts` — whale-mode: large liquidity + swap operations for stress testing
 
 Network: `somnia_testnet` (chain 50312, RPC `https://dream-rpc.somnia.network/`)

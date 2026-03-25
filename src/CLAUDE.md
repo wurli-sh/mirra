@@ -34,7 +34,7 @@ WagmiProvider (config from config/wagmi.ts, multicall: false)
 | `components/` | UI components organized by domain — see [components/CLAUDE.md](components/CLAUDE.md) |
 | `hooks/` | wagmi contract read/write hooks — see [hooks/CLAUDE.md](hooks/CLAUDE.md) |
 | `config/` | Chain definition, contract addresses (from env), wagmi config (multicall disabled), ABI JSON files |
-| `stores/` | Zustand stores — `ui.ts` (tabs, follow modal state) |
+| `stores/` | Zustand stores — `ui.ts` (tabs, follow modal state), `session.ts` (session key state) |
 | `lib/` | Utilities: `cn.ts` (clsx+twMerge), `format.ts` (numbers/addresses), `animations.ts` (framer-motion variants) |
 | `pages/` | Route-level page components composing domain components |
 | `data/` | Shared TypeScript types (`types.ts`) |
@@ -57,9 +57,14 @@ Key components in `components/chat/`:
 
 UI primitives in `components/ui/`:
 - `OniAvatar` — Piggi SVG avatar with `bare` prop for no-bg mode
+- `Button` — Styled button (primary/secondary/outline/danger variants)
 - `TextShimmer` — Character shimmer animation for loading states
 - `TextLoop` — Cycling text with framer-motion transitions
 - `ThinkingSpinner` — SVG 4x4 grid with pulsing animation
+- `FormDots` — Win/loss dot indicator
+- `ProgressBar` — Horizontal progress bar
+- `Sparkline` — Inline SVG sparkline chart
+- `StatRow` — Label-value row for stats panels
 
 ## Conventions
 

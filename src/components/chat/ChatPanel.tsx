@@ -15,10 +15,10 @@ import { TopUpModal } from './TopUpModal'
 import { useSessionStore } from '@/stores/session'
 import { useSessionBalance } from '@/hooks/useSessionBalance'
 
-const SESSION_KEY = 'mirra_chat_messages'
-
 export function ChatPanel() {
   const { address } = useAccount()
+  // Scope storage to wallet address so different wallets don't share chat history
+  const SESSION_KEY = address ? `mirra_chat_${address.toLowerCase()}` : 'mirra_chat_messages'
   const isSessionActive = useSessionStore((s) => s.status === 'active')
   const { stt: sessionStt, gas: sessionGas } = useSessionBalance()
   const [topUpOpen, setTopUpOpen] = useState(false)

@@ -4,7 +4,7 @@
   <img src="./assets/mirra.png" width="100%" alt="mirra" />
 </div>
 
-**Reactive copy-trading on Somnia.** Leader trades auto-mirrored in the same block—no bots or backend. Includes Oni, an AI agent executing trades via session keys.
+**Reactive copy-trading on Somnia.** Lreader trades auto-mirrored in the same block—no bots or backend. Includes Oni, an AI agent executing trades via session keys.
 
 ## Deployed on Somnia Shannon Testnet
 

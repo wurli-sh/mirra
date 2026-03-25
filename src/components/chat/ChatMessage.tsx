@@ -2,6 +2,7 @@ import { motion } from 'framer-motion'
 import { type UIMessage } from 'ai'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
+import rehypeSanitize from 'rehype-sanitize'
 import { ActionCard, type ActionType } from './ActionCard'
 import { ExecutedCard } from './ExecutedCard'
 import { DataCard, isDataTool } from './DataCard'
@@ -82,7 +83,7 @@ export function ChatMessage({ message, onQuickAction }: Props) {
                       className={`bg-primary/15 border border-primary/30 rounded-xl rounded-tl-sm px-4 py-3 ${hasRichContent ? 'max-w-full' : 'max-w-[90%]'}`}
                     >
                       <div className="text-text text-sm leading-relaxed chat-markdown">
-                        <ReactMarkdown remarkPlugins={[remarkGfm]} components={{ a: SafeLink }}>
+                        <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeSanitize]} components={{ a: SafeLink }}>
                           {cleaned}
                         </ReactMarkdown>
                       </div>

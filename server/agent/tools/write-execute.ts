@@ -60,7 +60,7 @@ export function buildExecutableWriteTools(session: SessionData) {
       leader: z.string().describe('Leader wallet address'),
       amount: z.string().default('10').describe('STT deposit amount'),
       maxPerTrade: z.string().default('5').describe('Max STT per trade'),
-      slippageBps: z.number().default(300).describe('Slippage in bps'),
+      slippageBps: z.number().int().min(1).max(1000).default(300).describe('Slippage in bps (1-1000)'),
       stopLoss: z.string().default('5').describe('Stop loss in STT'),
     }),
     execute: async (params) => {

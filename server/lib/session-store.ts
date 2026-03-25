@@ -7,7 +7,6 @@ export interface SessionData {
   ownerAddress: Address
   sessionKeyAddress: Address
   createdAt: number
-  lastUsedAt: number
   spentSTT: bigint
   maxSpendSTT: bigint
   approvesDone: boolean
@@ -64,7 +63,6 @@ export function createSession(
     ownerAddress,
     sessionKeyAddress: account.address,
     createdAt: now,
-    lastUsedAt: now,
     spentSTT: 0n,
     maxSpendSTT: DEFAULT_MAX_SPEND,
     approvesDone: false,

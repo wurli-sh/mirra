@@ -50,9 +50,9 @@ export function OniSection() {
         >
           {/* Fake chat preview */}
           <div className="flex-1 space-y-3 w-full">
-            <ChatBubble side="user">I want to swap 10 STT for USDC</ChatBubble>
+            <ChatBubble side="user">I want to swap 2 STT for USDC</ChatBubble>
             <ChatBubble side="oni">
-              You're getting <strong>9.41 USDC</strong> for your 10 STT — solid rate! Want to go for it? 🐷
+              You're getting <strong>9.41 USDC</strong> for your 2 STT — solid rate! Want to go for it? 🐷
             </ChatBubble>
             <ChatBubble side="user">yes let's go</ChatBubble>
             <ChatBubble side="oni">

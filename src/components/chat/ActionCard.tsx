@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { useWriteContract, useWaitForTransactionReceipt, useAccount } from 'wagmi'
-import { parseEther, maxUint256, type Address, type Hash } from 'viem'
+import { parseEther, isAddress, maxUint256, type Address, type Hash } from 'viem'
 import { toast } from 'sonner'
 import {
   ArrowRightLeft, UserPlus, UserMinus, ArrowDownToLine, ArrowUpFromLine,
@@ -179,6 +179,15 @@ export function ActionCard({ data, onQuickAction }: Props) {
       }
     }
 
+    // Validate leader address for actions that use it
+    if (['follow', 'unfollow', 'deposit', 'withdraw'].includes(data.type) && data.leader) {
+      if (!isAddress(data.leader as string)) {
+        setErrorMsg('Invalid leader address.')
+        setStatus('error')
+        return
+      }
+    }
+
     setStatus('confirming')
 
     try {
@@ -186,7 +195,7 @@ export function ActionCard({ data, onQuickAction }: Props) {
       case 'swap': {
         const amtIn = parseFloat(data.amountIn)
         const estOut = parseFloat(data.estimatedOut)
-        if (!isFinite(amtIn) || amtIn <= 0 || !isFinite(estOut) || estOut <= 0) {
+        if (!isFinite(amtIn) || amtIn <= 0 || amtIn > 100_000 || !isFinite(estOut) || estOut <= 0) {
           setErrorMsg('Invalid swap amounts.'); setStatus('error'); return
         }
         writeContract({
@@ -422,7 +431,10 @@ export function ActionCard({ data, onQuickAction }: Props) {
             </div>
             <div className="flex items-center justify-between bg-surface-alt rounded-md px-3 py-2.5">
               <span className="text-xs text-text-muted">Spender</span>
-              <span className="text-xs font-medium text-text">{data.spender === 'followerVault' ? 'Follower Vault' : 'SimpleDEX'}</span>
+              <div className="text-right">
+                <span className="text-xs font-medium text-text block">{data.spender === 'followerVault' ? 'Follower Vault' : 'SimpleDEX'}</span>
+                {data.spenderAddress && <span className="text-[10px] font-mono text-text-muted">{truncateAddr(data.spenderAddress)}</span>}
+              </div>
             </div>
           </div>
         )}

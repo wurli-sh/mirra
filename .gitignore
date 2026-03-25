@@ -30,3 +30,7 @@ coverage/
 coverage.json
 docs/
 demo/
+
+# Project Documentation
+COMPETITORS.md
+DETAILS.md

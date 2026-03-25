@@ -21,12 +21,15 @@ components/
 │   ├── LeaderTable.tsx       # Leader rankings table with follow/unfollow
 │   ├── LeaderRow.tsx         # Individual leader row with rank badge
 │   ├── FollowModal.tsx       # Follow configuration modal
-│   └── LeaderModal.tsx       # Reusable register/deregister leader modal
+│   ├── LeaderModal.tsx       # Reusable register/deregister leader modal
+│   ├── LeaderLegend.tsx      # Rank tier color legend (gold/silver/bronze)
+│   └── RankingChart.tsx      # SVG line chart showing leader ranking trends
 ├── trade/         # Trade page components
 │   ├── SwapPanel.tsx         # Dark charcoal swap card with token selectors
 │   ├── PositionCard.tsx      # Follow position display
 │   ├── TradeFeed.tsx         # Live activity feed (SSE-powered)
-│   └── TokenSelector.tsx     # Token dropdown selector
+│   ├── TokenSelector.tsx     # Token dropdown selector
+│   └── StatsPanel.tsx        # Leader stats + pending fees + claim button
 ├── chat/          # AI chat agent components
 │   ├── ChatPanel.tsx         # Main chat container (useChat, session storage, Oni avatar)
 │   ├── ChatMessage.tsx       # Message rendering (markdown + DataCard/ActionCard detection)
@@ -40,11 +43,16 @@ components/
 └── ui/            # Reusable primitives
     ├── OniAvatar.tsx         # Piggi SVG avatar (bare/bg modes, sm/md/lg sizes)
     ├── AnimatedImage.tsx     # Image with skeleton loader
+    ├── Button.tsx            # Styled button (primary/secondary/outline/danger variants)
     ├── TextShimmer.tsx       # Character shimmer loading animation
     ├── TextLoop.tsx          # Cycling text with framer-motion
     ├── ThinkingSpinner.tsx   # SVG pulsing grid spinner
     ├── Tabs.tsx              # Animated tab switcher with sliding indicator
-    └── Badge.tsx             # Status badge component
+    ├── Badge.tsx             # Status badge component
+    ├── FormDots.tsx          # Win/loss dot indicator (green/red circles)
+    ├── ProgressBar.tsx       # Horizontal progress bar (success/danger colors)
+    ├── Sparkline.tsx         # Inline SVG sparkline chart
+    └── StatRow.tsx           # Label-value row for stats panels
 ```
 
 ## Patterns

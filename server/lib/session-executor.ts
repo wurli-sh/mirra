@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { createWalletClient, http, parseEther, formatEther, maxUint256, type Address, type Hash } from 'viem'
+import { createWalletClient, http, parseEther, formatEther, isAddress, maxUint256, type Address, type Hash } from 'viem'
 import { privateKeyToAccount } from 'viem/accounts'
 import { publicClient, contracts, somniaTestnet, resolveToken } from './viem-client'
 import { type SessionData, checkSpend, commitSpend, checkOperationLimit, commitOperation, markApprovesDone } from './session-store'
@@ -11,6 +11,25 @@ import { ERC20Abi } from '../../src/config/abi/ERC20'
 const WHITELISTED_CONTRACTS = new Set(
   Object.values(contracts).map(a => a?.toLowerCase()).filter(Boolean)
 )
+
+/** Validate and parse a string amount to wei. Returns error string on failure. */
+function safeParseAmount(value: unknown, fieldName: string): bigint | string {
+  const str = String(value ?? '')
+  const num = parseFloat(str)
+  if (!isFinite(num) || num <= 0 || num > 1_000_000) {
+    return `${fieldName} must be a positive finite number (got "${str}")`
+  }
+  return parseEther(str)
+}
+
+/** Validate an address parameter from LLM tool output. */
+function validateAddress(value: unknown, fieldName: string): Address | string {
+  const addr = String(value ?? '')
+  if (!isAddress(addr)) {
+    return `Invalid ${fieldName} address: "${addr.slice(0, 20)}"`
+  }
+  return addr as Address
+}
 
 function createSessionWallet(session: SessionData) {
   const account = privateKeyToAccount(session.privateKey)
@@ -184,11 +203,26 @@ export async function executeAction(
       }
 
       case 'follow': {
-        const leader = params.leader as Address
-        const amount = parseEther(params.amount as string)
-        const maxPerTrade = parseEther(params.maxPerTrade as string)
-        const slippageBps = params.slippageBps as number
-        const stopLoss = parseEther(params.stopLoss as string)
+        const leaderResult = validateAddress(params.leader, 'leader')
+        if (typeof leaderResult === 'string') return { error: leaderResult }
+        const leader = leaderResult
+
+        const amountResult = safeParseAmount(params.amount, 'amount')
+        if (typeof amountResult === 'string') return { error: amountResult }
+        const amount = amountResult
+
+        const maxPerTradeResult = safeParseAmount(params.maxPerTrade, 'maxPerTrade')
+        if (typeof maxPerTradeResult === 'string') return { error: maxPerTradeResult }
+        const maxPerTrade = maxPerTradeResult
+
+        const slippageBps = Number(params.slippageBps)
+        if (!Number.isInteger(slippageBps) || slippageBps < 1 || slippageBps > 1000) {
+          return { error: 'slippageBps must be an integer between 1 and 1000' }
+        }
+
+        const stopLossResult = safeParseAmount(params.stopLoss, 'stopLoss')
+        if (typeof stopLossResult === 'string') return { error: stopLossResult }
+        const stopLoss = stopLossResult
 
         // Pre-check STT balance — fall back to ActionCard if insufficient
         try {
@@ -235,11 +269,13 @@ export async function executeAction(
       }
 
       case 'unfollow': {
+        const unfollowLeader = validateAddress(params.leader, 'leader')
+        if (typeof unfollowLeader === 'string') return { error: unfollowLeader }
         const hash = await wallet.writeContract({
           address: contracts.followerVault,
           abi: FollowerVaultAbi,
           functionName: 'unfollow',
-          args: [params.leader as Address],
+          args: [unfollowLeader],
         })
         await waitForTx(hash)
         commitOperation(session.ownerAddress)
@@ -247,7 +283,11 @@ export async function executeAction(
       }
 
       case 'deposit': {
-        const amt = parseEther(params.amount as string)
+        const depositLeader = validateAddress(params.leader, 'leader')
+        if (typeof depositLeader === 'string') return { error: depositLeader }
+        const amtResult = safeParseAmount(params.amount, 'amount')
+        if (typeof amtResult === 'string') return { error: amtResult }
+        const amt = amtResult
         if (!checkSpend(session.ownerAddress, amt)) {
           return { error: 'Session spending cap reached.' }
         }
@@ -255,7 +295,7 @@ export async function executeAction(
           address: contracts.followerVault,
           abi: FollowerVaultAbi,
           functionName: 'deposit',
-          args: [params.leader as Address, amt],
+          args: [depositLeader, amt],
         })
         await waitForTx(hash)
         commitSpend(session.ownerAddress, amt)
@@ -264,12 +304,15 @@ export async function executeAction(
       }
 
       case 'withdraw': {
-        // H-4: withdraw still counts against operation limit (checked above)
+        const withdrawLeader = validateAddress(params.leader, 'leader')
+        if (typeof withdrawLeader === 'string') return { error: withdrawLeader }
+        const withdrawAmt = safeParseAmount(params.amount, 'amount')
+        if (typeof withdrawAmt === 'string') return { error: withdrawAmt }
         const hash = await wallet.writeContract({
           address: contracts.followerVault,
           abi: FollowerVaultAbi,
           functionName: 'withdraw',
-          args: [params.leader as Address, parseEther(params.amount as string)],
+          args: [withdrawLeader, withdrawAmt],
         })
         await waitForTx(hash)
         commitOperation(session.ownerAddress)
@@ -277,7 +320,9 @@ export async function executeAction(
       }
 
       case 'register': {
-        const stakeAmt = parseEther(params.stakeAmount as string || '10')
+        const stakeResult = safeParseAmount(params.stakeAmount || '10', 'stakeAmount')
+        if (typeof stakeResult === 'string') return { error: stakeResult }
+        const stakeAmt = stakeResult
         if (!checkSpend(session.ownerAddress, stakeAmt)) {
           return { error: 'Session spending cap reached.' }
         }
@@ -294,28 +339,29 @@ export async function executeAction(
       }
 
       case 'deregister': {
-        const hash = await wallet.writeContract({
-          address: contracts.leaderRegistry,
-          abi: LeaderRegistryAbi,
-          functionName: 'deregisterLeader',
-        })
-        await waitForTx(hash)
-        commitOperation(session.ownerAddress)
-        return { executed: true, txHash: hash, type: 'deregister' }
+        // deregisterLeader checks msg.sender — session wallet won't be the leader,
+        // so fall back to ActionCard for the user's real wallet
+        return {
+          type: 'deregister' as const,
+          fallback: true,
+          contractAddress: contracts.leaderRegistry,
+          sessionWalletCantExecute: true,
+        }
       }
 
       case 'claimFees': {
         const token = resolveToken(params.token as string || 'STT')
         if (!token) return { error: 'Unknown token' }
-        const hash = await wallet.writeContract({
-          address: contracts.followerVault,
-          abi: FollowerVaultAbi,
-          functionName: 'claimFees',
-          args: [token],
-        })
-        await waitForTx(hash)
-        commitOperation(session.ownerAddress)
-        return { executed: true, txHash: hash, type: 'claimFees' }
+        // claimFees checks msg.sender is a leader — session wallet won't be registered,
+        // so always fall back to ActionCard for the user's real wallet
+        return {
+          type: 'claimFees' as const,
+          fallback: true,
+          contractAddress: contracts.followerVault,
+          token: token.symbol,
+          tokenAddress: token.address,
+          sessionWalletCantExecute: true,
+        }
       }
 
       case 'approve': {
@@ -342,7 +388,7 @@ export async function executeAction(
   } catch (err) {
     const msg = err instanceof Error ? err.message : 'Transaction failed'
     // Log the actual error server-side for debugging, sanitize for the user
-    console.error(`[session-exec] ${actionType} failed:`, msg.slice(0, 300))
+    console.error(`[session-exec] ${actionType} failed:`, sanitizeError(msg))
     return { error: sanitizeError(msg) }
   }
 }

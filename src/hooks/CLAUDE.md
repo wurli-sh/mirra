@@ -32,6 +32,8 @@ Custom hooks wrapping wagmi's `useReadContract` / `useReadContracts` / `useWrite
 | `useReactiveEvents` | util | — | SSE consumer for Somnia Reactivity event stream |
 | `useWallet` | util | — | Wallet connection state wrapper |
 | `usePageReady` | util | — | Page load readiness flag |
+| `useSessionBalance` | read | ERC20 + native | Session wallet STT + gas balance, auto-verifies server session status |
+| `useSessionCleanup` | util | — | Auto-revokes session on wallet disconnect or address change |
 
 ## Chat Agent Reuse
 

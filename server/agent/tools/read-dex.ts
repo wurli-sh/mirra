@@ -61,7 +61,7 @@ export const get_amount_out = tool({
         amountOut: out,
       }
     } catch (err) {
-      console.error(`[tool] get_amount_out ERROR:`, err)
+      console.error(`[tool] get_amount_out ERROR:`, err instanceof Error ? err.message.slice(0, 200) : 'unknown')
       return { error: `Could not get quote: ${err instanceof Error ? err.message.slice(0, 200) : 'pool may have no liquidity'}` }
     }
   },

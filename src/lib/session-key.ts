@@ -54,6 +54,10 @@ export async function checkSessionStatus(ownerAddress: Address): Promise<{
   sessionKeyAddress?: Address
   expiresAt?: number
 }> {
-  const res = await fetch(`/api/session/status?address=${ownerAddress}`)
+  const res = await fetch('/api/session/status', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ address: ownerAddress }),
+  })
   return res.json()
 }

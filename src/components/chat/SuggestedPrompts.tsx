@@ -4,7 +4,7 @@ import { TrendingUp, Users, ArrowRightLeft, HelpCircle } from 'lucide-react'
 const PROMPTS = [
   { icon: Users, label: 'Who\'s on top?', text: 'Who are the top leaders on Mirra right now?' },
   { icon: TrendingUp, label: 'My bags', text: 'Show my current follow positions and PnL' },
-  { icon: ArrowRightLeft, label: 'Swap time', text: 'I want to swap 10 STT for USDC' },
+  { icon: ArrowRightLeft, label: 'Swap time', text: 'I want to swap 2 STT for USDC' },
   { icon: HelpCircle, label: 'How does this work?', text: 'How does reactive copy-trading work on Mirra?' },
 ]
 
