@@ -13,13 +13,13 @@
 | **Chain** | Somnia Shannon Testnet (Chain ID `50312`) |
 | **RPC** | `https://dream-rpc.somnia.network/` |
 | **Explorer** | [shannon-explorer.somnia.network](https://shannon-explorer.somnia.network) |
-| **SimpleDEX** | `0x25949a1AFe1bdDEA5822aa8371CdF8E256D498fb` |
-| **LeaderRegistry** | `0xBb1Ba262B96567632f32F8bCf06263AA86C434E3` |
-| **FollowerVault** | `0x16725Ce5a927D97538C282727c9B052F21EcA275` |
-| **MirrorExecutor** | `0xaa8404e8Af97C178A9C2FBFce595e283D0C1a47c` |
-| **RiskGuardian** | `0x5F918046FB4EeAF298631393e9B877dc5149F032` |
-| **PositionTracker** | `0x6FD78D3A02bD1535658F8Cc1a811a4674589CBb1` |
-| **ReputationEngine** | `0x6b255e7aD1627F79DfE7Bbd7D0b0b00Ac4EAd694` |
+| **SimpleDEX** | `0x29be601cD09b6CF0429721895680b7dbDFE7fB5E` |
+| **LeaderRegistry** | `0x485b7673299A2Ef4Ce8f911E414bE2758FE9c8a2` |
+| **FollowerVault** | `0x8F4d404ADC5b7a1e6D2A355FA9c64Df3cC62096b` |
+| **MirrorExecutor** | `0x181B8A52282D66bB6122d84Dbb442d141502Dc92` |
+| **RiskGuardian** | `0xA4d4318067a6be92ef76Ca61973D7FFFB5f3FAdd` |
+| **PositionTracker** | `0x50292552Bd6E8Ab14321d6581795dB0934e39f60` |
+| **ReputationEngine** | `0x55DDb2Ef336FB32764cE4F17F9264aF97F9fb219` |
 
 ---
 
