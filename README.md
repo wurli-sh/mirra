@@ -2,22 +2,26 @@
   <img src="./assets/mirra.png" width="100%" alt="mirra" />
 </div>
 
-**Reactive copy-trading on Somnia.** Lreader trades auto-mirrored in the same block—no bots or backend. Includes Oni, an AI agent executing trades via session keys.
+**Winner of the [Somnia Reactivity Hackathon](https://dorahacks.io/hackathon/somnia-reactivity/winner).**
+
+Reactive copy-trading on Somnia. Leader trades auto-mirrored in the same block—no bots or backend. Includes Oni, an AI agent executing trades via session keys.
+
+[Demo Video](https://youtu.be/Gt_PvXdaq-0)
 
 ## Deployed on Somnia Shannon Testnet
 
-| Resource | Address |
-|----------|---------|
-| **Chain** | Somnia Shannon Testnet (Chain ID `50312`) |
-| **RPC** | `https://dream-rpc.somnia.network/` |
-| **Explorer** | [shannon-explorer.somnia.network](https://shannon-explorer.somnia.network) |
-| **SimpleDEX** | `0x29be601cD09b6CF0429721895680b7dbDFE7fB5E` |
-| **LeaderRegistry** | `0x485b7673299A2Ef4Ce8f911E414bE2758FE9c8a2` |
-| **FollowerVault** | `0x8F4d404ADC5b7a1e6D2A355FA9c64Df3cC62096b` |
-| **MirrorExecutor** | `0x181B8A52282D66bB6122d84Dbb442d141502Dc92` |
-| **RiskGuardian** | `0xA4d4318067a6be92ef76Ca61973D7FFFB5f3FAdd` |
-| **PositionTracker** | `0x50292552Bd6E8Ab14321d6581795dB0934e39f60` |
-| **ReputationEngine** | `0x55DDb2Ef336FB32764cE4F17F9264aF97F9fb219` |
+| Resource             | Address                                                                    |
+| -------------------- | -------------------------------------------------------------------------- |
+| **Chain**            | Somnia Shannon Testnet (Chain ID `50312`)                                  |
+| **RPC**              | `https://dream-rpc.somnia.network/`                                        |
+| **Explorer**         | [shannon-explorer.somnia.network](https://shannon-explorer.somnia.network) |
+| **SimpleDEX**        | `0x29be601cD09b6CF0429721895680b7dbDFE7fB5E`                               |
+| **LeaderRegistry**   | `0x485b7673299A2Ef4Ce8f911E414bE2758FE9c8a2`                               |
+| **FollowerVault**    | `0x8F4d404ADC5b7a1e6D2A355FA9c64Df3cC62096b`                               |
+| **MirrorExecutor**   | `0x181B8A52282D66bB6122d84Dbb442d141502Dc92`                               |
+| **RiskGuardian**     | `0xA4d4318067a6be92ef76Ca61973D7FFFB5f3FAdd`                               |
+| **PositionTracker**  | `0x50292552Bd6E8Ab14321d6581795dB0934e39f60`                               |
+| **ReputationEngine** | `0x55DDb2Ef336FB32764cE4F17F9264aF97F9fb219`                               |
 
 ---
 
@@ -84,6 +88,7 @@ mirra/
 ## Key Features
 
 ### Reactive Copy-Trading
+
 - Leaders register by staking STT, followers deposit into non-custodial vaults
 - Leader swap on SimpleDEX triggers `MirrorExecutor._onEvent()` via Somnia Reactivity
 - Follower trades mirror proportionally in the same block
@@ -91,6 +96,7 @@ mirra/
 - `ReputationEngine` tracks score, win rate, PnL on-chain
 
 ### Autonomous AI Agent (Oni)
+
 - Chat-based interface at `/oni` powered by Ollama (local) or Groq (prod)
 - 9 read tools (leaders, positions, balances, quotes, activity) + 9 write tools (swap, follow, deposit, etc.)
 - **Session keys**: Server-generated ephemeral wallets for zero-popup autonomous execution
@@ -98,6 +104,7 @@ mirra/
 - Live event streaming via SSE + Somnia Reactivity SDK (`somnia_watch`)
 
 ### Somnia Reactivity Integration
+
 - **On-chain**: 2 handler contracts inheriting `SomniaEventHandler` with `_onEvent` overrides
 - **On-chain subscriptions**: 3 chained subscriptions via `sdk.createSoliditySubscription()`
 - **Off-chain**: Server uses `sdk.subscribe()` via `somnia_watch` for native push events
@@ -107,15 +114,15 @@ mirra/
 
 ## Tech Stack
 
-| Layer | Stack |
-|-------|-------|
-| **Frontend** | React 19, Vite, TypeScript, Tailwind v4, wagmi v2, viem, Zustand, TanStack Query, framer-motion |
-| **Server** | Hono, Vercel AI SDK, viem |
-| **LLM (local)** | Ollama with Qwen 3 8B (`qwen3:8b`) via ollama-ai-provider-v2 |
-| **LLM (prod)** | Groq with Llama 3.1 8B / Llama 3.3 70B via @ai-sdk/groq |
-| **Contracts** | Solidity 0.8.30, Hardhat, OpenZeppelin 5.x, @somnia-chain/reactivity-contracts |
-| **Reactivity** | @somnia-chain/reactivity SDK (on-chain + off-chain subscriptions) |
-| **Design** | Font: Onest. Primary: #FFD5F0 (pink). Secondary: #1A1A1A (charcoal) |
+| Layer           | Stack                                                                                           |
+| --------------- | ----------------------------------------------------------------------------------------------- |
+| **Frontend**    | React 19, Vite, TypeScript, Tailwind v4, wagmi v2, viem, Zustand, TanStack Query, framer-motion |
+| **Server**      | Hono, Vercel AI SDK, viem                                                                       |
+| **LLM (local)** | Ollama with Qwen 3 8B (`qwen3:8b`) via ollama-ai-provider-v2                                    |
+| **LLM (prod)**  | Groq with Llama 3.1 8B / Llama 3.3 70B via @ai-sdk/groq                                         |
+| **Contracts**   | Solidity 0.8.30, Hardhat, OpenZeppelin 5.x, @somnia-chain/reactivity-contracts                  |
+| **Reactivity**  | @somnia-chain/reactivity SDK (on-chain + off-chain subscriptions)                               |
+| **Design**      | Font: Onest. Primary: #FFD5F0 (pink). Secondary: #1A1A1A (charcoal)                             |
 
 ---
 
@@ -154,6 +161,7 @@ npx tsx scripts/setup-subscriptions.ts  # Register reactive subscriptions
 ## Environment Setup
 
 **Root** (`.env`):
+
 ```bash
 # Contract addresses
 VITE_SIMPLE_DEX=0x...
@@ -176,6 +184,7 @@ GROQ_API_KEY=
 ```
 
 **Contracts** (`contracts/.env`):
+
 ```bash
 PRIVATE_KEY=your_deployer_private_key_here
 ```
