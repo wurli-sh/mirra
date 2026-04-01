@@ -1,34 +1,44 @@
-import { useState, useRef, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Link, useLocation } from 'react-router-dom'
-import { ChevronDown, ClipboardCopy, ExternalLink, LogOut } from 'lucide-react'
-import { useWallet } from '@/hooks/useWallet'
+import { useState, useRef, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Link, useLocation } from "react-router-dom";
+import { ChevronDown, ClipboardCopy, ExternalLink, LogOut } from "lucide-react";
+import { useWallet } from "@/hooks/useWallet";
 
 const navLinks = [
-  { to: '/', label: 'Home' },
-  { to: '/oni', label: 'Oni Agent' },
-  { to: '/trade', label: 'Trade' },
-] as const
+  { to: "/", label: "Home" },
+  { to: "/oni", label: "Oni Agent" },
+  { to: "/trade", label: "Trade" },
+] as const;
 
 export function Navbar() {
-  const { pathname } = useLocation()
-  const { address, isConnected, isConnecting, connectors, connectWith, disconnect } = useWallet()
-  const [walletMenuOpen, setWalletMenuOpen] = useState(false)
-  const [copied, setCopied] = useState(false)
-  const menuRef = useRef<HTMLDivElement>(null)
-  const display = address ? `${address.slice(0, 4)}...${address.slice(-3)}` : ''
+  const { pathname } = useLocation();
+  const {
+    address,
+    isConnected,
+    isConnecting,
+    connectors,
+    connectWith,
+    disconnect,
+  } = useWallet();
+  const [walletMenuOpen, setWalletMenuOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const display = address
+    ? `${address.slice(0, 4)}...${address.slice(-3)}`
+    : "";
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) setWalletMenuOpen(false)
-    }
-    document.addEventListener('mousedown', handler)
-    return () => document.removeEventListener('mousedown', handler)
-  }, [])
+      if (menuRef.current && !menuRef.current.contains(e.target as Node))
+        setWalletMenuOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
 
   useEffect(() => {
-    setWalletMenuOpen(false)
-  }, [isConnected, pathname])
+    setWalletMenuOpen(false);
+  }, [isConnected, pathname]);
 
   return (
     <header className="sticky top-0 z-40 flex justify-center px-4">
@@ -36,31 +46,34 @@ export function Navbar() {
         {/* Brand — left */}
         <Link to="/" className="flex items-center gap-2">
           <div className="size-7 rounded-md bg-primary" />
-          <span className="text-base font-bold tracking-tight text-primary">Mirra</span>
+          <span className="text-base font-bold tracking-tight text-primary">
+            Mirra
+          </span>
         </Link>
 
         {/* Nav links — center */}
         <nav className="flex items-center justify-center gap-0.5">
           {navLinks.map(({ to, label }) => {
-            const isActive = pathname === to || (to !== '/' && pathname.startsWith(to))
+            const isActive =
+              pathname === to || (to !== "/" && pathname.startsWith(to));
             return (
               <Link
                 key={to}
                 to={to}
                 className={`relative rounded-lg px-3 sm:px-4 py-1.5 text-xs sm:text-sm font-medium transition-colors duration-200 ${
-                  isActive ? 'text-white' : 'text-white/40 hover:text-white/70'
+                  isActive ? "text-white" : "text-white/40 hover:text-white/70"
                 }`}
               >
                 {isActive && (
                   <motion.div
                     layoutId="activeNav"
                     className="absolute inset-0 rounded-lg bg-white/15"
-                    transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
                   />
                 )}
                 <span className="relative z-10">{label}</span>
               </Link>
-            )
+            );
           })}
         </nav>
 
@@ -90,7 +103,7 @@ export function Navbar() {
                     transition={{ duration: 0.15 }}
                   >
                     <div className="px-4 py-3 border-b border-border">
-                      <span className="text-[10px] font-semibold text-text-muted uppercase tracking-wider">
+                      <span className="text-xs font-semibold text-text-muted uppercase tracking-wider">
                         Choose Wallet
                       </span>
                     </div>
@@ -101,7 +114,11 @@ export function Navbar() {
                         className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-secondary hover:bg-surface transition-colors cursor-pointer"
                       >
                         {connector.icon ? (
-                          <img src={connector.icon} alt="" className="size-5 rounded" />
+                          <img
+                            src={connector.icon}
+                            alt=""
+                            className="size-5 rounded"
+                          />
                         ) : (
                           <div className="size-5 rounded bg-primary" />
                         )}
@@ -118,10 +135,12 @@ export function Navbar() {
                 onClick={() => setWalletMenuOpen(!walletMenuOpen)}
                 className="flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-white/15 hover:bg-white/20 transition-colors px-4 sm:px-5 py-2"
               >
-                <span className="text-sm font-semibold text-white">{display}</span>
+                <span className="text-sm font-semibold text-white">
+                  {display}
+                </span>
                 <ChevronDown
                   size={13}
-                  className={`text-white/40 transition-transform duration-200 ${walletMenuOpen ? 'rotate-180' : ''}`}
+                  className={`text-white/40 transition-transform duration-200 ${walletMenuOpen ? "rotate-180" : ""}`}
                 />
               </button>
 
@@ -135,23 +154,27 @@ export function Navbar() {
                     transition={{ duration: 0.15 }}
                   >
                     <div className="px-4 py-3 border-b border-border/60">
-                      <p className="text-[10px] font-semibold text-text-muted uppercase tracking-wider">Wallet</p>
+                      <p className="text-xs font-semibold text-text-muted uppercase tracking-wider">
+                        Wallet
+                      </p>
                       <p className="text-xs text-text-faint mt-0.5 font-mono">
-                        {address ? `${address.slice(0, 6)}...${address.slice(-4)}` : ''}
+                        {address
+                          ? `${address.slice(0, 6)}...${address.slice(-4)}`
+                          : ""}
                       </p>
                     </div>
                     <button
                       onClick={() => {
                         if (address) {
-                          navigator.clipboard.writeText(address)
-                          setCopied(true)
-                          setTimeout(() => setCopied(false), 1500)
+                          navigator.clipboard.writeText(address);
+                          setCopied(true);
+                          setTimeout(() => setCopied(false), 1500);
                         }
                       }}
                       className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-secondary hover:bg-surface/60 transition-colors cursor-pointer"
                     >
                       <ClipboardCopy size={14} className="text-text-muted" />
-                      {copied ? 'Copied!' : 'Copy Address'}
+                      {copied ? "Copied!" : "Copy Address"}
                     </button>
                     <a
                       href={`https://shannon-explorer.somnia.network/address/${address}`}
@@ -163,7 +186,10 @@ export function Navbar() {
                       Explorer
                     </a>
                     <button
-                      onClick={() => { disconnect(); setWalletMenuOpen(false) }}
+                      onClick={() => {
+                        disconnect();
+                        setWalletMenuOpen(false);
+                      }}
                       className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-danger hover:bg-danger/5 transition-colors cursor-pointer border-t border-border/60"
                     >
                       <LogOut size={14} />
@@ -177,5 +203,5 @@ export function Navbar() {
         </div>
       </div>
     </header>
-  )
+  );
 }

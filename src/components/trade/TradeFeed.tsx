@@ -1,30 +1,38 @@
-import { motion } from 'framer-motion'
-import { Activity, ArrowRight, ExternalLink } from 'lucide-react'
-import { cn } from '@/lib/cn'
-import { useLiveTradeFeed } from '@/hooks/useLiveEvents'
-import { contracts } from '@/config/contracts'
-import { pulse } from '@/lib/animations'
+import { motion } from "framer-motion";
+import { Activity, ArrowRight, ExternalLink } from "lucide-react";
+import { cn } from "@/lib/cn";
+import { useLiveTradeFeed } from "@/hooks/useLiveEvents";
+import { contracts } from "@/config/contracts";
+import { pulse } from "@/lib/animations";
 
-const EXPLORER = 'https://shannon-explorer.somnia.network'
+const EXPLORER = "https://shannon-explorer.somnia.network";
 
 export function TradeFeed() {
-  const { items, loaded, isReactive } = useLiveTradeFeed()
+  const { items, loaded, isReactive } = useLiveTradeFeed();
 
   return (
     <div className="border border-border rounded-xl overflow-hidden max-h-[460px] flex flex-col">
       {/* Header */}
       <div className="flex items-center px-5 py-3.5 bg-surface-alt/60 gap-2">
         <Activity size={14} className="text-secondary" />
-        <span className="font-semibold text-sm text-secondary">Recent Activity</span>
+        <span className="font-semibold text-sm text-secondary">
+          Recent Activity
+        </span>
         <div className="flex-1" />
         {isReactive && (
-          <span className="text-[9px] font-semibold uppercase tracking-wider text-amber-600 bg-amber-100 px-1.5 py-0.5 rounded">
+          <span className="text-xs font-semibold uppercase tracking-wider text-amber-600 bg-amber-100 px-1.5 py-0.5 rounded">
             Somnia Reactivity
           </span>
         )}
-        <motion.div className={cn('w-1.5 h-1.5 rounded-full', isReactive ? 'bg-success' : 'bg-warning')} animate={pulse} />
+        <motion.div
+          className={cn(
+            "w-1.5 h-1.5 rounded-full",
+            isReactive ? "bg-success" : "bg-warning",
+          )}
+          animate={pulse}
+        />
         <span className="text-xs text-text-faint">
-          {isReactive ? 'Live' : items.length > 0 ? 'Cached' : 'Connecting...'}
+          {isReactive ? "Live" : items.length > 0 ? "Cached" : "Connecting..."}
         </span>
       </div>
 
@@ -42,7 +50,9 @@ export function TradeFeed() {
         </div>
       ) : items.length === 0 ? (
         <div className="py-10 text-center">
-          <p className="text-xs text-text-muted">No trades yet. Swap events will appear here in real time.</p>
+          <p className="text-xs text-text-muted">
+            No trades yet. Swap events will appear here in real time.
+          </p>
         </div>
       ) : (
         <div className="divide-y divide-border/40 overflow-y-auto flex-1">
@@ -53,19 +63,31 @@ export function TradeFeed() {
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center px-3 sm:px-5 py-3.5 gap-2 sm:gap-4 hover:bg-surface transition-colors duration-150 cursor-pointer group"
-              initial={{ opacity: 0, y: -8 }}
+              initial={{ opacity: 0, y: -4 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.25, delay: i * 0.03 }}
+              transition={{ duration: 0.2, delay: i * 0.02 }}
             >
               {/* Time */}
-              <span className="text-sm text-text-faint w-12 shrink-0 tabular-nums font-medium">{item.time}</span>
+              <span className="text-sm text-text-faint w-12 shrink-0 tabular-nums font-medium">
+                {item.time}
+              </span>
 
               {/* Type badge */}
-              <span className={cn(
-                'text-xs font-bold uppercase tracking-wider px-2 py-1 rounded shrink-0',
-                item.type === 'success' ? 'bg-success/10 text-success' : item.type === 'fail' ? 'bg-danger/10 text-danger' : 'bg-warning/10 text-warning'
-              )}>
-                {item.type === 'success' ? 'SWAP' : item.type === 'fail' ? 'FAIL' : 'STOP'}
+              <span
+                className={cn(
+                  "text-xs font-bold uppercase tracking-wider px-2 py-1 rounded shrink-0",
+                  item.type === "success"
+                    ? "bg-success/10 text-success"
+                    : item.type === "fail"
+                      ? "bg-danger/10 text-danger"
+                      : "bg-warning/10 text-warning",
+                )}
+              >
+                {item.type === "success"
+                  ? "SWAP"
+                  : item.type === "fail"
+                    ? "FAIL"
+                    : "STOP"}
               </span>
 
               {/* Details */}
@@ -78,14 +100,19 @@ export function TradeFeed() {
               </span>
 
               {/* Result + explorer icon */}
-              {item.type === 'success' && (
-                <span className="text-sm font-bold text-success tabular-nums shrink-0">{item.result}</span>
+              {item.type === "success" && (
+                <span className="text-sm font-bold text-success tabular-nums shrink-0">
+                  {item.result}
+                </span>
               )}
-              <ExternalLink size={12} className="text-text-faint group-hover:text-text-muted transition-colors shrink-0" />
+              <ExternalLink
+                size={12}
+                className="text-text-faint group-hover:text-text-muted transition-colors shrink-0"
+              />
             </motion.a>
           ))}
         </div>
       )}
     </div>
-  )
+  );
 }
